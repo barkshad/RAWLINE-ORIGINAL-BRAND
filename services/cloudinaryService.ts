@@ -1,4 +1,3 @@
-
 const CLOUD_NAME = "ds2mbrzcn";
 const UPLOAD_PRESET = "real_unsigned";
 const FOLDER = "rawline";
@@ -10,8 +9,9 @@ export const uploadToCloudinary = async (file: File): Promise<string> => {
   formData.append("folder", FOLDER);
 
   try {
+    // Using /auto/upload to support video and image files
     const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+      `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`,
       {
         method: "POST",
         body: formData,
@@ -31,10 +31,10 @@ export const uploadToCloudinary = async (file: File): Promise<string> => {
 };
 
 /**
- * Generates an optimized Cloudinary URL
+ * Generates an optimized Cloudinary URL for images
  */
 export const getOptimizedUrl = (url: string, width: number = 1200): string => {
-  if (!url.includes("cloudinary.com")) return url;
+  if (!url || !url.includes("cloudinary.com") || url.includes("/video/")) return url;
   const baseUrl = url.split("/upload/")[0];
   const tail = url.split("/upload/")[1];
   return `${baseUrl}/upload/f_auto,q_auto,w_${width}/${tail}`;

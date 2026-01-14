@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import { motion, useScroll, useSpring, useTransform, AnimatePresence } from 'framer-motion';
