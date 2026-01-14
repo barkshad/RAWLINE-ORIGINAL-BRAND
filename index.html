@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>RAWLINE — Industrial Archive</title>
+  <title>RAWLINE — V I N T A G E ARCHIVE</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;900&family=JetBrains+Mono:wght@100;300;400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@100;300;400;500;700;900&family=JetBrains+Mono:wght@100;300;400;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #030303;
+      --bg: #080808;
       --fg: #fcfcfc;
       --accent: #ff3b3b;
-      --glass: rgba(255, 255, 255, 0.03);
-      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass: rgba(255, 255, 255, 0.02);
+      --glass-border: rgba(255, 255, 255, 0.05);
     }
 
     html.lenis {
@@ -23,18 +23,6 @@
       scroll-behavior: auto !important;
     }
 
-    .lenis.lenis-smooth [data-lenis-prevent] {
-      overscroll-behavior: contain;
-    }
-
-    .lenis.lenis-stopped {
-      overflow: hidden;
-    }
-
-    .lenis.lenis-scrolling iframe {
-      pointer-events: none;
-    }
-
     body {
       font-family: 'Inter', sans-serif;
       background-color: var(--bg);
@@ -42,84 +30,62 @@
       overflow-x: hidden;
       cursor: none;
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .serif-display {
+      font-family: 'Cormorant Garamond', serif;
     }
 
     .noise {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      opacity: 0.05;
-      z-index: 9999;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; opacity: 0.03; z-index: 9999;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
     }
 
     .vignette {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 100%);
-      pointer-events: none;
-      z-index: 9997;
-    }
-
-    .tilt-card {
-      transform-style: preserve-3d;
-      perspective: 1000px;
-    }
-
-    .glass-panel {
-      background: var(--glass);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border: 1px solid var(--glass-border);
-    }
-
-    @keyframes holographic {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    .holographic-overlay {
-      background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.05) 45%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.05) 55%, transparent 100%);
-      background-size: 200% 200%;
-      mix-blend-mode: overlay;
+      position: fixed; inset: 0;
+      background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.5) 100%);
+      pointer-events: none; z-index: 9997;
     }
 
     .custom-cursor {
-      width: 10px;
-      height: 10px;
-      background: white;
-      position: fixed;
-      pointer-events: none;
-      z-index: 10000;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
+      width: 8px; height: 8px; background: white;
+      position: fixed; pointer-events: none; z-index: 10000;
+      border-radius: 50%; transform: translate(-50%, -50%);
       mix-blend-mode: difference;
-      transition: width 0.3s, height 0.3s, background-color 0.3s;
     }
 
     .cursor-outline {
-      width: 44px;
-      height: 44px;
-      border: 1px solid rgba(255,255,255,0.2);
-      position: fixed;
-      pointer-events: none;
-      z-index: 9999;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.15);
+      position: fixed; pointer-events: none; z-index: 9999;
+      border-radius: 50%; transform: translate(-50%, -50%);
+      transition: all 0.15s ease-out;
     }
 
-    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-    .caret { border-right: 2px solid currentColor; animation: blink 1s step-end infinite; }
+    .image-overlay-glow {
+      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 40%);
+    }
 
-    .vertical-text {
-      writing-mode: vertical-rl;
-      text-orientation: mixed;
+    .archive-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    
+    @media (min-width: 1024px) {
+      .archive-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4rem;
+      }
+    }
+
+    /* Oscar & Patch inspired clean metadata */
+    .artifact-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      font-weight: 700;
     }
   </style>
   <script type="importmap">
@@ -149,47 +115,15 @@
   <div class="vignette"></div>
   <div id="cursor" class="custom-cursor hidden md:block"></div>
   <div id="cursor-outline" class="cursor-outline hidden md:block"></div>
-  
   <div id="root"></div>
-
   <script type="module" src="/index.tsx"></script>
-
   <script>
     const cursor = document.getElementById('cursor');
     const outline = document.getElementById('cursor-outline');
-    
     document.addEventListener('mousemove', (e) => {
-      if(cursor) {
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
-      }
+      if(cursor) { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; }
       if(outline) {
-        outline.animate({
-          left: e.clientX + 'px',
-          top: e.clientY + 'px'
-        }, { duration: 500, fill: 'forwards', easing: 'ease-out' });
-      }
-    });
-
-    document.addEventListener('mousedown', () => {
-      if(cursor) {
-        cursor.style.width = '24px';
-        cursor.style.height = '24px';
-      }
-      if(outline) {
-        outline.style.transform = 'translate(-50%, -50%) scale(0.5)';
-        outline.style.borderColor = 'rgba(255,255,255,0.8)';
-      }
-    });
-
-    document.addEventListener('mouseup', () => {
-      if(cursor) {
-        cursor.style.width = '10px';
-        cursor.style.height = '10px';
-      }
-      if(outline) {
-        outline.style.transform = 'translate(-50%, -50%) scale(1)';
-        outline.style.borderColor = 'rgba(255,255,255,0.2)';
+        outline.animate({ left: e.clientX + 'px', top: e.clientY + 'px' }, { duration: 400, fill: 'forwards', easing: 'ease-out' });
       }
     });
   </script>
