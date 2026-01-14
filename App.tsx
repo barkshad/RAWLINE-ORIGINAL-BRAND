@@ -1,13 +1,12 @@
-
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
-import { motion, useScroll, useSpring, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useScroll, useSpring, AnimatePresence } from 'framer-motion';
 import Lenis from 'lenis';
 import PieceCard from './components/PieceCard';
 import FadeInSection from './components/FadeInSection';
 import AdminCMS from './components/AdminCMS';
 import PieceDetail from './components/PieceDetail';
-import { Piece, SiteContent, FitCheck } from './types';
+import { Piece, SiteContent } from './types';
 import { getPieces, getSiteContent } from './services/firebaseService';
 
 const DEFAULT_CONTENT: SiteContent = {
@@ -21,6 +20,13 @@ const DEFAULT_CONTENT: SiteContent = {
   fitChecks: []
 };
 
+// Global helper for media type detection
+export const isVideoUrl = (url?: string) => {
+  if (!url) return false;
+  // Cloudinary video URLs usually contain '/video/' or common video extensions
+  return url.includes('/video/') || url.match(/\.(mp4|webm|ogg|mov)$/i);
+};
+
 const MainLayout: React.FC<{ 
   scrolled: boolean; 
   syncError: string | null; 
@@ -31,11 +37,6 @@ const MainLayout: React.FC<{
 }> = ({ scrolled, syncError, content, pieces, loadData, setContent }) => {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
-
-  const isVideo = (url?: string) => {
-    if (!url) return false;
-    return url.match(/\.(mp4|webm|ogg|mov)$|video/i);
-  };
 
   return (
     <div className="min-h-screen bg-[#080808] text-white selection:bg-white selection:text-black font-sans">
@@ -72,19 +73,30 @@ const MainLayout: React.FC<{
       {/* Hero with Media Background */}
       <header className="relative h-screen flex flex-col justify-center items-center text-center px-6 overflow-hidden bg-black">
         <div className="absolute inset-0 z-0 opacity-40">
-          {isVideo(content.heroMediaUrl) ? (
-            <video 
-              autoPlay 
-              loop 
-              muted 
-              playsInline 
-              className="w-full h-full object-cover grayscale"
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={content.heroMediaUrl}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1 }}
+              className="w-full h-full"
             >
-              <source src={content.heroMediaUrl} type="video/mp4" />
-            </video>
-          ) : content.heroMediaUrl ? (
-            <img src={content.heroMediaUrl} className="w-full h-full object-cover grayscale" alt="Hero Background" />
-          ) : null}
+              {isVideoUrl(content.heroMediaUrl) ? (
+                <video 
+                  key={content.heroMediaUrl}
+                  autoPlay 
+                  loop 
+                  muted 
+                  playsInline 
+                  src={content.heroMediaUrl}
+                  className="w-full h-full object-cover grayscale"
+                />
+              ) : content.heroMediaUrl ? (
+                <img src={content.heroMediaUrl} className="w-full h-full object-cover grayscale" alt="Hero Background" />
+              ) : null}
+            </motion.div>
+          </AnimatePresence>
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black" />
         </div>
 
@@ -157,7 +169,7 @@ const MainLayout: React.FC<{
               <FadeInSection key={check.id} delay={idx * 100}>
                 <div className="space-y-6 group">
                   <div className="relative aspect-[9/16] bg-black overflow-hidden border border-white/5 transition-all duration-700 group-hover:border-white/20">
-                    {isVideo(check.videoUrl) ? (
+                    {isVideoUrl(check.videoUrl) ? (
                       <video 
                         src={check.videoUrl} 
                         className="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-1000"

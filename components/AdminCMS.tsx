@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Piece, SiteContent, FitCheck } from '../types';
 import { 
@@ -11,6 +10,7 @@ import {
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { uploadToCloudinary } from '../services/cloudinaryService';
 import AICurator from './AICurator';
+import { isVideoUrl } from '../App';
 
 interface AdminCMSProps {
   content: SiteContent;
@@ -26,6 +26,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'content' | 'pieces' | 'fitchecks' | 'lab'>('content');
   const [isUploading, setIsUploading] = useState<Record<string, boolean>>({});
+  const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -110,9 +111,16 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
     onUpdateContent({ ...content, fitChecks: newFitChecks });
   };
 
-  const isVideo = (url?: string) => {
-    if (!url) return false;
-    return url.match(/\.(mp4|webm|ogg|mov)$|video/i);
+  const handleSaveGlobalContent = async () => {
+    setIsSaving(true);
+    try {
+      await saveSiteContent(content);
+      alert("Metadata synchronized to global production.");
+    } catch (err) {
+      alert("Failed to sync metadata.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (!isOpen) {
@@ -217,10 +225,12 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                           <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
                             <div className="w-4 h-4 border border-white border-t-transparent animate-spin rounded-full" />
                           </div>
-                        ) : isVideo(content.heroMediaUrl) ? (
+                        ) : isVideoUrl(content.heroMediaUrl) ? (
                           <video src={content.heroMediaUrl} className="w-full h-full object-cover" muted />
-                        ) : (
+                        ) : content.heroMediaUrl ? (
                           <img src={content.heroMediaUrl} className="w-full h-full object-cover" alt="Hero Preview" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-[8px] text-white/20">NO_MEDIA</div>
                         )}
                       </div>
                       <label className="px-8 py-4 bg-white text-black text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-neutral-200 transition-all">
@@ -239,10 +249,11 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                   />
                 </div>
                 <button 
-                  onClick={async () => { await saveSiteContent(content); alert("Archived successfully."); }}
-                  className="bg-red-600 text-white px-12 py-5 text-[10px] font-black uppercase tracking-[0.5em] hover:bg-red-500 shadow-xl"
+                  onClick={handleSaveGlobalContent}
+                  disabled={isSaving}
+                  className="bg-red-600 text-white px-12 py-5 text-[10px] font-black uppercase tracking-[0.5em] hover:bg-red-500 shadow-xl disabled:opacity-50"
                 >
-                  SAVE_METADATA
+                  {isSaving ? 'SYNCING...' : 'SAVE_METADATA'}
                 </button>
               </div>
             ) : activeTab === 'pieces' ? (
@@ -286,7 +297,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                                      <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
                                        <div className="w-6 h-6 border border-white border-t-transparent animate-spin rounded-full" />
                                      </div>
-                                   ) : isVideo(piece.imageUrl) ? (
+                                   ) : isVideoUrl(piece.imageUrl) ? (
                                       <video src={piece.imageUrl} className="w-full h-full object-cover" muted />
                                    ) : (
                                       <img src={piece.imageUrl} className="w-full h-full object-cover" />
@@ -342,10 +353,12 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                                    <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
                                       <div className="w-4 h-4 border border-white border-t-transparent animate-spin rounded-full" />
                                    </div>
-                                 ) : isVideo(f.videoUrl) ? (
+                                 ) : isVideoUrl(f.videoUrl) ? (
                                     <video src={f.videoUrl} className="w-full h-full object-cover" muted />
-                                 ) : (
+                                 ) : f.videoUrl ? (
                                     <img src={f.videoUrl} className="w-full h-full object-cover" />
+                                 ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-[8px] text-white/20">NO_ASSET</div>
                                  )}
                               </div>
                               <label className="flex-1 px-6 py-4 bg-white/5 border border-white/10 text-[9px] uppercase font-black text-center hover:bg-white hover:text-black cursor-pointer transition-all">
@@ -363,10 +376,11 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                   ))}
                 </div>
                 <button 
-                  onClick={async () => { await saveSiteContent(content); alert("Synchronized."); }}
-                  className="bg-red-600 text-white px-12 py-5 text-[10px] font-black uppercase tracking-[0.5em] hover:bg-red-500 shadow-xl"
+                  onClick={handleSaveGlobalContent}
+                  disabled={isSaving}
+                  className="bg-red-600 text-white px-12 py-5 text-[10px] font-black uppercase tracking-[0.5em] hover:bg-red-500 shadow-xl disabled:opacity-50"
                 >
-                  PUSH_FIT_UPDATES
+                  {isSaving ? 'SYNCING...' : 'PUSH_FIT_UPDATES'}
                 </button>
               </div>
             ) : (
