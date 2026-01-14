@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Piece } from '../types';
 import { getOptimizedUrl } from '../services/cloudinaryService';
@@ -9,65 +9,95 @@ interface PieceCardProps {
 }
 
 const PieceCard: React.FC<PieceCardProps> = ({ piece }) => {
-  const optimizedImage = getOptimizedUrl(piece.imageUrl, 800);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = (y - centerY) / 10;
+    const rotateY = (centerX - x) / 10;
+    setTilt({ x: rotateX, y: rotateY });
+  };
+
+  const handleMouseLeave = () => setTilt({ x: 0, y: 0 });
 
   return (
-    <Link to={`/artifact/${piece.id}`} className="block cursor-none">
-      <div className="group relative bg-[#0a0a0a] border border-white/10 overflow-hidden transition-all duration-700 hover:border-white/30">
-        {/* Structural Data Overlay */}
-        <div className="absolute top-0 left-0 w-full z-20 flex justify-between p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-          <div className="text-[7px] font-mono text-white/90 bg-black/80 px-1.5 py-1 border border-white/10 uppercase tracking-tighter font-black">
-            ARC-ID: {piece.id.substring(0,8).toUpperCase()}
+    <Link 
+      to={`/artifact/${piece.id}`} 
+      className="block perspective-1000"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div 
+        ref={cardRef}
+        style={{
+          transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+          transition: 'transform 0.1s ease-out'
+        }}
+        className="group relative bg-[#0a0a0a] border border-white/5 overflow-hidden transition-all duration-700 hover:border-white/20 shadow-2xl tilt-card"
+      >
+        {/* Holographic Shine Overlay */}
+        <div 
+          className="absolute inset-0 z-20 pointer-events-none holographic-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-[holographic_3s_infinite_linear]" 
+        />
+
+        {/* Structural Metadata (Glass Layer) */}
+        <div className="absolute top-0 left-0 w-full z-30 flex justify-between p-4 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-[-10px] group-hover:translate-y-0">
+          <div className="text-[7px] font-mono text-white/90 bg-black/60 backdrop-blur-md px-2 py-1.5 border border-white/10 uppercase tracking-[0.2em] font-black">
+            ARTIFACT_{piece.id.substring(0,6).toUpperCase()}
           </div>
-          <div className="text-[7px] font-mono text-white/90 bg-black/80 px-1.5 py-1 border border-white/10 uppercase tracking-tighter font-black">
-            LOC: CLOUD_NODE_01
+          <div className="text-[7px] font-mono text-white/90 bg-black/60 backdrop-blur-md px-2 py-1.5 border border-white/10 uppercase tracking-[0.2em] font-black">
+            STATUS: {piece.status}
           </div>
         </div>
 
-        <div className="relative aspect-[4/5] overflow-hidden">
+        <div className="relative aspect-[4/5] overflow-hidden bg-neutral-900">
+          {/* Chromatic Aberration Simulation Layers */}
+          <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-10 transition-opacity duration-300 z-10">
+            <img src={getOptimizedUrl(piece.imageUrl, 800)} className="absolute inset-0 w-full h-full object-cover mix-blend-screen scale-[1.02] translate-x-[2px] blur-[1px] hue-rotate-[90deg]" />
+            <img src={getOptimizedUrl(piece.imageUrl, 800)} className="absolute inset-0 w-full h-full object-cover mix-blend-screen scale-[1.02] translate-x-[-2px] blur-[1px] hue-rotate-[-90deg]" />
+          </div>
+
           <img
-            src={optimizedImage}
+            src={getOptimizedUrl(piece.imageUrl, 800)}
             alt={piece.code}
-            loading="lazy"
-            className="w-full h-full object-cover grayscale transition-all duration-1000 group-hover:grayscale-0 group-hover:scale-110 opacity-60 group-hover:opacity-100 filter contrast-125"
+            className="w-full h-full object-cover grayscale transition-all duration-1000 group-hover:grayscale-0 group-hover:scale-105 opacity-40 group-hover:opacity-100"
           />
           
-          {/* Holographic Scanline Overlay */}
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-            <div className="scanline" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
 
-          {/* Catalog Tag */}
-          <div className="absolute bottom-4 left-4 z-20 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
-             <span className="text-[10px] font-mono text-white bg-white/20 backdrop-blur-md border border-white/30 px-3 py-1 tracking-[0.2em] font-black uppercase">
-               VIEW_RECORD
-             </span>
+          {/* View Indicator */}
+          <div className="absolute bottom-6 left-6 z-30 opacity-0 group-hover:opacity-100 translate-x-[-20px] group-hover:translate-x-0 transition-all duration-700">
+             <div className="flex items-center gap-3">
+               <div className="w-8 h-[1px] bg-red-600" />
+               <span className="text-[9px] font-mono text-white uppercase tracking-[0.5em] font-black">OPEN_RECORD</span>
+             </div>
           </div>
         </div>
 
-        <div className="p-6 space-y-6 border-t border-white/10 relative bg-[#050505]">
-          <div className="flex justify-between items-baseline">
-            <h3 className="text-xl font-serif italic font-bold tracking-tight text-white">{piece.code}</h3>
-            <div className={`text-[9px] font-mono px-2 py-0.5 border font-black ${
-              piece.status === 'ARCHIVED' ? 'border-white/20 text-white/40' : 
-              piece.status === 'ACTIVE' ? 'border-red-600 text-red-600' : 
-              piece.status === 'WORN' ? 'border-white/60 text-white' :
-              'border-white/30 text-white/50'
-            } uppercase tracking-[0.2em]`}>
-              {piece.status}
+        <div className="p-8 space-y-6 bg-black relative z-20">
+          <div className="flex justify-between items-end">
+            <div className="space-y-1">
+              <span className="text-[8px] font-mono text-red-600/60 uppercase tracking-[0.4em] font-black">Designation</span>
+              <h3 className="text-3xl font-serif italic font-bold tracking-tighter text-white leading-none">
+                {piece.code}
+              </h3>
+            </div>
+            <div className="text-right">
+              <span className="text-[8px] font-mono text-white/20 uppercase tracking-[0.4em] font-black block">Origin</span>
+              <span className="text-[10px] text-white/60 tracking-widest font-bold uppercase">{piece.era}</span>
             </div>
           </div>
           
-          <div className="grid grid-cols-2 gap-x-6 gap-y-4 border-t border-white/5 pt-4">
-            <div className="space-y-1">
-              <span className="block text-[7px] font-mono text-white/40 uppercase tracking-[0.4em] font-black">Era</span>
-              <span className="block text-[11px] text-white/90 tracking-wider font-bold uppercase">{piece.era}</span>
-            </div>
-            <div className="space-y-1">
-              <span className="block text-[7px] font-mono text-white/40 uppercase tracking-[0.4em] font-black">Archive Grade</span>
-              <span className="block text-[11px] text-white/90 tracking-wider font-bold uppercase">Class-A</span>
-            </div>
+          <div className="flex gap-2 h-1.5 w-full bg-white/5">
+             <div className="h-full bg-red-600/40 w-1/3" />
+             <div className="h-full bg-white/10 w-1/4" />
+             <div className="h-full bg-white/10 w-1/12" />
           </div>
         </div>
       </div>

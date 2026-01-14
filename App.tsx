@@ -36,139 +36,142 @@ const MainLayout: React.FC<{
   setContent: (c: SiteContent) => void;
 }> = ({ scrolled, syncError, content, pieces, loadData, setContent }) => {
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-white selection:text-black font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-[#030303] text-white selection:bg-white selection:text-black font-sans overflow-x-hidden">
       {/* Global CRT Scanline Effect */}
       <div className="scanline z-[99] pointer-events-none fixed top-0 left-0 w-full h-full opacity-30" />
 
       {/* Sync Error Toast */}
       {syncError && (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] bg-red-600/90 text-white px-4 py-2 rounded-md text-[8px] md:text-[10px] font-mono tracking-widest uppercase animate-bounce shadow-2xl border border-white/20 max-w-[90vw] text-center">
-          [!] {syncError}
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] bg-red-600 text-white px-6 py-3 rounded-none text-[10px] font-mono tracking-[0.4em] uppercase animate-bounce shadow-[0_0_30px_rgba(255,0,0,0.4)] border border-red-500/50 max-w-[90vw] text-center font-black">
+          [!] SYNC_LINK_FAILURE: {syncError}
         </div>
       )}
 
       {/* Navigation */}
-      <nav className={`fixed top-0 left-0 w-full z-50 p-4 md:p-8 lg:p-12 flex justify-between items-center transition-all duration-700 ${scrolled ? 'bg-black/80 backdrop-blur-xl py-4 md:py-6 border-b border-white/5' : 'bg-transparent'}`}>
-        <div className="flex items-center gap-3 md:gap-5">
-          <div className="text-2xl md:text-4xl font-serif font-bold italic tracking-[-0.05em] text-white">RAWLINE</div>
-          <div className="hidden sm:block h-[1px] w-8 md:w-12 bg-white/10" />
+      <nav className={`fixed top-0 left-0 w-full z-50 px-6 md:px-16 lg:px-24 flex justify-between items-center transition-all duration-1000 ${scrolled ? 'bg-black/60 backdrop-blur-3xl py-6 md:py-8 border-b border-white/5' : 'bg-transparent py-10 md:py-16'}`}>
+        <div className="flex items-center gap-6">
+          <div className="text-3xl md:text-4xl font-serif font-bold italic tracking-tighter text-white">RAWLINE</div>
+          <div className="hidden sm:block h-[1px] w-12 bg-white/10" />
         </div>
         
-        <div className="hidden lg:flex gap-16 text-[9px] font-bold uppercase tracking-[0.6em] text-white/30">
-          <a href="#archive" className="hover:text-white transition-all duration-700 hover:tracking-[1em]">ARCHIVE</a>
-          <a href="#lab" className="hover:text-white transition-all duration-700 hover:tracking-[1em]">STUDIES</a>
-          <a href="#social" className="hover:text-white transition-all duration-700 hover:tracking-[1em]">RELEASED</a>
+        <div className="hidden lg:flex gap-20 text-[10px] font-black uppercase tracking-[0.8em] text-white/20">
+          <a href="#archive" className="hover:text-white hover:tracking-[1.2em] transition-all duration-700">ARCHIVE</a>
+          <a href="#lab" className="hover:text-white hover:tracking-[1.2em] transition-all duration-700">STUDY</a>
+          <a href="#philosophy" className="hover:text-white hover:tracking-[1.2em] transition-all duration-700">MANIFEST</a>
         </div>
 
-        <div className="flex items-center gap-3 md:gap-4 text-[7px] md:text-[8px] font-mono tracking-widest text-white/30 uppercase font-black">
-          <span className="hidden xs:inline">{syncError ? 'OFFLINE_MODE' : 'CORE_READY'}</span>
-          <div className={`w-1.5 h-1.5 rounded-full animate-pulse shadow-[0_0_8px] ${syncError ? 'bg-orange-500 shadow-orange-500' : 'bg-red-600 shadow-red-600'}`} />
+        <div className="flex items-center gap-4 text-[9px] font-mono tracking-[0.4em] text-white/30 uppercase font-black">
+          <span className="hidden xs:inline">{syncError ? 'OFFLINE' : 'LIVE_NODE'}</span>
+          <div className={`w-2 h-2 rounded-full animate-pulse shadow-[0_0_15px] ${syncError ? 'bg-orange-500 shadow-orange-500/50' : 'bg-red-600 shadow-red-600/50'}`} />
         </div>
       </nav>
 
       {/* Hero Section */}
-      <header className="relative min-h-[90vh] md:min-h-screen flex flex-col justify-center px-6 sm:px-[10%] overflow-hidden bg-black pt-20">
+      <header className="relative min-h-screen flex flex-col justify-center px-6 sm:px-[12%] overflow-hidden bg-black pt-20">
         <div className="absolute inset-0 opacity-10 pointer-events-none overflow-hidden">
-          <div className="absolute top-[20%] left-[60%] w-[1px] h-[60vh] bg-gradient-to-b from-transparent via-white/40 to-transparent rotate-12" />
-          <div className="absolute bottom-[20%] left-[20%] w-[1px] h-[40vh] bg-gradient-to-t from-transparent via-white/40 to-transparent -rotate-12" />
+          <div className="absolute top-0 right-0 w-[80vw] h-[80vh] bg-gradient-radial from-red-600/20 to-transparent opacity-30 blur-[150px]" />
+          <div className="absolute top-[20%] left-[65%] w-[1px] h-[70vh] bg-gradient-to-b from-transparent via-white/20 to-transparent rotate-12" />
         </div>
 
         <FadeInSection className="max-w-7xl z-10">
-          <div className="mb-6 md:mb-12 flex items-center gap-4 md:gap-8 text-[9px] md:text-[11px] tracking-[0.5em] md:tracking-[0.8em] text-white/30 uppercase font-black">
-            <span className="w-12 md:w-24 h-[1px] bg-white/10" /> VINTAGE ARCHIVE / SYSTEM_NODE
+          <div className="mb-10 md:mb-20 flex items-center gap-6 md:gap-10 text-[11px] md:text-[13px] tracking-[0.8em] text-white/20 uppercase font-black">
+            <span className="w-16 md:w-32 h-[1px] bg-white/10" /> MASTER_INDEX / v1.5
           </div>
-          <h1 className="text-[clamp(3rem,18vw,14rem)] leading-[0.8] font-serif font-bold italic tracking-[-0.05em] mb-10 md:mb-16 text-white break-words">
+          <h1 className="text-[clamp(4rem,22vw,18rem)] leading-[0.75] font-serif font-bold italic tracking-tighter mb-16 md:mb-24 text-white drop-shadow-2xl">
             {content.heroTitle}
           </h1>
-          <div className="flex flex-col lg:flex-row gap-10 lg:gap-20 items-baseline max-w-6xl">
-            <div className="space-y-6 md:space-y-8">
-                <p className="text-white text-lg sm:text-2xl md:text-5xl max-w-2xl font-light tracking-tight leading-[1.2] md:leading-[1.1]">
+          <div className="flex flex-col lg:flex-row gap-12 lg:gap-32 items-start max-w-7xl">
+            <div className="space-y-8 md:space-y-12">
+                <p className="text-white text-2xl sm:text-4xl md:text-6xl max-w-3xl font-light tracking-tighter leading-[1.05] italic">
                     {content.heroSubTitle}
                 </p>
-                <div className="flex flex-wrap gap-6 md:gap-12 text-[8px] md:text-[10px] tracking-[0.2em] md:tracking-[0.3em] text-white/60 font-bold uppercase border-t border-white/10 pt-6 md:pt-8">
-                    <span>DB: {syncError ? 'LOCAL_STORAGE' : 'ACTIVE_LINK'}</span>
-                    <span>COV: 1950—PRESENT</span>
+                <div className="flex flex-wrap gap-8 md:gap-16 text-[10px] md:text-[11px] tracking-[0.5em] text-white/40 font-black uppercase border-t border-white/5 pt-10 md:pt-14">
+                    <div className="flex items-center gap-4">
+                       <span className="w-2 h-2 bg-red-600 animate-pulse" />
+                       <span>{syncError ? 'CACHE_MODE' : 'CLOUD_STABLE'}</span>
+                    </div>
+                    <span>COVERAGE: 1950—PRESENT</span>
                 </div>
             </div>
-            <div className="flex flex-col gap-1 text-[8px] md:text-[9px] font-mono text-white/30 uppercase tracking-[0.3em] md:tracking-[0.5em] border border-white/5 p-4 md:p-6 bg-white/[0.01] w-full lg:w-auto">
-              <span className="text-white/50 mb-1 md:mb-2 font-bold uppercase">Sequence:</span>
-              <span>[1] SCAN_ARTIFACT</span>
-              <span>[2] PARSE_DATA</span>
-              <span>[3] STYLE_FIT</span>
-              <span>[4] PERSIST_RECORD</span>
+            <div className="flex flex-col gap-2 text-[9px] md:text-[11px] font-mono text-white/20 uppercase tracking-[0.6em] border border-white/5 p-8 md:p-12 glass-panel w-full lg:w-auto mt-10 lg:mt-0">
+              <span className="text-red-600 mb-4 font-black">SYSTEM_SEQUENCE:</span>
+              <span className="opacity-100 text-white/40">[01] ANALYZE_MORPHEME</span>
+              <span className="opacity-80">[02] IDENTIFY_SILHOUETTE</span>
+              <span className="opacity-60">[03] CATEGORIZE_HARDWARE</span>
+              <span className="opacity-40">[04] ARCHIVE_RECORD</span>
             </div>
           </div>
         </FadeInSection>
         
-        <div className="relative mt-20 lg:absolute lg:bottom-20 lg:left-[10%] group pb-10 lg:pb-0">
-          <div className="flex items-center gap-6 md:gap-12">
-            <div className="hidden sm:flex flex-col items-center gap-4">
-                <span className="text-[8px] md:text-[9px] tracking-[0.4em] md:tracking-[0.6em] text-white/30 uppercase vertical-text font-black">SCROLL_ENTRY</span>
-                <div className="w-[1px] h-16 md:h-24 bg-gradient-to-t from-white/20 to-transparent group-hover:h-32 transition-all duration-700" />
+        <div className="relative mt-20 lg:absolute lg:bottom-24 lg:left-[12%] group pb-16 lg:pb-0">
+          <div className="flex items-center gap-8 md:gap-16">
+            <div className="hidden sm:flex flex-col items-center gap-6">
+                <span className="text-[10px] tracking-[1em] text-white/10 uppercase vertical-text font-black">DATA_STREAM</span>
+                <div className="w-[1px] h-24 bg-gradient-to-t from-red-600/40 to-transparent group-hover:h-32 transition-all duration-1000" />
             </div>
-            <p className="max-w-xs text-[9px] md:text-[11px] text-white/40 uppercase tracking-[0.15em] md:tracking-[0.2em] font-mono italic font-medium leading-relaxed">
-              Every artifact is identified and archived into the cloud. A living record of style evolution.
+            <p className="max-w-sm text-[11px] md:text-[13px] text-white/30 uppercase tracking-[0.2em] font-mono italic font-bold leading-loose">
+              Every garment undergoes a high-fidelity scan for archival documentation. Sourcing the past to influence the future.
             </p>
           </div>
         </div>
       </header>
 
-      {/* Archive Statement Section */}
-      <section id="philosophy" className="py-24 sm:py-48 lg:py-72 px-6 sm:px-[10%] relative border-y border-white/5 bg-[#080808]">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-32">
+      {/* Manifest Section */}
+      <section id="philosophy" className="py-48 sm:py-72 lg:py-96 px-6 sm:px-[12%] relative border-y border-white/5 bg-[#050505]">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-20 lg:gap-40">
           <div className="lg:col-span-5 flex flex-col justify-between">
              <FadeInSection>
-                <h2 className="text-[9px] uppercase tracking-[0.5em] md:tracking-[0.8em] text-white/20 font-black mb-8 md:mb-16 underline decoration-red-600 decoration-4 underline-offset-8">ARCHIVE STATEMENT</h2>
-                <div className="text-5xl sm:text-7xl lg:text-9xl font-serif font-bold italic tracking-tighter leading-[0.8] text-white mb-8 lg:mb-12">
+                <div className="flex items-center gap-6 mb-12">
+                   <div className="w-4 h-4 bg-red-600 rounded-full animate-pulse" />
+                   <h2 className="text-[11px] uppercase tracking-[1em] text-white/30 font-black">ARCHIVE_MANIFEST</h2>
+                </div>
+                <div className="text-7xl sm:text-9xl font-serif font-bold italic tracking-tighter leading-[0.75] text-white mb-12 lg:mb-0 drop-shadow-2xl">
                   {content.archiveStatementTitle}
                 </div>
-                <div className="text-[8px] font-mono text-white/40 uppercase tracking-[0.3em] mt-auto font-black italic hidden lg:block">System_Ready: 2024_EST</div>
              </FadeInSection>
           </div>
-          <div className="lg:col-span-7 space-y-12 lg:space-y-20 text-xl sm:text-2xl md:text-4xl text-white/60 font-light leading-[1.2] lg:leading-[1.1] tracking-tighter max-w-5xl">
-            <FadeInSection delay={100}>
+          <div className="lg:col-span-7 space-y-16 lg:space-y-32 text-2xl sm:text-4xl md:text-6xl text-white/50 font-light leading-[1] tracking-tighter max-w-6xl">
+            <FadeInSection delay={200}>
               <p>
-                <span className="text-white font-serif italic font-black">RAWLINE</span> {content.archiveStatementText1.replace('RAWLINE', '')}
+                <span className="text-white font-serif italic font-black underline decoration-red-600/30 underline-offset-[12px]">RAWLINE</span> {content.archiveStatementText1.replace('RAWLINE', '')}
               </p>
             </FadeInSection>
-            <FadeInSection delay={200}>
-              <p className="text-white/80 font-medium italic">
+            <FadeInSection delay={400}>
+              <p className="text-white font-medium italic border-l border-white/10 pl-10 md:pl-20 py-4">
                 {content.archiveStatementText2}
               </p>
             </FadeInSection>
-            <FadeInSection delay={300}>
-              <div className="border-l-2 border-red-600/30 pl-6 lg:pl-12 py-2 lg:py-4">
-                <p className="italic font-mono text-[10px] sm:text-[13px] tracking-tight text-white/40 leading-relaxed uppercase font-bold">
-                  "THIS IS NOT TREND FORECASTING. THIS IS OBSERVATION OVER TIME. IF YOU FEEL IT — YOU ALREADY KNOW."
-                </p>
-              </div>
+            <FadeInSection delay={600}>
+               <div className="text-[11px] md:text-[14px] font-mono tracking-[0.4em] text-red-600/60 font-black uppercase leading-loose">
+                  [!] THIS IS NOT TREND FORECASTING. THIS IS OBSERVATION OVER TIME. DATA REVEALS ALL TRUTHS.
+               </div>
             </FadeInSection>
           </div>
         </div>
       </section>
 
       {/* Archive Database */}
-      <section id="archive" className="py-24 sm:py-48 lg:py-72 px-6 sm:px-[10%]">
-        <FadeInSection className="mb-20 md:mb-40 flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10 md:gap-16">
-          <div className="space-y-4 md:space-y-6">
-            <h2 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter text-white uppercase">Archive_Index</h2>
-            <div className="flex items-center gap-4 md:gap-6">
-              <span className="w-8 md:w-16 h-[1px] bg-white/10" />
-              <div className="text-[9px] md:text-[12px] tracking-[0.4em] md:tracking-[0.6em] text-white/30 uppercase font-black">
-                {syncError ? 'DB_LOCAL' : 'DB_SYNCED'} // {pieces.length} RECORDS
+      <section id="archive" className="py-48 sm:py-72 lg:py-96 px-6 sm:px-[12%]">
+        <FadeInSection className="mb-32 md:mb-64 flex flex-col lg:flex-row justify-between items-start lg:items-end gap-12 md:gap-24">
+          <div className="space-y-6 md:space-y-8">
+            <h2 className="text-6xl sm:text-8xl lg:text-[10rem] font-black tracking-tighter text-white uppercase leading-none italic">Archive_Index</h2>
+            <div className="flex items-center gap-6 md:gap-10">
+              <span className="w-12 md:w-24 h-[1px] bg-red-600/40" />
+              <div className="text-[10px] md:text-[14px] tracking-[0.8em] text-white/30 uppercase font-black">
+                {syncError ? 'DATABASE_OFFLINE_CACHE' : 'DATABASE_CLOUD_SYNC'} // {pieces.length} RECORDS_FOUND
               </div>
             </div>
           </div>
-          <div className="flex flex-wrap gap-4 font-mono text-[9px] text-white/60 font-bold w-full lg:w-auto">
-            {['ALL', 'ERA', 'STATUS'].map(btn => (
-              <button key={btn} className="flex-1 lg:flex-none border border-white/10 px-4 md:px-8 py-3 md:py-4 hover:text-black hover:bg-white transition-all cursor-none uppercase tracking-widest text-center whitespace-nowrap">{btn}</button>
+          <div className="flex flex-wrap gap-4 font-mono text-[10px] text-white/40 font-black w-full lg:w-auto">
+            {['SORT_ALL', 'ERA_FILTER', 'STATUS_CODE'].map(btn => (
+              <button key={btn} className="flex-1 lg:flex-none border border-white/5 px-6 md:px-12 py-4 md:py-6 hover:text-black hover:bg-white transition-all cursor-none uppercase tracking-[0.4em] text-center whitespace-nowrap glass-panel">{btn}</button>
             ))}
           </div>
         </FadeInSection>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16 md:gap-x-12 md:gap-y-24">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-24 md:gap-x-20 md:gap-y-40">
           {pieces.map((piece, idx) => (
-            <FadeInSection key={piece.id} delay={idx % 3 * 100} className={idx % 3 === 1 ? 'lg:mt-16' : idx % 3 === 2 ? 'lg:mt-32' : ''}>
+            <FadeInSection key={piece.id} delay={idx % 3 * 100} className={idx % 3 === 1 ? 'lg:mt-32' : idx % 3 === 2 ? 'lg:mt-64' : ''}>
               <PieceCard piece={piece} />
             </FadeInSection>
           ))}
@@ -176,47 +179,50 @@ const MainLayout: React.FC<{
       </section>
 
       {/* AI Laboratory */}
-      <section id="lab" className="py-24 sm:py-48 lg:py-72 px-6 sm:px-[10%] relative overflow-hidden bg-black border-y border-white/5">
-        <div className="absolute top-0 right-0 w-[50vw] h-[50vh] bg-red-600/[0.03] blur-[150px] rounded-full pointer-events-none" />
+      <section id="lab" className="py-48 sm:py-72 lg:py-96 px-6 sm:px-[12%] relative overflow-hidden bg-[#030303] border-y border-white/5">
+        <div className="absolute top-0 right-0 w-[60vw] h-[60vh] bg-red-600/[0.04] blur-[150px] rounded-full pointer-events-none" />
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-40 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 lg:gap-48 items-start">
           <FadeInSection>
-            <h2 className="text-[9px] uppercase tracking-[0.5em] md:tracking-[0.8em] text-white/30 font-black mb-10 md:mb-20 underline decoration-red-600 decoration-4 underline-offset-8">ARCHIVE LAB / SCAN</h2>
-            <h3 className="text-5xl sm:text-7xl lg:text-9xl font-serif font-bold italic tracking-tighter mb-10 md:mb-20 leading-[0.8] text-white">
-              VIRTUAL<br /><span className="text-white/10 font-sans font-black italic">MORPHOLOGY.</span>
+            <div className="flex items-center gap-6 mb-16">
+               <div className="w-12 h-[1px] bg-red-600" />
+               <h2 className="text-[11px] uppercase tracking-[1em] text-white/30 font-black">MORPHOLOGY_LAB</h2>
+            </div>
+            <h3 className="text-7xl sm:text-9xl lg:text-[12rem] font-serif font-bold italic tracking-tighter mb-16 md:mb-24 leading-[0.7] text-white">
+              VIRTUAL<br /><span className="text-white/5 font-sans font-black italic">ANALYSIS.</span>
             </h3>
-            <p className="text-white/50 text-lg sm:text-2xl md:text-3xl leading-snug mb-10 md:mb-20 font-light tracking-tighter max-w-xl italic">
-              Initiate a morphological scan to determine archival integrity. Our node cross-references hardware, era, and silhouette.
+            <p className="text-white/40 text-2xl sm:text-3xl md:text-5xl leading-[1.1] mb-20 md:mb-32 font-light tracking-tighter max-w-2xl italic serif">
+              Initiate a high-fidelity morphological scan. Our laboratory cross-references industrial silhouettes, era data, and hardware quality to determine archival integrity.
             </p>
             
-            <div className="space-y-8 md:space-y-12">
+            <div className="space-y-12 md:space-y-16">
                {[
-                 { label: "Hardware Audit", desc: "Industrial zippers, buttons, and fasteners" },
-                 { label: "Morphology scan", desc: "Identifying era via silhouette and weave structure" },
-                 { label: "Archive Grade", desc: "Technical determination of archival rank" }
+                 { label: "Hardware Audit", desc: "Analysis of zippers, rivets, and functional fasteners" },
+                 { label: "Pattern Recognition", desc: "Cross-referencing silhouette data via neural nodes" },
+                 { label: "Archival Rank", desc: "Determining historical and industrial grade" }
                ].map((item, i) => (
-                 <div key={i} className="flex gap-6 md:gap-10 group border-b border-white/5 pb-6 md:pb-8 last:border-0">
-                   <span className="text-[10px] md:text-[12px] font-mono text-red-600 group-hover:text-red-500 transition-colors font-black">0{i+1}</span>
-                   <div className="space-y-1 md:space-y-2">
-                     <div className="text-sm md:text-lg font-bold tracking-widest text-white/80 uppercase">{item.label}</div>
-                     <div className="text-[9px] md:text-[11px] font-mono text-white/30 uppercase tracking-[0.15em] md:tracking-[0.2em]">{item.desc}</div>
+                 <div key={i} className="flex gap-8 md:gap-12 group border-b border-white/5 pb-10 md:pb-14 last:border-0">
+                   <span className="text-[12px] md:text-[14px] font-mono text-red-600 font-black tracking-widest">[0{i+1}]</span>
+                   <div className="space-y-3">
+                     <div className="text-xl md:text-3xl font-black tracking-[0.2em] text-white/80 uppercase group-hover:text-white transition-colors">{item.label}</div>
+                     <div className="text-[10px] md:text-[12px] font-mono text-white/20 uppercase tracking-[0.4em] font-bold italic">{item.desc}</div>
                    </div>
                  </div>
                ))}
             </div>
           </FadeInSection>
           
-          <FadeInSection delay={200} className="lg:sticky lg:top-40">
+          <FadeInSection delay={200} className="lg:sticky lg:top-48">
             <AICurator />
           </FadeInSection>
         </div>
       </section>
 
-      {/* Industrial Marquee */}
-      <div className="py-16 sm:py-32 border-b border-white/5 bg-black overflow-hidden select-none">
-        <div className="flex whitespace-nowrap animate-marquee opacity-20">
+      {/* Marquee */}
+      <div className="py-24 border-b border-white/5 bg-[#030303] overflow-hidden select-none">
+        <div className="flex whitespace-nowrap animate-marquee opacity-10">
           {[1,2,3,4].map(i => (
-            <div key={i} className="text-[20vw] lg:text-[14vw] font-serif font-bold italic text-white uppercase px-10 md:px-24 tracking-[-0.05em]">
+            <div key={i} className="text-[25vw] lg:text-[20vw] font-serif font-bold italic text-white uppercase px-16 md:px-32 tracking-[-0.05em]">
               RAWLINE-RAWLINE-
             </div>
           ))}
@@ -224,35 +230,35 @@ const MainLayout: React.FC<{
       </div>
 
       {/* Footer */}
-      <footer className="py-24 sm:py-48 px-6 sm:px-[10%] border-t border-white/5 bg-[#050505]">
-        <div className="flex flex-col lg:flex-row justify-between items-start gap-16 lg:gap-40">
-          <div className="space-y-8 md:space-y-12 text-left">
-            <div className="text-5xl sm:text-7xl font-serif font-bold italic tracking-[-0.05em] text-white">RAWLINE</div>
-            <div className="space-y-3 md:space-y-4 text-left">
-              <p className="text-[9px] md:text-[10px] font-mono text-white/60 tracking-[0.3em] md:tracking-[0.5em] uppercase font-black">VINTAGE ARCHIVE // {syncError ? 'CACHE' : 'CLOUD'}</p>
-              <p className="text-[9px] md:text-[10px] font-mono text-white/40 tracking-[0.3em] md:tracking-[0.5em] uppercase font-bold max-w-xs">Sourcing the past to influence the future.</p>
-              <div className="flex gap-4 pt-2 md:pt-4">
-                 <div className={`w-2 h-2 rounded-full animate-pulse ${syncError ? 'bg-orange-500' : 'bg-green-500'}`} />
-                 <div className="w-2 h-2 bg-red-600 rounded-full" />
-                 <div className="w-2 h-2 bg-blue-600 rounded-full" />
+      <footer className="py-48 sm:py-72 px-6 sm:px-[12%] border-t border-white/5 bg-[#010101]">
+        <div className="flex flex-col lg:flex-row justify-between items-start gap-24 lg:gap-48">
+          <div className="space-y-12 md:space-y-20 text-left">
+            <div className="text-6xl sm:text-8xl font-serif font-bold italic tracking-tighter text-white">RAWLINE</div>
+            <div className="space-y-6 text-left">
+              <p className="text-[11px] font-mono text-red-600 tracking-[0.8em] uppercase font-black">SYSTEM_INDEX // v1.5_STABLE</p>
+              <p className="text-[10px] md:text-[11px] font-mono text-white/20 tracking-[0.4em] uppercase font-bold max-w-sm leading-relaxed">Dedicated to the preservation and analysis of industrial garments across history.</p>
+              <div className="flex gap-4 pt-4">
+                 <div className="w-3 h-3 rounded-full bg-red-600 animate-pulse shadow-[0_0_10px_rgba(255,0,0,0.4)]" />
+                 <div className="w-3 h-3 bg-white/10 rounded-full" />
+                 <div className="w-3 h-3 bg-white/10 rounded-full" />
               </div>
             </div>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-16 md:gap-32 text-[10px] md:text-[11px] font-mono text-white/40 uppercase tracking-[0.3em] md:tracking-[0.4em] font-bold w-full lg:w-auto">
-            <div className="space-y-6 md:space-y-8">
-              <span className="text-white block border-b border-white/5 pb-4 md:pb-6 font-black tracking-[0.2em]">DIRECT</span>
-              <a href="#" className="block hover:text-white transition-colors">INDEX</a>
-              <a href="#lab" className="block hover:text-white transition-colors">STUDIES</a>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-24 md:gap-40 text-[11px] md:text-[13px] font-mono text-white/20 uppercase tracking-[0.6em] font-black w-full lg:w-auto">
+            <div className="space-y-10">
+              <span className="text-white block border-b border-white/5 pb-6">NAVIGATE</span>
+              <a href="#" className="block hover:text-white transition-all hover:tracking-[1em]">INDEX</a>
+              <a href="#lab" className="block hover:text-white transition-all hover:tracking-[1em]">STUDY</a>
             </div>
-            <div className="space-y-6 md:space-y-8">
-              <span className="text-white block border-b border-white/5 pb-4 md:pb-6 font-black tracking-[0.2em]">CONNECT</span>
-              <a href="#" className="block hover:text-white transition-colors">INSTAGRAM</a>
-              <a href="#" className="block hover:text-white transition-colors">RELEASED</a>
+            <div className="space-y-10">
+              <span className="text-white block border-b border-white/5 pb-6">NETWORK</span>
+              <a href="#" className="block hover:text-white transition-all hover:tracking-[1em]">INSTAGRAM</a>
+              <a href="#" className="block hover:text-white transition-all hover:tracking-[1em]">CLOUD_DUMP</a>
             </div>
-            <div className="space-y-6 md:space-y-8">
-              <span className="text-white block border-b border-white/5 pb-4 md:pb-6 font-black tracking-[0.2em]">TERMINAL</span>
-              <div className="block text-white/60 underline decoration-white/10 font-black">
+            <div className="space-y-10">
+              <span className="text-white block border-b border-white/5 pb-6">TERMINAL</span>
+              <div className="block group">
                 <AdminCMS 
                   content={content} 
                   onUpdateContent={setContent} 
@@ -260,14 +266,14 @@ const MainLayout: React.FC<{
                   onRefreshPieces={loadData} 
                 />
               </div>
-              <span className="block italic text-[9px] md:text-[10px] font-bold mt-2">© {new Date().getFullYear()} RAWLINE FOUNDRY</span>
+              <span className="block text-white/5 italic text-[10px] md:text-[11px] font-bold mt-4 uppercase tracking-widest">© {new Date().getFullYear()} RAWLINE_FOUNDRY. PROPRIETARY.</span>
             </div>
           </div>
         </div>
         
-        <div className="mt-24 md:mt-48 flex flex-col md:flex-row justify-between items-start md:items-end border-t border-white/5 pt-10 md:pt-16 gap-6">
-          <span className="text-[9px] md:text-[11px] font-mono text-white/70 uppercase tracking-[0.3em] md:tracking-[0.5em] font-black">{content.footerTagline}</span>
-          <span className="text-[8px] md:text-[9px] font-mono text-white/40 uppercase tracking-[0.4em] md:tracking-[0.6em] italic font-bold">ENCRYPTED_ARCHIVE_NODE_CONNECTED</span>
+        <div className="mt-48 md:mt-72 flex flex-col md:flex-row justify-between items-start md:items-end border-t border-white/5 pt-16 md:pt-24 gap-12">
+          <span className="text-[11px] md:text-[14px] font-mono text-white/40 uppercase tracking-[1em] font-black">{content.footerTagline}</span>
+          <span className="text-[9px] md:text-[11px] font-mono text-white/10 uppercase tracking-[0.8em] italic font-bold">SECURE_ARCHIVE_NODE_ACTIVE</span>
         </div>
       </footer>
 
@@ -277,12 +283,7 @@ const MainLayout: React.FC<{
           100% { transform: translateX(-50%); }
         }
         .animate-marquee {
-          animation: marquee 30s linear infinite;
-        }
-        @media (max-width: 640px) {
-          .animate-marquee {
-            animation-duration: 20s;
-          }
+          animation: marquee 40s linear infinite;
         }
       `}</style>
     </div>
@@ -309,9 +310,9 @@ const App: React.FC = () => {
     } catch (error: any) {
       console.error("Data synchronization error:", error);
       if (error.code === 'permission-denied' || error.message?.includes('permission')) {
-        setSyncError("Access Blocked: Update Firestore Rules.");
+        setSyncError("ACCESS_RESTRICTED");
       } else {
-        setSyncError(`Link Failed: ${error.code || 'Offline'}`);
+        setSyncError(`LINK_FAILED_${error.code || 'NULL'}`);
       }
     } finally {
       setIsLoading(false);
@@ -319,7 +320,7 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 40);
+    const handleScroll = () => setScrolled(window.scrollY > 100);
     window.addEventListener('scroll', handleScroll, { passive: true });
     loadData();
     return () => window.removeEventListener('scroll', handleScroll);
@@ -327,10 +328,13 @@ const App: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center font-mono p-4">
-        <div className="flex flex-col items-center gap-6 text-center">
-          <div className="text-white text-xl md:text-2xl font-bold tracking-[0.5em] md:tracking-[1em] animate-pulse">RAWLINE</div>
-          <div className="text-white/20 text-[9px] uppercase tracking-[0.4em]">Establishing_Cloud_Link...</div>
+      <div className="min-h-screen bg-[#030303] flex items-center justify-center font-mono p-4">
+        <div className="flex flex-col items-center gap-10 text-center">
+           <div className="w-20 h-20 border-4 border-red-600/20 border-t-red-600 rounded-full animate-spin shadow-[0_0_30px_rgba(255,0,0,0.2)]" />
+           <div className="space-y-2">
+             <div className="text-white text-2xl md:text-3xl font-black tracking-[1em] animate-pulse">RAWLINE</div>
+             <div className="text-white/20 text-[10px] uppercase tracking-[0.8em] font-black">INITIALIZING_LOCAL_NODES...</div>
+           </div>
         </div>
       </div>
     );

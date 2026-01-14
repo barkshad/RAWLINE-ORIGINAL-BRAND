@@ -4,16 +4,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>RAWLINE — Vintage Style Archive</title>
+  <title>RAWLINE — Industrial Archive</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;900&family=JetBrains+Mono:wght@100;300;400;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #050505;       /* Deep Black */
-      --fg: #fcfcfc;       /* Off White */
-      --accent: #ff3b3b;   /* Vibrant Red */
-      --border: rgba(255, 255, 255, 0.08);
+      --bg: #030303;
+      --fg: #fcfcfc;
+      --accent: #ff3b3b;
+      --glass: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
     }
+
     body {
       font-family: 'Inter', sans-serif;
       background-color: var(--bg);
@@ -21,6 +23,8 @@
       overflow-x: hidden;
       cursor: none;
     }
+
+    /* Noise and Atmospheric Depth */
     .noise {
       position: fixed;
       top: 0;
@@ -28,120 +32,132 @@
       width: 100%;
       height: 100%;
       pointer-events: none;
-      opacity: 0.04;
+      opacity: 0.05;
       z-index: 9999;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
     }
-    .crt-overlay {
+
+    .vignette {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
-      background-size: 100% 4px, 4px 100%;
+      inset: 0;
+      background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 100%);
       pointer-events: none;
-      z-index: 9998;
+      z-index: 9997;
     }
-    ::selection {
-      background: var(--fg);
-      color: var(--bg);
+
+    /* Physics-based interactions helper classes */
+    .tilt-card {
+      transform-style: preserve-3d;
+      perspective: 1000px;
     }
+
+    /* Glassmorphism */
+    .glass-panel {
+      background: var(--glass);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid var(--glass-border);
+    }
+
+    /* Holographic Glint */
+    @keyframes holographic {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .holographic-overlay {
+      background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.05) 45%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.05) 55%, transparent 100%);
+      background-size: 200% 200%;
+      mix-blend-mode: overlay;
+    }
+
+    /* Custom Cursor */
     .custom-cursor {
-      width: 8px;
-      height: 8px;
-      background: var(--fg);
+      width: 10px;
+      height: 10px;
+      background: white;
       position: fixed;
       pointer-events: none;
       z-index: 10000;
-      transition: transform 0.1s ease-out;
+      border-radius: 50%;
       transform: translate(-50%, -50%);
       mix-blend-mode: difference;
+      transition: width 0.3s, height 0.3s, background-color 0.3s;
     }
+
     .cursor-outline {
-      width: 40px;
-      height: 40px;
-      border: 1px solid rgba(255,255,255,0.3);
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255,255,255,0.2);
       position: fixed;
       pointer-events: none;
       z-index: 9999;
-      transition: transform 0.2s ease-out;
+      border-radius: 50%;
       transform: translate(-50%, -50%);
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    
-    @keyframes scanline {
-      0% { transform: translateY(-100%); }
-      100% { transform: translateY(100%); }
-    }
-    .scanline {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.02) 50%, transparent);
-      animation: scanline 6s linear infinite;
-      pointer-events: none;
-    }
-    .vertical-text {
-      writing-mode: vertical-rl;
-    }
-    ::-webkit-scrollbar {
-      width: 4px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #050505;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #333;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #555;
-    }
+
+    /* Typewriter Caret */
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    .caret { border-right: 2px solid currentColor; animation: blink 1s step-end infinite; }
+
+    /* Page Transition */
+    .page-enter { opacity: 0; transform: scale(0.98); }
+    .page-enter-active { opacity: 1; transform: scale(1); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+
   </style>
 <script type="importmap">
 {
   "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
     "react/": "https://esm.sh/react@^19.2.3/",
     "react": "https://esm.sh/react@^19.2.3",
     "@google/genai": "https://esm.sh/@google/genai@^1.35.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.12.0",
     "firebase/": "https://esm.sh/firebase@^12.7.0/",
     "vite": "https://esm.sh/vite@^7.3.1",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
-    "react-router-dom": "https://esm.sh/react-router-dom@^7.12.0"
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
   }
 }
 </script>
 </head>
 <body>
   <div class="noise"></div>
-  <div class="crt-overlay"></div>
+  <div class="vignette"></div>
   <div id="cursor" class="custom-cursor hidden md:block"></div>
   <div id="cursor-outline" class="cursor-outline hidden md:block"></div>
+  
   <div id="root"></div>
 
-  <!-- Vite entry point -->
   <script type="module" src="/index.tsx"></script>
 
   <script>
     const cursor = document.getElementById('cursor');
     const outline = document.getElementById('cursor-outline');
+    
     document.addEventListener('mousemove', (e) => {
       cursor.style.left = e.clientX + 'px';
       cursor.style.top = e.clientY + 'px';
-      outline.style.left = e.clientX + 'px';
-      outline.style.top = e.clientY + 'px';
+      
+      outline.animate({
+        left: e.clientX + 'px',
+        top: e.clientY + 'px'
+      }, { duration: 500, fill: 'forwards', easing: 'ease-out' });
     });
+
     document.addEventListener('mousedown', () => {
-      cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
-      outline.style.transform = 'translate(-50%, -50%) scale(0.6)';
+      cursor.style.width = '24px';
+      cursor.style.height = '24px';
+      outline.style.transform = 'translate(-50%, -50%) scale(0.5)';
+      outline.style.borderColor = 'rgba(255,255,255,0.8)';
     });
+
     document.addEventListener('mouseup', () => {
-      cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+      cursor.style.width = '10px';
+      cursor.style.height = '10px';
       outline.style.transform = 'translate(-50%, -50%) scale(1)';
+      outline.style.borderColor = 'rgba(255,255,255,0.2)';
     });
   </script>
 </body>

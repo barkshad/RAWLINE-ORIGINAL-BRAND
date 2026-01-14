@@ -1,6 +1,6 @@
 {
-  "name": "RAWLINE — ARCHIVE v1.1",
-  "description": "A high-fidelity industrial archive for curated vintage artifacts. Integrated with Cloudinary for asset management and Firebase for cloud persistence.",
+  "name": "RAWLINE — ARCHIVE v1.5",
+  "description": "A world-class industrial archive with physics-based animations, glassmorphism, 3D tilt interactions, and curated vintage artifacts. Featuring a high-fidelity control panel and AI-driven morphological analysis.",
   "requestFramePermissions": [
     "camera"
   ]
