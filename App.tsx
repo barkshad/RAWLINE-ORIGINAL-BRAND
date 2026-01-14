@@ -72,14 +72,15 @@ const MainLayout: React.FC<{
 
       {/* Hero with Media Background */}
       <header className="relative h-screen flex flex-col justify-center items-center text-center px-6 overflow-hidden bg-black">
-        <div className="absolute inset-0 z-0 opacity-40">
+        {/* Visibility increased from opacity-40 to opacity-80 for maximum clarity */}
+        <div className="absolute inset-0 z-0 opacity-80">
           <AnimatePresence mode="wait">
             <motion.div
               key={content.heroMediaUrl}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 1 }}
+              transition={{ duration: 1.2 }}
               className="w-full h-full"
             >
               {isVideoUrl(content.heroMediaUrl) ? (
@@ -90,21 +91,25 @@ const MainLayout: React.FC<{
                   muted 
                   playsInline 
                   src={content.heroMediaUrl}
-                  className="w-full h-full object-cover grayscale"
+                  className="w-full h-full object-cover" // Grayscale removed for clarity
                 />
               ) : content.heroMediaUrl ? (
-                <img src={content.heroMediaUrl} className="w-full h-full object-cover grayscale" alt="Hero Background" />
+                <img 
+                  src={content.heroMediaUrl} 
+                  className="w-full h-full object-cover" 
+                  alt="Hero Background" 
+                />
               ) : null}
             </motion.div>
           </AnimatePresence>
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-black" />
         </div>
 
         <FadeInSection className="max-w-4xl z-10 space-y-12">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="artifact-label text-white/20"
+            className="artifact-label text-white/40"
           >
             THE ARCHIVAL COLLECTION
           </motion.div>
@@ -120,7 +125,7 @@ const MainLayout: React.FC<{
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
-            className="text-white/60 text-lg md:text-xl max-w-2xl mx-auto font-light tracking-wide italic serif-display"
+            className="text-white/80 text-lg md:text-xl max-w-2xl mx-auto font-light tracking-wide italic serif-display"
           >
             {content.heroSubTitle}
           </motion.p>
@@ -131,7 +136,7 @@ const MainLayout: React.FC<{
           transition={{ duration: 3, repeat: Infinity }}
           className="absolute bottom-16 left-1/2 -translate-x-1/2 z-10"
         >
-          <div className="w-[1px] h-12 bg-white/20" />
+          <div className="w-[1px] h-12 bg-white/40" />
         </motion.div>
       </header>
 
