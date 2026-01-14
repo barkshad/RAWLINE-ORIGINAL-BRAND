@@ -17,11 +17,11 @@ import { isVideoUrl } from './utils';
 
 const DEFAULT_CONTENT: SiteContent = {
   heroTitle: "RAWLINE: THE MOTION ARCHIVE",
-  heroSubTitle: "Not just clothes. Real artifacts.\nStill standing, still valid.",
+  heroSubTitle: "A deep archive of the silhouettes and fabrics that really paved the way. Real history for the streets.",
   heroMediaUrl: "https://videos.pexels.com/video-files/3248357/3248357-hd_1920_1080_25fps.mp4",
   archiveStatementTitle: "THE CODE",
-  archiveStatementText1: "RAWLINE ain’t a trend, it’s a standard. We been outside, digging through the noise to find the pieces that actually mean something. If it made the stack, it’s got history behind it.",
-  archiveStatementText2: "This for the steppers, the collectors, and everybody who knows that some garments don't just age—they gain pressure. No fluff, just motion. You feel me.",
+  archiveStatementText1: "RAWLINE is about where the look meets the life. We only pull pieces with that heavy-duty build and real history. If the fabric ain't holding up under pressure, it ain't RAWLINE.",
+  archiveStatementText2: "This ain't for the spectators. It's for the ones in the paint. Authentic artifacts, authenticated by the block. You feel me.",
   footerTagline: "Built from the pavement up. Still the signal.",
   fitChecks: []
 };
@@ -110,6 +110,21 @@ const HomePage: React.FC<{ content: SiteContent; pieces: Piece[] }> = ({ content
         </motion.div>
       </header>
       
+      {/* Introduction Section */}
+      <section className="py-48 px-8 md:px-24 bg-[#080808]">
+        <div className="max-w-4xl mx-auto">
+          <FadeInSection className="space-y-12">
+            <div className="artifact-label text-red-600">MISSION_CRITICAL</div>
+            <h2 className="text-4xl md:text-7xl serif-display italic font-light tracking-tighter leading-none">
+              The link between the look and the life.
+            </h2>
+            <p className="text-xl md:text-2xl font-light text-white/50 italic serif-display leading-relaxed">
+              RAWLINE is about where the look meets the life. We only pull pieces with that heavy-duty build and real history. If the fabric ain't holding up under pressure, it ain't RAWLINE. No weak links in the archive.
+            </p>
+          </FadeInSection>
+        </div>
+      </section>
+
       {/* Featured Pieces */}
       <section className="py-32 px-8 md:px-16">
          <div className="flex justify-between items-end mb-16">
@@ -135,7 +150,7 @@ const HomePage: React.FC<{ content: SiteContent; pieces: Piece[] }> = ({ content
                     "Garments move different when you're actually outside."
                  </h2>
                  <p className="text-white/40 font-light max-w-md italic serif-display">
-                   We don't do flat lays. We show how it looks in the wild. If the drape ain't right, it ain't RAWLINE.
+                   We don't do flat lays. We show how it looks in the wild. If the drape ain't right, it ain't RAWLINE. Pressure is applied on every silhouette.
                  </p>
                  <Link to="/fits" className="inline-block artifact-label border-b border-white/20 pb-1 hover:text-red-600 hover:border-red-600 transition-all">
                     WATCH THE MOTION STUDIES

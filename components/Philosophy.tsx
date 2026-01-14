@@ -52,13 +52,13 @@ const Philosophy: React.FC<PhilosophyProps> = ({ content }) => {
            <FadeInSection delay={200}>
               <h4 className="text-4xl serif-display italic text-white font-light">History doesn't fold.</h4>
               <p className="text-white/40 mt-6 leading-loose font-light italic serif-display">
-                 Fast fashion is a fluke. We preserve the history that actually hit the pavement. Every tear, every fade, every repair is a mark of authenticity. If it ain't lived, we don't want it. That's the longevity we're about.
+                 Fast fashion is a fluke. We preserve the history that actually hit the pavement. Every tear, every fade, every repair is a mark of authenticity. If it ain't lived, we don't want it. That's why we focus on that heavy-duty construction integrity.
               </p>
            </FadeInSection>
            <FadeInSection delay={300}>
               <h4 className="text-4xl serif-display italic text-white font-light">Curated for the Culture.</h4>
               <p className="text-white/40 mt-6 leading-loose font-light italic serif-display">
-                 Our archive isn't just about labels. It's about the silhouette, the hardware, and the vibe. We dig through the noise to find the signals that still resonate in the streets today. Pressure is applied on every pick.
+                 A curated archival study of the silhouettes and material history that realmente mean something. We dig through the noise to find the signals that still resonate in the streets today. Pressure is applied on every pick.
               </p>
            </FadeInSection>
         </div>
