@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import { motion, useScroll, useSpring, AnimatePresence } from 'framer-motion';
@@ -10,13 +11,13 @@ import { Piece, SiteContent } from './types';
 import { getPieces, getSiteContent } from './services/firebaseService';
 
 const DEFAULT_CONTENT: SiteContent = {
-  heroTitle: "V I N T A G E",
-  heroSubTitle: "A curated archival study of industrial silhouettes and material history.",
+  heroTitle: "RAWLINE FASHION ARCHIVE",
+  heroSubTitle: "Old clothes. Real history.\nStill hitting.",
   heroMediaUrl: "https://videos.pexels.com/video-files/3248357/3248357-hd_1920_1080_25fps.mp4",
-  archiveStatementTitle: "CURATED SELECTION",
-  archiveStatementText1: "RAWLINE focuses on the intersection of function and form. Each artifact is selected for its construction integrity and historical significance.",
-  archiveStatementText2: "Archiving the past to inform the silhouettes of the future.",
-  footerTagline: "RAWLINE — PERMANENT ARCHIVE COLLECTION",
+  archiveStatementTitle: "THE PHILOSOPHY",
+  archiveStatementText1: "RAWLINE ain’t start as a brand. It started with paying attention. Digging through racks, finding the same cuts that kept showing up. Stuff that been outside. That’s when it clicked — some clothes don’t fall off. They just level up.",
+  archiveStatementText2: "This ain’t random thrifting, gng. This is intention. RAWLINE is a fashion archive in motion — built from vintage, worn forward. You feel me.",
+  footerTagline: "Built from vintage. Still standing.",
   fitChecks: []
 };
 
@@ -53,10 +54,10 @@ const MainLayout: React.FC<{
         </div>
         
         <div className="hidden md:flex gap-16 text-[10px] font-medium uppercase tracking-[0.3em] text-white/40">
-          {['ARCHIVE', 'FIT CHECKS', 'MANIFEST'].map((item) => (
+          {['ARCHIVE', 'FITS', 'PHILOSOPHY'].map((item) => (
             <motion.a 
               key={item}
-              href={`#${item.toLowerCase().replace(' ', '')}`}
+              href={`#${item.toLowerCase()}`}
               whileHover={{ color: '#fff', letterSpacing: '0.4em' }}
               className="transition-all duration-500"
             >
@@ -91,7 +92,7 @@ const MainLayout: React.FC<{
                   muted 
                   playsInline 
                   src={content.heroMediaUrl}
-                  className="w-full h-full object-cover" // Grayscale removed for clarity
+                  className="w-full h-full object-cover" 
                 />
               ) : content.heroMediaUrl ? (
                 <img 
@@ -105,19 +106,19 @@ const MainLayout: React.FC<{
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-black" />
         </div>
 
-        <FadeInSection className="max-w-4xl z-10 space-y-12">
+        <FadeInSection className="max-w-5xl z-10 space-y-12">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="artifact-label text-white/40"
+            className="artifact-label text-white/40 tracking-[0.4em]"
           >
-            THE ARCHIVAL COLLECTION
+            EST. 2024
           </motion.div>
           <motion.h1 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-            className="text-[clamp(3rem,12vw,10rem)] leading-[0.9] serif-display font-light italic tracking-tight text-white drop-shadow-2xl"
+            className="text-[clamp(3rem,10vw,8rem)] leading-[0.9] serif-display font-light italic tracking-tight text-white drop-shadow-2xl"
           >
             {content.heroTitle}
           </motion.h1>
@@ -125,10 +126,18 @@ const MainLayout: React.FC<{
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
-            className="text-white/80 text-lg md:text-xl max-w-2xl mx-auto font-light tracking-wide italic serif-display"
+            className="text-white/80 text-lg md:text-xl max-w-2xl mx-auto font-light tracking-wide italic serif-display whitespace-pre-line"
           >
             {content.heroSubTitle}
           </motion.p>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2 }}
+            className="text-[10px] uppercase tracking-[0.4em] text-white/50 pt-8"
+          >
+            TAP IN, TWIN.
+          </motion.div>
         </FadeInSection>
         
         <motion.div 
@@ -144,11 +153,12 @@ const MainLayout: React.FC<{
       <section id="archive" className="py-24 md:py-48 px-8 md:px-16 lg:px-24">
         <FadeInSection className="mb-24 flex flex-col md:flex-row justify-between items-end gap-10">
           <div className="space-y-4">
-            <div className="artifact-label text-red-600/60">COLLECTION_INDEX</div>
-            <h2 className="text-4xl md:text-6xl serif-display italic font-light tracking-tight">Archives</h2>
+            <div className="artifact-label text-red-600/60">LIVING ARCHIVE</div>
+            <h2 className="text-4xl md:text-6xl serif-display italic font-light tracking-tight">The Archive</h2>
+            <p className="text-white/40 text-sm font-light max-w-md">This is a living fashion archive. Not everything here is for sale. Once it leaves, it don’t come back.</p>
           </div>
           <div className="text-[10px] font-mono text-white/20 uppercase tracking-widest border-b border-white/10 pb-2">
-            STABLE_NODE: {pieces.length} ARTIFACTS
+            INDEX: {pieces.length} ARTIFACTS
           </div>
         </FadeInSection>
 
@@ -163,10 +173,13 @@ const MainLayout: React.FC<{
 
       {/* Fit Checks Section */}
       {content.fitChecks && content.fitChecks.length > 0 && (
-        <section id="fitchecks" className="py-24 md:py-48 px-8 md:px-16 lg:px-24 bg-[#050505]">
+        <section id="fits" className="py-24 md:py-48 px-8 md:px-16 lg:px-24 bg-[#050505]">
           <FadeInSection className="mb-24">
             <div className="artifact-label text-white/20 mb-4">STUDY_02 // MOTION</div>
-            <h2 className="text-4xl md:text-6xl serif-display italic font-light tracking-tight">Fit Checks</h2>
+            <h2 className="text-4xl md:text-6xl serif-display italic font-light tracking-tight">Fits / Garments</h2>
+            <p className="text-white/40 text-lg font-light mt-4 max-w-lg italic serif-display">
+              "Vintage moves different. Old fabric. New posture. That's the balance."
+            </p>
           </FadeInSection>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
@@ -206,16 +219,16 @@ const MainLayout: React.FC<{
       )}
 
       {/* Manifesto / Statement */}
-      <section id="manifest" className="py-48 px-8 md:px-24 bg-[#0a0a0a] border-y border-white/5">
+      <section id="philosophy" className="py-48 px-8 md:px-24 bg-[#0a0a0a] border-y border-white/5">
         <div className="max-w-5xl mx-auto text-center space-y-20">
           <FadeInSection>
-            <div className="artifact-label text-white/20 mb-8">THE PHILOSOPHY</div>
-            <h3 className="text-4xl md:text-7xl serif-display italic leading-tight font-light text-white/90">
+            <div className="artifact-label text-white/20 mb-8">{content.archiveStatementTitle}</div>
+            <h3 className="text-3xl md:text-6xl serif-display italic leading-tight font-light text-white/90">
               "{content.archiveStatementText1}"
             </h3>
           </FadeInSection>
           <FadeInSection delay={300}>
-            <p className="text-xl md:text-2xl font-light text-white/40 max-w-2xl mx-auto italic serif-display">
+            <p className="text-xl md:text-2xl font-light text-white/40 max-w-3xl mx-auto italic serif-display leading-relaxed">
               {content.archiveStatementText2}
             </p>
           </FadeInSection>
@@ -227,23 +240,23 @@ const MainLayout: React.FC<{
         <div className="grid grid-cols-1 md:grid-cols-3 gap-24 items-start">
           <div className="space-y-8">
             <div className="text-2xl font-light tracking-[0.2em] uppercase">RAWLINE</div>
-            <p className="artifact-label text-white/20 leading-loose">Established as a permanent archive for industrial garment history.</p>
+            <p className="artifact-label text-white/20 leading-loose">Built from vintage.<br/>Still standing.</p>
           </div>
           
           <div className="space-y-8 md:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-12">
             <div className="space-y-6">
-              <span className="artifact-label text-white/40 block">LINKS</span>
+              <span className="artifact-label text-white/40 block">INDEX</span>
               <div className="flex flex-col gap-4 text-[10px] uppercase tracking-widest text-white/30">
                 <a href="#archive" className="hover:text-white transition-all">Archive</a>
-                <a href="#fitchecks" className="hover:text-white transition-all">Fit Checks</a>
-                <a href="#manifest" className="hover:text-white transition-all">Manifest</a>
+                <a href="#fits" className="hover:text-white transition-all">Fits</a>
+                <a href="#philosophy" className="hover:text-white transition-all">Philosophy</a>
               </div>
             </div>
             <div className="space-y-6">
               <span className="artifact-label text-white/40 block">SOCIAL</span>
               <div className="flex flex-col gap-4 text-[10px] uppercase tracking-widest text-white/30">
                 <a href="#" className="hover:text-white transition-all">Instagram</a>
-                <a href="#" className="hover:text-white transition-all">Archive Node</a>
+                <a href="#" className="hover:text-white transition-all">TikTok</a>
               </div>
             </div>
             <div className="space-y-6">
@@ -255,7 +268,7 @@ const MainLayout: React.FC<{
         
         <div className="mt-32 pt-16 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
           <span className="artifact-label text-white/10">{content.footerTagline}</span>
-          <span className="artifact-label text-white/10">© {new Date().getFullYear()} RAWLINE FOUNDRY</span>
+          <span className="artifact-label text-white/10">© {new Date().getFullYear()} RAWLINE ARCHIVE</span>
         </div>
       </footer>
     </div>

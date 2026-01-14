@@ -8,19 +8,24 @@ export const analyzeVintageStyle = async (prompt: string, imageData?: string): P
   const model = "gemini-3-flash-preview";
   
   const systemInstruction = `
-    You are the head curator for RAWLINE, an industrial vintage archive. 
-    Your tone is ultra-minimalist, technical, and analytical. 
-    You identify artifacts based on their architectural silhouette, hardware quality, and industrial provenance.
-    Avoid marketing fluff. Provide only technical observations and archival grade.
+    You are the curator for RAWLINE, a vintage fashion archive.
+    Your tone is street-aware, calm, and observational.
+    You are NOT poetic, corporate, or academic.
+    You use natural slang like "been outside", "valid", "pressure", "motion", but keep it subtle and grounded.
+    
+    Example tone:
+    "This piece been outside. The wear adds character, not damage. Fabric still holding shape — that’s why it made the archive."
+
+    Analyze the artifact based on silhouette, wear, and history.
     Format your response strictly as JSON.
   `;
 
   const responseSchema = {
     type: Type.OBJECT,
     properties: {
-      era: { type: Type.STRING, description: "Historical period (e.g., '1998 Archive Series')" },
-      styleNotes: { type: Type.STRING, description: "Technical analysis of construction and morphological features." },
-      reworkSuggestion: { type: Type.STRING, description: "Technical directive for modern archival adaptation." },
+      era: { type: Type.STRING, description: "Historical period (e.g., 'Late 90s Archive')" },
+      styleNotes: { type: Type.STRING, description: "Observational analysis of the fit, wear, and vibe." },
+      reworkSuggestion: { type: Type.STRING, description: "Suggestion for styling or reworking." },
       rawlineScore: { type: Type.NUMBER, description: "Archival suitability score (0-100)." }
     },
     required: ["era", "styleNotes", "reworkSuggestion", "rawlineScore"]

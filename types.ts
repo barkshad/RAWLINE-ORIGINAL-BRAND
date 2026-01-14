@@ -3,7 +3,7 @@ export interface Piece {
   id: string;
   code: string;
   era: string;
-  status: 'ARCHIVED' | 'ACTIVE' | 'WORN' | 'RELEASED' | 'STUDY';
+  status: 'ORIGINAL' | 'STUDY' | 'ALTERED' | 'RELEASED' | 'ARCHIVED';
   imageUrl: string;
   additionalImages?: string[];
   description?: string;

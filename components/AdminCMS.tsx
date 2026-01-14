@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Piece, SiteContent, FitCheck } from '../types';
 import { 
@@ -52,7 +53,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
     const newPiece: Omit<Piece, 'id'> = {
       code: `RL-ARCH-${(pieces.length + 1).toString().padStart(4, '0')}`,
       era: '1990s',
-      status: 'ARCHIVED',
+      status: 'ORIGINAL',
       imageUrl: 'https://picsum.photos/800/1000',
       material: 'Archive Material',
       condition: 'Mint',
@@ -129,7 +130,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
         onClick={() => setIsOpen(true)}
         className="text-[9px] font-mono text-white/20 hover:text-white uppercase tracking-[0.5em] transition-all py-3 flex items-center gap-4"
       >
-        ACCESS_CONTROL_NODE
+        ARCHIVE INDEX
       </button>
     );
   }
@@ -140,7 +141,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
       
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-white/5 pb-8 mb-10 gap-6">
         <div className="space-y-2">
-          <h2 className="text-2xl md:text-3xl font-black tracking-tighter italic">FOUNDRY_CONTROLLER</h2>
+          <h2 className="text-2xl md:text-3xl font-black tracking-tighter italic">ARCHIVE_INDEX_CONTROLLER</h2>
           <div className="flex items-center gap-3">
              <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
              <span className="text-[10px] text-white/30 uppercase tracking-[0.4em]">Node: {user ? 'ROOT_ACCESS' : 'LOCKED'}</span>
@@ -200,7 +201,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                 onClick={() => setActiveTab(tab as any)}
                 className={`pb-5 text-[11px] tracking-[0.6em] uppercase transition-all font-black whitespace-nowrap ${activeTab === tab ? 'text-white border-b-2 border-red-600' : 'text-white/20 hover:text-white/40'}`}
               >
-                {tab === 'content' ? 'SYSTEM_METADATA' : tab === 'pieces' ? 'ARTIFACT_CATALOG' : tab === 'fitchecks' ? 'FIT_STUDIES' : 'MORPH_LAB'}
+                {tab === 'content' ? 'INDEX_METADATA' : tab === 'pieces' ? 'ARCHIVE_CATALOG' : tab === 'fitchecks' ? 'FIT_STUDIES' : 'MORPH_LAB'}
               </button>
             ))}
           </div>
@@ -262,7 +263,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                   onClick={handleAddPiece}
                   className="w-full border border-dashed border-white/10 py-12 text-white/20 hover:text-white hover:border-white/30 transition-all uppercase text-[10px] tracking-[0.8em] font-black"
                 >
-                  + INITIALIZE_ARTIFACT_RECORD
+                  + ADD TO ARCHIVE
                 </button>
                 <div className="grid grid-cols-1 gap-12">
                   {pieces.map((piece) => (
@@ -275,7 +276,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                         <div className="space-y-6">
                            <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="text-[8px] uppercase text-white/20 font-black">Code</label>
+                                <label className="text-[8px] uppercase text-white/20 font-black">Archive ID</label>
                                 <input className="w-full bg-black/40 border border-white/5 p-4 text-xs font-bold" value={piece.code} onChange={(e) => handlePieceFieldUpdate(piece.id, 'code', e.target.value)} />
                             </div>
                             <div className="space-y-2">
@@ -284,13 +285,14 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                             </div>
                            </div>
                            <div className="space-y-2">
-                                <label className="text-[8px] uppercase text-white/20 font-black">Morphology Description</label>
+                                <label className="text-[8px] uppercase text-white/20 font-black">Archive Notes</label>
                                 <textarea className="w-full bg-black/40 border border-white/5 p-4 text-xs h-32 resize-none" value={piece.description} onChange={(e) => handlePieceFieldUpdate(piece.id, 'description', e.target.value)} />
+                                <div className="text-[8px] text-white/30 pt-1 italic">This entry becomes part of the RAWLINE archive. Document carefully.</div>
                            </div>
                         </div>
                         <div className="space-y-6">
                            <div className="space-y-2">
-                             <label className="text-[8px] uppercase text-white/20 font-black">Primary Asset (Image/Video)</label>
+                             <label className="text-[8px] uppercase text-white/20 font-black">Document Garment</label>
                              <div className="flex gap-8 items-end">
                                 <div className="w-32 aspect-[3/4] bg-neutral-900 border border-white/10 relative overflow-hidden shrink-0">
                                    {isUploading[piece.id] ? (
@@ -316,7 +318,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                                 onChange={(e) => handlePieceFieldUpdate(piece.id, 'status', e.target.value)}
                                 className="w-full bg-black/40 border border-white/5 p-4 text-xs font-black uppercase tracking-widest text-white/60"
                               >
-                                {['ARCHIVED', 'ACTIVE', 'WORN', 'RELEASED', 'STUDY'].map(s => <option key={s} value={s}>{s}</option>)}
+                                {['ORIGINAL', 'STUDY', 'ALTERED', 'RELEASED', 'ARCHIVED'].map(s => <option key={s} value={s}>{s}</option>)}
                               </select>
                            </div>
                         </div>
