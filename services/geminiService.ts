@@ -2,9 +2,9 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { AnalysisResult } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export const analyzeVintageStyle = async (prompt: string, imageData?: string): Promise<AnalysisResult> => {
+  // Create instance right before use to ensure process.env.API_KEY is available and valid
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   const model = "gemini-3-flash-preview";
   
   const systemInstruction = `
