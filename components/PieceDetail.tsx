@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,6 +12,11 @@ const PieceDetail: React.FC = () => {
   const [piece, setPiece] = useState<Piece | null>(null);
   const [loading, setLoading] = useState(true);
   const [mainImage, setMainImage] = useState<string>('');
+
+  const isVideo = (url?: string) => {
+    if (!url) return false;
+    return url.match(/\.(mp4|webm|ogg|mov)$|video/i);
+  };
 
   useEffect(() => {
     const fetchPiece = async () => {
@@ -62,16 +68,32 @@ const PieceDetail: React.FC = () => {
           <div className="space-y-12">
             <FadeInSection className="relative aspect-[3/4] overflow-hidden bg-[#111] shadow-2xl">
               <AnimatePresence mode="wait">
-                <motion.img 
+                <motion.div
                   key={mainImage}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.8 }}
-                  src={getOptimizedUrl(mainImage, 1800)} 
-                  alt={piece.code} 
-                  className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
-                />
+                  className="w-full h-full"
+                >
+                  {isVideo(mainImage) ? (
+                    <video 
+                      src={mainImage} 
+                      className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
+                      controls
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                    />
+                  ) : (
+                    <img 
+                      src={getOptimizedUrl(mainImage, 1800)} 
+                      alt={piece.code} 
+                      className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
+                    />
+                  )}
+                </motion.div>
               </AnimatePresence>
             </FadeInSection>
 
@@ -82,7 +104,11 @@ const PieceDetail: React.FC = () => {
                   onClick={() => setMainImage(img)}
                   className={`aspect-square transition-all duration-500 overflow-hidden border ${mainImage === img ? 'border-white' : 'border-white/5 opacity-40 hover:opacity-100'}`}
                 >
-                  <img src={getOptimizedUrl(img, 400)} className="w-full h-full object-cover grayscale" />
+                  {isVideo(img) ? (
+                    <video src={img} className="w-full h-full object-cover grayscale" muted />
+                  ) : (
+                    <img src={getOptimizedUrl(img, 400)} className="w-full h-full object-cover grayscale" />
+                  )}
                 </button>
               ))}
             </div>
@@ -92,11 +118,11 @@ const PieceDetail: React.FC = () => {
           <div className="space-y-24">
             <FadeInSection className="space-y-12">
               <div className="space-y-4">
-                <div className="artifact-label text-white/30">REF NO: {piece.id.substring(0,8).toUpperCase()}</div>
+                <div className="artifact-label text-white/30 tracking-[0.5em]">REF NO: {piece.id.substring(0,8).toUpperCase()}</div>
                 <h1 className="text-7xl md:text-9xl serif-display italic font-light tracking-tight leading-none">
                   {piece.code}
                 </h1>
-                <div className="flex gap-4 pt-4">
+                <div className="flex flex-wrap gap-4 pt-4">
                   <span className="artifact-label text-[9px] px-4 py-2 bg-white/5 border border-white/10 text-white/60 uppercase">
                     ERA: {piece.era}
                   </span>
@@ -128,7 +154,7 @@ const PieceDetail: React.FC = () => {
               </div>
 
               <div className="pt-16 flex flex-col gap-4">
-                <button onClick={() => window.print()} className="artifact-label w-full py-6 border border-white/10 hover:bg-white hover:text-black transition-all">
+                <button onClick={() => window.print()} className="artifact-label w-full py-6 border border-white/10 hover:bg-white hover:text-black transition-all font-black">
                   GENERATE PDF RECORD
                 </button>
                 <div className="artifact-label text-[7px] text-center text-white/10 pt-4">AUTHENTICATED BY RAWLINE FOUNDRY ARCHIVE</div>

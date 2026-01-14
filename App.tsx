@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import { motion, useScroll, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import Lenis from 'lenis';
@@ -156,19 +157,24 @@ const MainLayout: React.FC<{
               <FadeInSection key={check.id} delay={idx * 100}>
                 <div className="space-y-6 group">
                   <div className="relative aspect-[9/16] bg-black overflow-hidden border border-white/5 transition-all duration-700 group-hover:border-white/20">
-                    <video 
-                      src={check.videoUrl} 
-                      className="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-1000"
-                      muted
-                      loop
-                      onMouseOver={(e) => e.currentTarget.play()}
-                      onMouseOut={(e) => {
-                        e.currentTarget.pause();
-                        e.currentTarget.currentTime = 0;
-                      }}
-                    />
+                    {isVideo(check.videoUrl) ? (
+                      <video 
+                        src={check.videoUrl} 
+                        className="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-1000"
+                        muted
+                        loop
+                        autoPlay
+                        playsInline
+                      />
+                    ) : (
+                      <img 
+                        src={check.videoUrl} 
+                        className="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-1000"
+                        alt={check.title}
+                      />
+                    )}
                     <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="artifact-label text-[8px] text-white">INTERACTIVE_NODE</div>
+                      <div className="artifact-label text-[8px] text-white tracking-[0.5em]">RECORDED_FIT</div>
                     </div>
                   </div>
                   <div className="space-y-1">
