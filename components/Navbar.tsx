@@ -20,11 +20,15 @@ const Navbar: React.FC<NavbarProps> = ({ scrolled, syncError }) => {
     { label: 'THE CODE', path: '/philosophy' }
   ];
 
+  const handleLinkClick = () => {
+    setIsOpen(false);
+  };
+
   return (
     <>
       <nav className={`fixed top-0 left-0 w-full z-[100] px-8 md:px-16 flex justify-between items-center transition-all duration-700 ${scrolled || !isHome || isOpen ? 'bg-[#080808]/90 backdrop-blur-xl py-6 border-b border-white/5' : 'bg-transparent py-12'}`}>
         <div className="flex items-center gap-10">
-          <Link to="/" onClick={() => setIsOpen(false)}>
+          <Link to="/" onClick={handleLinkClick}>
             <motion.div 
               whileHover={{ opacity: 0.6 }}
               className="text-2xl md:text-3xl font-light tracking-[0.2em] uppercase cursor-none"
@@ -56,6 +60,7 @@ const Navbar: React.FC<NavbarProps> = ({ scrolled, syncError }) => {
         <button 
           onClick={() => setIsOpen(!isOpen)}
           className="flex flex-col gap-1.5 z-[110] group"
+          aria-label="Toggle navigation"
         >
           <motion.div 
             animate={isOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
@@ -84,7 +89,7 @@ const Navbar: React.FC<NavbarProps> = ({ scrolled, syncError }) => {
           >
             <div className="noise opacity-10"></div>
             <div className="space-y-12 relative z-10">
-              <div className="artifact-label text-red-600/60 mb-8">NAVIGATION_INDEX</div>
+              <div className="artifact-label text-red-600/60 mb-8 font-black tracking-[0.5em]">NAVIGATION_INDEX</div>
               {menuItems.map((item, idx) => (
                 <motion.div
                   key={item.label}
@@ -94,7 +99,7 @@ const Navbar: React.FC<NavbarProps> = ({ scrolled, syncError }) => {
                 >
                   <Link 
                     to={item.path} 
-                    onClick={() => setIsOpen(false)}
+                    onClick={handleLinkClick}
                     className="block group"
                   >
                     <div className="flex items-baseline gap-6">
@@ -109,9 +114,9 @@ const Navbar: React.FC<NavbarProps> = ({ scrolled, syncError }) => {
             </div>
 
             <div className="absolute bottom-16 left-12 md:left-32 flex gap-12 text-[10px] font-black uppercase tracking-[0.4em] text-white/20">
-              <a href="#" className="hover:text-white">Instagram</a>
-              <a href="#" className="hover:text-white">TikTok</a>
-              <a href="#" className="hover:text-white">Archive_V1.5</a>
+              <a href="#" className="hover:text-white transition-colors">Instagram</a>
+              <a href="#" className="hover:text-white transition-colors">TikTok</a>
+              <a href="#" className="hover:text-white transition-colors">Archive_V1.5</a>
             </div>
           </motion.div>
         )}

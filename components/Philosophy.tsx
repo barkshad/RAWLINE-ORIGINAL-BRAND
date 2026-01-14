@@ -12,7 +12,7 @@ const Philosophy: React.FC<PhilosophyProps> = ({ content }) => {
     <div className="min-h-screen bg-[#080808] pt-32 pb-24">
       <section className="px-8 md:px-24 mb-24">
         <FadeInSection>
-          <div className="artifact-label text-red-600/60 mb-6">RAWLINE_ARCHIVE // MANIFESTO</div>
+          <div className="artifact-label text-red-600/60 mb-6 font-black tracking-[0.5em]">RAWLINE_ARCHIVE // MANIFESTO</div>
           <h1 className="text-5xl md:text-8xl serif-display italic font-light tracking-tight text-white mb-12">
             The Code
           </h1>
@@ -40,8 +40,8 @@ const Philosophy: React.FC<PhilosophyProps> = ({ content }) => {
 
       <section className="px-8 md:px-24 py-32 grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
         <FadeInSection>
-           <div className="aspect-[4/5] bg-[#111] border border-white/5 relative overflow-hidden group">
-              <img src="https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" className="w-full h-full object-cover grayscale opacity-40 group-hover:opacity-100 transition-opacity duration-1000" alt="Culture note" />
+           <div className="aspect-[4/5] bg-[#111] border border-white/5 relative overflow-hidden group shadow-2xl">
+              <img src="https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" className="w-full h-full object-cover grayscale opacity-40 group-hover:opacity-100 transition-opacity duration-1000" alt="Culture reference" />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
               <div className="absolute bottom-8 left-8">
                  <div className="artifact-label text-white font-black tracking-[0.5em]">REAL_PRESSURE</div>
@@ -52,13 +52,13 @@ const Philosophy: React.FC<PhilosophyProps> = ({ content }) => {
            <FadeInSection delay={200}>
               <h4 className="text-4xl serif-display italic text-white font-light">History doesn't fold.</h4>
               <p className="text-white/40 mt-6 leading-loose font-light italic serif-display">
-                 Fast fashion is a fluke. We preserve the history that actually hit the pavement. Every tear, every fade, every repair is a mark of authenticity. If it ain't lived, we don't want it. That's why we focus on that heavy-duty construction integrity.
+                 Fast fashion is a fluke. We preserve the history that actually hit the pavement. Every tear, every fade, every repair is a mark of authenticity. If it ain't lived, we don't want it. That's why we focus on that heavy-duty construction integrity. Real world testing only.
               </p>
            </FadeInSection>
            <FadeInSection delay={300}>
-              <h4 className="text-4xl serif-display italic text-white font-light">Curated for the Culture.</h4>
+              <h4 className="text-4xl serif-display italic text-white font-light">Curated for the block.</h4>
               <p className="text-white/40 mt-6 leading-loose font-light italic serif-display">
-                 A curated archival study of the silhouettes and material history that realmente mean something. We dig through the noise to find the signals that still resonate in the streets today. Pressure is applied on every pick.
+                 A curated study of the silhouettes and material heritage that actually paved the way. We dig through the noise to find the signals that still resonate in the streets today. Real history for the block. Pressure is applied on every pick.
               </p>
            </FadeInSection>
         </div>

@@ -11,16 +11,17 @@ import Archive from './components/Archive';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import PieceCard from './components/PieceCard';
+import ScrollToTop from './components/ScrollToTop';
 import { Piece, SiteContent } from './types';
 import { getPieces, getSiteContent } from './services/firebaseService';
 import { isVideoUrl } from './utils';
 
 const DEFAULT_CONTENT: SiteContent = {
   heroTitle: "RAWLINE: THE MOTION ARCHIVE",
-  heroSubTitle: "A deep archive of the silhouettes and fabrics that really paved the way. Real history for the streets.",
+  heroSubTitle: "A curated look at the industrial shapes and material heritage that actually paved the way. Real history for the streets.",
   heroMediaUrl: "https://videos.pexels.com/video-files/3248357/3248357-hd_1920_1080_25fps.mp4",
   archiveStatementTitle: "THE CODE",
-  archiveStatementText1: "RAWLINE is about where the look meets the life. We only pull pieces with that heavy-duty build and real history. If the fabric ain't holding up under pressure, it ain't RAWLINE.",
+  archiveStatementText1: "RAWLINE is where the silhouette meets the real world. We only pull pieces with that heavy-duty build and actual history. If the construction ain't holding up under pressure, it ain't making the archive.",
   archiveStatementText2: "This ain't for the spectators. It's for the ones in the paint. Authentic artifacts, authenticated by the block. You feel me.",
   footerTagline: "Built from the pavement up. Still the signal.",
   fitChecks: []
@@ -114,12 +115,12 @@ const HomePage: React.FC<{ content: SiteContent; pieces: Piece[] }> = ({ content
       <section className="py-48 px-8 md:px-24 bg-[#080808]">
         <div className="max-w-4xl mx-auto">
           <FadeInSection className="space-y-12">
-            <div className="artifact-label text-red-600">MISSION_CRITICAL</div>
+            <div className="artifact-label text-red-600 font-black">MISSION_CRITICAL</div>
             <h2 className="text-4xl md:text-7xl serif-display italic font-light tracking-tighter leading-none">
               The link between the look and the life.
             </h2>
             <p className="text-xl md:text-2xl font-light text-white/50 italic serif-display leading-relaxed">
-              RAWLINE is about where the look meets the life. We only pull pieces with that heavy-duty build and real history. If the fabric ain't holding up under pressure, it ain't RAWLINE. No weak links in the archive.
+              RAWLINE is where the silhouette meets the real world. We only pull pieces with that heavy-duty build and actual history. If the construction ain't holding up under pressure, it ain't making the archive. No weak links allowed.
             </p>
           </FadeInSection>
         </div>
@@ -145,7 +146,7 @@ const HomePage: React.FC<{ content: SiteContent; pieces: Piece[] }> = ({ content
         <section className="py-32 px-8 md:px-16 bg-[#0a0a0a] border-y border-white/5">
            <div className="grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
               <div className="space-y-8">
-                 <div className="artifact-label text-red-600">IN_MOTION</div>
+                 <div className="artifact-label text-red-600 font-black">IN_MOTION</div>
                  <h2 className="text-4xl md:text-6xl serif-display italic font-light leading-none">
                     "Garments move different when you're actually outside."
                  </h2>
@@ -156,7 +157,7 @@ const HomePage: React.FC<{ content: SiteContent; pieces: Piece[] }> = ({ content
                     WATCH THE MOTION STUDIES
                  </Link>
               </div>
-              <div className="aspect-[9/16] md:aspect-video bg-black overflow-hidden relative group border border-white/5">
+              <div className="aspect-[9/16] md:aspect-video bg-black overflow-hidden relative group border border-white/5 shadow-2xl">
                  {isVideoUrl(content.fitChecks[0].videoUrl) ? (
                     <video 
                       src={content.fitChecks[0].videoUrl} 
@@ -173,6 +174,7 @@ const HomePage: React.FC<{ content: SiteContent; pieces: Piece[] }> = ({ content
                       alt="Motion reference"
                     />
                  )}
+                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-all pointer-events-none" />
               </div>
            </div>
         </section>
@@ -225,13 +227,25 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smoothWheel: true });
-    function raf(time: number) { lenis.raf(time); requestAnimationFrame(raf); }
+    const lenis = new Lenis({ 
+      duration: 1.2, 
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
+      smoothWheel: true 
+    });
+    
+    function raf(time: number) { 
+      lenis.raf(time); 
+      requestAnimationFrame(raf); 
+    }
+    
     requestAnimationFrame(raf);
     const handleScroll = () => setScrolled(window.scrollY > 80);
     window.addEventListener('scroll', handleScroll, { passive: true });
     loadData();
-    return () => { window.removeEventListener('scroll', handleScroll); lenis.destroy(); };
+    return () => { 
+      window.removeEventListener('scroll', handleScroll); 
+      lenis.destroy(); 
+    };
   }, [loadData]);
 
   if (isLoading) {
@@ -244,6 +258,7 @@ const App: React.FC = () => {
 
   return (
     <HashRouter>
+      <ScrollToTop />
       <MainLayout scrolled={scrolled} syncError={syncError} content={content} pieces={pieces} loadData={loadData} setContent={setContent}>
         <Routes>
           <Route path="/" element={<HomePage content={content} pieces={pieces} />} />
