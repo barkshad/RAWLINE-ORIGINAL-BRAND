@@ -1,9 +1,11 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import PieceCard from './components/PieceCard';
 import AICurator from './components/AICurator';
 import FadeInSection from './components/FadeInSection';
 import AdminCMS from './components/AdminCMS';
+import PieceDetail from './components/PieceDetail';
 import { Piece, SiteContent } from './types';
 import { getPieces, getSiteContent } from './services/firebaseService';
 
@@ -25,53 +27,14 @@ const INITIAL_PIECES: Piece[] = [
   { id: '6', code: 'RL–ARCH–0006', era: '1990s', status: 'RELEASED', imageUrl: 'https://images.unsplash.com/photo-1578681994506-b8f463449011', material: 'Synthetic Blend', condition: 'Clean' },
 ];
 
-const App: React.FC = () => {
-  const [scrolled, setScrolled] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [content, setContent] = useState<SiteContent>(DEFAULT_CONTENT);
-  const [pieces, setPieces] = useState<Piece[]>(INITIAL_PIECES);
-  const [syncError, setSyncError] = useState<string | null>(null);
-
-  const loadData = useCallback(async () => {
-    try {
-      setSyncError(null);
-      const cloudContent = await getSiteContent();
-      if (cloudContent) setContent(cloudContent);
-      
-      const cloudPieces = await getPieces();
-      if (cloudPieces && cloudPieces.length > 0) {
-        setPieces(cloudPieces);
-      }
-    } catch (error: any) {
-      console.error("Data synchronization error:", error);
-      if (error.code === 'permission-denied' || error.message?.includes('permission')) {
-        setSyncError("Access Blocked: Update Firestore Rules.");
-      } else {
-        setSyncError(`Link Failed: ${error.code || 'Offline'}`);
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    loadData();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [loadData]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center font-mono p-4">
-        <div className="flex flex-col items-center gap-6 text-center">
-          <div className="text-white text-xl md:text-2xl font-bold tracking-[0.5em] md:tracking-[1em] animate-pulse">RAWLINE</div>
-          <div className="text-white/20 text-[9px] uppercase tracking-[0.4em]">Establishing_Cloud_Link...</div>
-        </div>
-      </div>
-    );
-  }
-
+const MainLayout: React.FC<{ 
+  scrolled: boolean; 
+  syncError: string | null; 
+  content: SiteContent; 
+  pieces: Piece[]; 
+  loadData: () => void;
+  setContent: (c: SiteContent) => void;
+}> = ({ scrolled, syncError, content, pieces, loadData, setContent }) => {
   return (
     <div className="min-h-screen bg-black text-white selection:bg-white selection:text-black font-sans overflow-x-hidden">
       {/* Global CRT Scanline Effect */}
@@ -323,6 +286,72 @@ const App: React.FC = () => {
         }
       `}</style>
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  const [scrolled, setScrolled] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [content, setContent] = useState<SiteContent>(DEFAULT_CONTENT);
+  const [pieces, setPieces] = useState<Piece[]>(INITIAL_PIECES);
+  const [syncError, setSyncError] = useState<string | null>(null);
+
+  const loadData = useCallback(async () => {
+    try {
+      setSyncError(null);
+      const cloudContent = await getSiteContent();
+      if (cloudContent) setContent(cloudContent);
+      
+      const cloudPieces = await getPieces();
+      if (cloudPieces && cloudPieces.length > 0) {
+        setPieces(cloudPieces);
+      }
+    } catch (error: any) {
+      console.error("Data synchronization error:", error);
+      if (error.code === 'permission-denied' || error.message?.includes('permission')) {
+        setSyncError("Access Blocked: Update Firestore Rules.");
+      } else {
+        setSyncError(`Link Failed: ${error.code || 'Offline'}`);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    loadData();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [loadData]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center font-mono p-4">
+        <div className="flex flex-col items-center gap-6 text-center">
+          <div className="text-white text-xl md:text-2xl font-bold tracking-[0.5em] md:tracking-[1em] animate-pulse">RAWLINE</div>
+          <div className="text-white/20 text-[9px] uppercase tracking-[0.4em]">Establishing_Cloud_Link...</div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <HashRouter>
+      <Routes>
+        <Route path="/" element={
+          <MainLayout 
+            scrolled={scrolled} 
+            syncError={syncError} 
+            content={content} 
+            pieces={pieces} 
+            loadData={loadData}
+            setContent={setContent}
+          />
+        } />
+        <Route path="/artifact/:id" element={<PieceDetail />} />
+      </Routes>
+    </HashRouter>
   );
 };
 

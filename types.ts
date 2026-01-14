@@ -5,6 +5,8 @@ export interface Piece {
   era: string;
   status: 'ARCHIVED' | 'ACTIVE' | 'WORN' | 'RELEASED' | 'STUDY';
   imageUrl: string;
+  additionalImages?: string[];
+  description?: string;
   material?: string;
   condition?: string;
   classification?: string;
