@@ -1,3 +1,4 @@
+
 import { initializeApp } from "firebase/app";
 import { 
   getFirestore, 
@@ -13,7 +14,7 @@ import {
   serverTimestamp 
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import { Piece, SiteContent } from "../types";
+import { Piece, SiteContent, FitCheck } from "../types";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD4eUxmQpQFye1WbzFbH5nLUdY8WdD8X30",

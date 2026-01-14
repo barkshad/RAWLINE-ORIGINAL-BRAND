@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Piece, SiteContent } from '../types';
+import { Piece, SiteContent, FitCheck } from '../types';
 import { 
   auth, 
   saveSiteContent, 
@@ -24,7 +24,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'content' | 'pieces' | 'lab'>('content');
+  const [activeTab, setActiveTab] = useState<'content' | 'pieces' | 'fitchecks' | 'lab'>('content');
   const [isUploading, setIsUploading] = useState<string | null>(null);
   const [error, setError] = useState('');
 
@@ -75,46 +75,46 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
     }
   };
 
-  const handleRemoveGalleryImage = async (id: string, index: number) => {
-    const currentPiece = pieces.find(p => p.id === id);
-    if (currentPiece && currentPiece.additionalImages) {
-      const newGallery = currentPiece.additionalImages.filter((_, i) => i !== index);
-      await updatePieceData(id, { additionalImages: newGallery });
-      onRefreshPieces();
-    }
-  };
-
-  const handleImageUpload = async (id: string, e: React.ChangeEvent<HTMLInputElement>, isGallery: boolean = false) => {
+  const handleMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>, callback: (url: string) => void, id: string) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
-
-    setIsUploading(`${id}-${isGallery ? 'gal' : 'main'}`);
+    setIsUploading(id);
     try {
-      if (isGallery) {
-        const uploadPromises = (Array.from(files) as File[]).map(file => uploadToCloudinary(file));
-        const urls = await Promise.all(uploadPromises);
-        const currentPiece = pieces.find(p => p.id === id);
-        const currentGallery = currentPiece?.additionalImages || [];
-        await updatePieceData(id, { additionalImages: [...currentGallery, ...urls] });
-      } else {
-        const url = await uploadToCloudinary(files[0] as File);
-        await updatePieceData(id, { imageUrl: url });
-      }
-      onRefreshPieces();
+      const url = await uploadToCloudinary(files[0] as File);
+      callback(url);
     } catch (err) {
-      alert("Upload failed. Verify Cloudinary configuration.");
+      alert("Upload failed.");
     } finally {
       setIsUploading(null);
     }
+  };
+
+  const handleAddFitCheck = () => {
+    const newFitChecks = [...(content.fitChecks || []), {
+      id: Math.random().toString(36).substr(2, 9),
+      videoUrl: '',
+      title: 'New Fit Check',
+      description: ''
+    }];
+    onUpdateContent({ ...content, fitChecks: newFitChecks });
+  };
+
+  const handleRemoveFitCheck = (id: string) => {
+    const newFitChecks = content.fitChecks?.filter(f => f.id !== id) || [];
+    onUpdateContent({ ...content, fitChecks: newFitChecks });
+  };
+
+  const handleFitCheckUpdate = (id: string, field: keyof FitCheck, value: any) => {
+    const newFitChecks = content.fitChecks?.map(f => f.id === id ? { ...f, [field]: value } : f) || [];
+    onUpdateContent({ ...content, fitChecks: newFitChecks });
   };
 
   if (!isOpen) {
     return (
       <button 
         onClick={() => setIsOpen(true)}
-        className="text-[9px] font-mono text-white/20 hover:text-red-600 uppercase tracking-[0.5em] transition-all py-3 group flex items-center gap-4"
+        className="text-[9px] font-mono text-white/20 hover:text-white uppercase tracking-[0.5em] transition-all py-3 flex items-center gap-4"
       >
-        <span className="w-8 h-[1px] bg-white/10 group-hover:bg-red-600/40 group-hover:w-16 transition-all" /> 
         ACCESS_CONTROL_NODE
       </button>
     );
@@ -136,7 +136,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
           {user && (
             <button 
               onClick={handleLogout} 
-              className="px-6 py-3 border border-red-600/30 text-red-600 text-[10px] uppercase tracking-widest font-black hover:bg-red-600 hover:text-white transition-all shadow-[0_0_20px_rgba(255,0,0,0.1)]"
+              className="px-6 py-3 border border-red-600/30 text-red-600 text-[10px] uppercase tracking-widest font-black hover:bg-red-600 hover:text-white transition-all shadow-lg"
             >
               TERMINATE_SESSION
             </button>
@@ -153,7 +153,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
       {!user ? (
         <div className="flex-1 flex flex-col items-center justify-center space-y-12 max-w-md mx-auto w-full">
           <div className="text-center space-y-4">
-             <div className="text-5xl mb-6">🔑</div>
+             <div className="text-5xl mb-6">🔒</div>
              <p className="text-xs text-white/40 uppercase tracking-[0.6em] font-black">Authorized Personnel Only.</p>
              {error && <p className="text-red-600 text-[10px] uppercase font-black bg-red-600/10 p-4 border border-red-600/20">{error}</p>}
           </div>
@@ -162,7 +162,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
               type="email" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-neutral-900/50 border border-white/10 px-6 py-4 text-xs focus:outline-none focus:border-white/30 transition-all placeholder:text-white/10"
+              className="w-full bg-neutral-900/50 border border-white/10 px-6 py-4 text-xs focus:outline-none focus:border-white/30 transition-all"
               placeholder="IDENT_ID"
               required
             />
@@ -170,30 +170,30 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
               type="password" 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-neutral-900/50 border border-white/10 px-6 py-4 text-xs focus:outline-none focus:border-white/30 transition-all placeholder:text-white/10"
+              className="w-full bg-neutral-900/50 border border-white/10 px-6 py-4 text-xs focus:outline-none focus:border-white/30 transition-all"
               placeholder="AUTH_PHRASE"
               required
             />
-            <button type="submit" className="w-full bg-red-600 text-white px-6 py-5 text-xs font-black hover:bg-red-500 transition-all uppercase tracking-[0.8em] shadow-lg">UNLOCK</button>
+            <button type="submit" className="w-full bg-red-600 text-white px-6 py-5 text-xs font-black hover:bg-red-500 transition-all uppercase tracking-[0.8em]">UNLOCK</button>
           </form>
         </div>
       ) : (
         <div className="flex-1 flex flex-col min-h-0">
           <div className="flex gap-8 md:gap-12 mb-10 border-b border-white/5 overflow-x-auto no-scrollbar">
-            {['content', 'pieces', 'lab'].map((tab) => (
+            {['content', 'pieces', 'fitchecks', 'lab'].map((tab) => (
               <button 
                 key={tab}
                 onClick={() => setActiveTab(tab as any)}
                 className={`pb-5 text-[11px] tracking-[0.6em] uppercase transition-all font-black whitespace-nowrap ${activeTab === tab ? 'text-white border-b-2 border-red-600' : 'text-white/20 hover:text-white/40'}`}
               >
-                {tab === 'content' ? 'SYSTEM_METADATA' : tab === 'pieces' ? 'ARTIFACT_CATALOG' : 'MORPH_LAB_v4'}
+                {tab === 'content' ? 'SYSTEM_METADATA' : tab === 'pieces' ? 'ARTIFACT_CATALOG' : tab === 'fitchecks' ? 'FIT_STUDIES' : 'MORPH_LAB'}
               </button>
             ))}
           </div>
 
           <div className="flex-1 overflow-y-auto no-scrollbar space-y-16 pb-32 pr-4">
             {activeTab === 'content' ? (
-              <div className="max-w-4xl space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <div className="max-w-4xl space-y-12 animate-in fade-in duration-700">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                   <div className="space-y-4">
                     <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Hero Title</label>
@@ -204,25 +204,32 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                     />
                   </div>
                   <div className="space-y-4">
-                    <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Statement Subhead</label>
-                    <input 
-                      className="w-full bg-white/5 border border-white/10 p-5 text-sm focus:border-white/40 transition-all"
-                      value={content.archiveStatementTitle}
-                      onChange={(e) => onUpdateContent({ ...content, archiveStatementTitle: e.target.value })}
-                    />
+                    <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Hero Media URL (Background)</label>
+                    <div className="flex gap-3">
+                      <input 
+                        className="flex-1 bg-white/5 border border-white/10 p-5 text-sm focus:border-white/40 transition-all"
+                        value={content.heroMediaUrl || ''}
+                        onChange={(e) => onUpdateContent({ ...content, heroMediaUrl: e.target.value })}
+                        placeholder="Video or Image URL"
+                      />
+                      <label className="px-6 py-5 bg-white text-black text-[9px] font-black uppercase cursor-pointer hover:bg-neutral-200 shrink-0">
+                        UPLOAD
+                        <input type="file" className="hidden" onChange={(e) => handleMediaUpload(e, (url) => onUpdateContent({...content, heroMediaUrl: url}), 'hero')} />
+                      </label>
+                    </div>
                   </div>
                 </div>
                 <div className="space-y-4">
-                  <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Archive Thesis</label>
+                  <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Hero Subhead / Archive Thesis</label>
                   <textarea 
-                    className="w-full bg-white/5 border border-white/10 p-5 text-sm h-40 focus:border-white/40 transition-all resize-none"
+                    className="w-full bg-white/5 border border-white/10 p-5 text-sm h-32 focus:border-white/40 transition-all resize-none"
                     value={content.heroSubTitle}
                     onChange={(e) => onUpdateContent({ ...content, heroSubTitle: e.target.value })}
                   />
                 </div>
                 <button 
                   onClick={async () => { await saveSiteContent(content); alert("Synchronized."); }}
-                  className="bg-white text-black px-12 py-5 text-[10px] font-black uppercase tracking-[0.5em] hover:bg-neutral-200 shadow-xl"
+                  className="bg-red-600 text-white px-12 py-5 text-[10px] font-black uppercase tracking-[0.5em] hover:bg-red-500 shadow-xl"
                 >
                   PUSH_TO_GLOBAL_PRODUCTION
                 </button>
@@ -231,116 +238,76 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
               <div className="space-y-12 animate-in fade-in duration-700">
                 <button 
                   onClick={handleAddPiece}
-                  className="w-full border-2 border-dashed border-white/5 py-20 text-white/20 hover:text-white hover:border-white/20 transition-all uppercase text-[10px] tracking-[0.8em] bg-white/[0.02] font-black"
+                  className="w-full border border-dashed border-white/10 py-12 text-white/20 hover:text-white hover:border-white/30 transition-all uppercase text-[10px] tracking-[0.8em] font-black"
                 >
-                  + INITIALIZE_NEW_RECORD
+                  + INITIALIZE_ARTIFACT_RECORD
                 </button>
                 <div className="grid grid-cols-1 gap-12">
                   {pieces.map((piece) => (
-                    <div key={piece.id} className="glass-panel p-10 space-y-10 relative group">
-                      <div className="flex justify-between items-center border-b border-white/5 pb-8">
-                        <div className="flex items-center gap-4">
-                           <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
-                           <div className="text-[11px] font-black tracking-[0.3em] uppercase italic text-white/80">RECORD: {piece.id.substring(0,8)}</div>
-                        </div>
-                        <button onClick={() => handleDeletePiece(piece.id)} className="text-[10px] text-red-600 hover:bg-red-600 hover:text-white px-4 py-2 border border-red-600/30 font-black tracking-widest uppercase transition-all">PURGE</button>
+                    <div key={piece.id} className="glass-panel p-10 space-y-8">
+                       <div className="flex justify-between items-center border-b border-white/5 pb-6">
+                        <span className="text-[10px] font-black text-white/40">CODE: {piece.code}</span>
+                        <button onClick={() => handleDeletePiece(piece.id)} className="text-[10px] text-red-600 uppercase font-black px-4 py-2 hover:bg-red-600 hover:text-white transition-all">PURGE</button>
                       </div>
-                      
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-                        <div className="space-y-10">
-                          <div className="grid grid-cols-2 gap-8">
-                            <div className="space-y-3">
-                              <label className="text-[8px] uppercase text-white/20 tracking-[0.5em] font-black">DESIGNATION_CODE</label>
-                              <input 
-                                className="w-full bg-black border border-white/10 p-4 text-xs font-bold focus:border-red-600/40"
-                                value={piece.code}
-                                onChange={(e) => handlePieceFieldUpdate(piece.id, 'code', e.target.value)}
-                              />
-                            </div>
-                            <div className="space-y-3">
-                              <label className="text-[8px] uppercase text-white/20 tracking-[0.5em] font-black">ERA_SLOT</label>
-                              <input 
-                                className="w-full bg-black border border-white/10 p-4 text-xs font-bold focus:border-red-600/40"
-                                value={piece.era}
-                                onChange={(e) => handlePieceFieldUpdate(piece.id, 'era', e.target.value)}
-                              />
-                            </div>
-                          </div>
-
-                          <div className="space-y-3">
-                            <label className="text-[8px] uppercase text-white/20 tracking-[0.5em] font-black">TECHNICAL_MANIFEST</label>
-                            <textarea 
-                              className="w-full bg-black border border-white/10 p-5 text-xs h-48 focus:border-red-600/40 resize-none no-scrollbar font-medium leading-relaxed"
-                              value={piece.description}
-                              onChange={(e) => handlePieceFieldUpdate(piece.id, 'description', e.target.value)}
-                              placeholder="// ENTER_ARTIFACT_INTEL..."
-                            />
-                          </div>
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div className="space-y-6">
+                           <div className="grid grid-cols-2 gap-4">
+                            <input className="bg-black/40 border border-white/5 p-4 text-xs" value={piece.code} onChange={(e) => handlePieceFieldUpdate(piece.id, 'code', e.target.value)} placeholder="Code" />
+                            <input className="bg-black/40 border border-white/5 p-4 text-xs" value={piece.era} onChange={(e) => handlePieceFieldUpdate(piece.id, 'era', e.target.value)} placeholder="Era" />
+                           </div>
+                           <textarea className="w-full bg-black/40 border border-white/5 p-4 text-xs h-32" value={piece.description} onChange={(e) => handlePieceFieldUpdate(piece.id, 'description', e.target.value)} placeholder="Description" />
                         </div>
-
-                        <div className="space-y-10">
-                           <div className="space-y-4">
-                              <label className="text-[8px] uppercase text-white/20 tracking-[0.5em] font-black">PRIMARY_DATA_ASSET</label>
-                              <div className="flex gap-8 items-end">
-                                <div className="w-32 h-44 bg-neutral-900 border border-white/10 shrink-0 relative overflow-hidden group/img">
-                                  <img src={piece.imageUrl} className="w-full h-full object-cover grayscale opacity-60 group-hover/img:opacity-100 transition-opacity" />
-                                  {isUploading === `${piece.id}-main` && (
-                                    <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
-                                      <div className="w-6 h-6 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
-                                    </div>
-                                  )}
-                                </div>
-                                <div className="flex-1 space-y-4">
-                                   <input 
-                                     type="file" 
-                                     className="text-[10px] w-full file:bg-white file:text-black file:border-0 file:text-[9px] file:px-4 file:py-2 file:font-black file:uppercase file:cursor-pointer" 
-                                     onChange={(e) => handleImageUpload(piece.id, e, false)} 
-                                   />
-                                   <p className="text-[8px] text-white/20 uppercase tracking-[0.4em] font-bold">Recommended: 1600x2000 Archive Format</p>
-                                </div>
-                              </div>
-                           </div>
-
-                           <div className="space-y-4">
-                              <label className="text-[8px] uppercase text-white/20 tracking-[0.5em] font-black">MORPHOLOGY_GALLERY ({piece.additionalImages?.length || 0})</label>
-                              <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
-                                {piece.additionalImages?.map((img, i) => (
-                                  <div key={i} className="group/gal relative aspect-square bg-neutral-900 border border-white/5 overflow-hidden">
-                                    <img src={img} className="w-full h-full object-cover grayscale opacity-40 group-hover/gal:opacity-100 group-hover/gal:scale-110 transition-all duration-700" />
-                                    <button 
-                                      onClick={() => handleRemoveGalleryImage(piece.id, i)}
-                                      className="absolute top-0 right-0 p-1.5 bg-red-600 text-white opacity-0 group-hover/gal:opacity-100 transition-opacity shadow-lg"
-                                    >
-                                      <span className="text-[10px] font-black">×</span>
-                                    </button>
-                                  </div>
-                                ))}
-                                <label className="relative aspect-square border-2 border-dashed border-white/5 flex items-center justify-center cursor-pointer hover:bg-white/[0.03] hover:border-white/20 transition-all group/add">
-                                   <input 
-                                     type="file" 
-                                     multiple 
-                                     className="hidden" 
-                                     onChange={(e) => handleImageUpload(piece.id, e, true)} 
-                                   />
-                                   {isUploading === `${piece.id}-gal` ? (
-                                      <div className="w-5 h-5 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
-                                   ) : (
-                                      <span className="text-2xl font-light text-white/10 group-hover/add:text-white/40">+</span>
-                                   )}
-                                </label>
-                              </div>
-                           </div>
+                        <div className="flex gap-6 items-start">
+                          <img src={piece.imageUrl} className="w-24 aspect-[3/4] object-cover grayscale opacity-40" />
+                          <label className="artifact-label bg-white/5 border border-white/10 p-4 cursor-pointer hover:bg-white/10">
+                            REPLACE_IMAGE
+                            <input type="file" className="hidden" onChange={(e) => handleMediaUpload(e, (url) => handlePieceFieldUpdate(piece.id, 'imageUrl', url), piece.id)} />
+                          </label>
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
+            ) : activeTab === 'fitchecks' ? (
+              <div className="space-y-12 animate-in fade-in duration-700">
+                <button 
+                  onClick={handleAddFitCheck}
+                  className="w-full border border-dashed border-white/10 py-12 text-white/20 hover:text-white hover:border-white/30 transition-all uppercase text-[10px] tracking-[0.8em] font-black"
+                >
+                  + ADD_FIT_STUDY
+                </button>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                  {content.fitChecks?.map((f) => (
+                    <div key={f.id} className="glass-panel p-8 space-y-6">
+                      <div className="flex justify-between border-b border-white/5 pb-4">
+                        <span className="text-[10px] text-white/30 uppercase font-black">STUDY_ID: {f.id}</span>
+                        <button onClick={() => handleRemoveFitCheck(f.id)} className="text-red-600 text-[10px] uppercase font-black">REMOVE</button>
+                      </div>
+                      <div className="space-y-4">
+                        <input className="w-full bg-black/40 border border-white/5 p-4 text-xs" value={f.title} onChange={(e) => handleFitCheckUpdate(f.id, 'title', e.target.value)} placeholder="Study Title" />
+                        <div className="flex gap-4 items-center">
+                          <video src={f.videoUrl} className="w-20 aspect-[9/16] bg-black object-cover" muted />
+                          <label className="flex-1 artifact-label bg-white/5 border border-white/10 p-4 text-center cursor-pointer hover:bg-white/10">
+                            {isUploading === f.id ? "UPLOADING..." : "UPLOAD_VIDEO"}
+                            <input type="file" accept="video/*" className="hidden" onChange={(e) => handleMediaUpload(e, (url) => handleFitCheckUpdate(f.id, 'videoUrl', url), f.id)} />
+                          </label>
+                        </div>
+                        <textarea className="w-full bg-black/40 border border-white/5 p-4 text-xs h-20" value={f.description} onChange={(e) => handleFitCheckUpdate(f.id, 'description', e.target.value)} placeholder="Study Metadata" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <button 
+                  onClick={async () => { await saveSiteContent(content); alert("Synchronized."); }}
+                  className="bg-red-600 text-white px-12 py-5 text-[10px] font-black uppercase tracking-[0.5em] hover:bg-red-500 shadow-xl"
+                >
+                  PUSH_FIT_CHANGES_TO_LIVE
+                </button>
+              </div>
             ) : (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                 <div className="max-w-4xl">
-                   <AICurator />
-                 </div>
+              <div className="animate-in fade-in duration-700">
+                 <AICurator />
               </div>
             )}
           </div>

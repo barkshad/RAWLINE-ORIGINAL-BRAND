@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import { motion, useScroll, useSpring, useTransform, AnimatePresence } from 'framer-motion';
@@ -6,16 +7,18 @@ import PieceCard from './components/PieceCard';
 import FadeInSection from './components/FadeInSection';
 import AdminCMS from './components/AdminCMS';
 import PieceDetail from './components/PieceDetail';
-import { Piece, SiteContent } from './types';
+import { Piece, SiteContent, FitCheck } from './types';
 import { getPieces, getSiteContent } from './services/firebaseService';
 
 const DEFAULT_CONTENT: SiteContent = {
   heroTitle: "V I N T A G E",
   heroSubTitle: "A curated archival study of industrial silhouettes and material history.",
+  heroMediaUrl: "https://videos.pexels.com/video-files/3248357/3248357-hd_1920_1080_25fps.mp4",
   archiveStatementTitle: "CURATED SELECTION",
   archiveStatementText1: "RAWLINE focuses on the intersection of function and form. Each artifact is selected for its construction integrity and historical significance.",
   archiveStatementText2: "Archiving the past to inform the silhouettes of the future.",
-  footerTagline: "RAWLINE — PERMANENT ARCHIVE COLLECTION"
+  footerTagline: "RAWLINE — PERMANENT ARCHIVE COLLECTION",
+  fitChecks: []
 };
 
 const MainLayout: React.FC<{ 
@@ -29,11 +32,15 @@ const MainLayout: React.FC<{
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
+  const isVideo = (url?: string) => {
+    if (!url) return false;
+    return url.match(/\.(mp4|webm|ogg|mov)$|video/i);
+  };
+
   return (
     <div className="min-h-screen bg-[#080808] text-white selection:bg-white selection:text-black font-sans">
       <motion.div className="fixed top-0 left-0 right-0 h-[1px] bg-white/20 z-[101] origin-[0%]" style={{ scaleX }} />
 
-      {/* Simplified Navigation inspired by Oscar & Patch */}
       <nav className={`fixed top-0 left-0 w-full z-50 px-8 md:px-16 flex justify-between items-center transition-all duration-700 ${scrolled ? 'bg-[#080808]/90 backdrop-blur-xl py-6 border-b border-white/5' : 'bg-transparent py-12'}`}>
         <div className="flex items-center gap-10">
           <motion.div 
@@ -45,10 +52,10 @@ const MainLayout: React.FC<{
         </div>
         
         <div className="hidden md:flex gap-16 text-[10px] font-medium uppercase tracking-[0.3em] text-white/40">
-          {['ARCHIVE', 'MANIFEST', 'CONTACT'].map((item) => (
+          {['ARCHIVE', 'FIT CHECKS', 'MANIFEST'].map((item) => (
             <motion.a 
               key={item}
-              href={`#${item.toLowerCase()}`}
+              href={`#${item.toLowerCase().replace(' ', '')}`}
               whileHover={{ color: '#fff', letterSpacing: '0.4em' }}
               className="transition-all duration-500"
             >
@@ -62,8 +69,25 @@ const MainLayout: React.FC<{
         </div>
       </nav>
 
-      {/* Hero: Simplified, Oscar & Patch style */}
-      <header className="relative h-[90vh] flex flex-col justify-center items-center text-center px-6 overflow-hidden">
+      {/* Hero with Media Background */}
+      <header className="relative h-screen flex flex-col justify-center items-center text-center px-6 overflow-hidden bg-black">
+        <div className="absolute inset-0 z-0 opacity-40">
+          {isVideo(content.heroMediaUrl) ? (
+            <video 
+              autoPlay 
+              loop 
+              muted 
+              playsInline 
+              className="w-full h-full object-cover grayscale"
+            >
+              <source src={content.heroMediaUrl} type="video/mp4" />
+            </video>
+          ) : content.heroMediaUrl ? (
+            <img src={content.heroMediaUrl} className="w-full h-full object-cover grayscale" alt="Hero Background" />
+          ) : null}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black" />
+        </div>
+
         <FadeInSection className="max-w-4xl z-10 space-y-12">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -76,7 +100,7 @@ const MainLayout: React.FC<{
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-            className="text-[clamp(3rem,12vw,10rem)] leading-[0.9] serif-display font-light italic tracking-tight text-white"
+            className="text-[clamp(3rem,12vw,10rem)] leading-[0.9] serif-display font-light italic tracking-tight text-white drop-shadow-2xl"
           >
             {content.heroTitle}
           </motion.h1>
@@ -84,7 +108,7 @@ const MainLayout: React.FC<{
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
-            className="text-white/40 text-lg md:text-xl max-w-2xl mx-auto font-light tracking-wide italic serif-display"
+            className="text-white/60 text-lg md:text-xl max-w-2xl mx-auto font-light tracking-wide italic serif-display"
           >
             {content.heroSubTitle}
           </motion.p>
@@ -93,18 +117,18 @@ const MainLayout: React.FC<{
         <motion.div 
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 3, repeat: Infinity }}
-          className="absolute bottom-16 left-1/2 -translate-x-1/2"
+          className="absolute bottom-16 left-1/2 -translate-x-1/2 z-10"
         >
-          <div className="w-[1px] h-12 bg-white/10" />
+          <div className="w-[1px] h-12 bg-white/20" />
         </motion.div>
       </header>
 
-      {/* Curated Grid Section */}
+      {/* Curated Archive Grid */}
       <section id="archive" className="py-24 md:py-48 px-8 md:px-16 lg:px-24">
         <FadeInSection className="mb-24 flex flex-col md:flex-row justify-between items-end gap-10">
           <div className="space-y-4">
             <div className="artifact-label text-red-600/60">COLLECTION_INDEX</div>
-            <h2 className="text-4xl md:text-6xl serif-display italic font-light tracking-tight">{content.archiveStatementTitle}</h2>
+            <h2 className="text-4xl md:text-6xl serif-display italic font-light tracking-tight">Archives</h2>
           </div>
           <div className="text-[10px] font-mono text-white/20 uppercase tracking-widest border-b border-white/10 pb-2">
             STABLE_NODE: {pieces.length} ARTIFACTS
@@ -119,6 +143,45 @@ const MainLayout: React.FC<{
           ))}
         </div>
       </section>
+
+      {/* Fit Checks Section */}
+      {content.fitChecks && content.fitChecks.length > 0 && (
+        <section id="fitchecks" className="py-24 md:py-48 px-8 md:px-16 lg:px-24 bg-[#050505]">
+          <FadeInSection className="mb-24">
+            <div className="artifact-label text-white/20 mb-4">STUDY_02 // MOTION</div>
+            <h2 className="text-4xl md:text-6xl serif-display italic font-light tracking-tight">Fit Checks</h2>
+          </FadeInSection>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+            {content.fitChecks.map((check, idx) => (
+              <FadeInSection key={check.id} delay={idx * 100}>
+                <div className="space-y-6 group">
+                  <div className="relative aspect-[9/16] bg-black overflow-hidden border border-white/5 transition-all duration-700 group-hover:border-white/20">
+                    <video 
+                      src={check.videoUrl} 
+                      className="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-1000"
+                      muted
+                      loop
+                      onMouseOver={(e) => e.currentTarget.play()}
+                      onMouseOut={(e) => {
+                        e.currentTarget.pause();
+                        e.currentTarget.currentTime = 0;
+                      }}
+                    />
+                    <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="artifact-label text-[8px] text-white">INTERACTIVE_NODE</div>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="serif-display italic text-xl font-light text-white/80">{check.title}</h4>
+                    {check.description && <p className="artifact-label text-[9px] text-white/20">{check.description}</p>}
+                  </div>
+                </div>
+              </FadeInSection>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Manifesto / Statement */}
       <section id="manifest" className="py-48 px-8 md:px-24 bg-[#0a0a0a] border-y border-white/5">
@@ -138,7 +201,7 @@ const MainLayout: React.FC<{
       </section>
 
       {/* Minimal Footer */}
-      <footer className="py-32 px-8 md:px-16 border-t border-white/5">
+      <footer className="py-32 px-8 md:px-16 border-t border-white/5 bg-black">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-24 items-start">
           <div className="space-y-8">
             <div className="text-2xl font-light tracking-[0.2em] uppercase">RAWLINE</div>
@@ -149,15 +212,16 @@ const MainLayout: React.FC<{
             <div className="space-y-6">
               <span className="artifact-label text-white/40 block">LINKS</span>
               <div className="flex flex-col gap-4 text-[10px] uppercase tracking-widest text-white/30">
-                <a href="#" className="hover:text-white transition-all">Archive</a>
-                <a href="#" className="hover:text-white transition-all">Manifest</a>
+                <a href="#archive" className="hover:text-white transition-all">Archive</a>
+                <a href="#fitchecks" className="hover:text-white transition-all">Fit Checks</a>
+                <a href="#manifest" className="hover:text-white transition-all">Manifest</a>
               </div>
             </div>
             <div className="space-y-6">
               <span className="artifact-label text-white/40 block">SOCIAL</span>
               <div className="flex flex-col gap-4 text-[10px] uppercase tracking-widest text-white/30">
                 <a href="#" className="hover:text-white transition-all">Instagram</a>
-                <a href="#" className="hover:text-white transition-all">Dossier</a>
+                <a href="#" className="hover:text-white transition-all">Archive Node</a>
               </div>
             </div>
             <div className="space-y-6">
@@ -186,7 +250,7 @@ const App: React.FC = () => {
   const loadData = useCallback(async () => {
     try {
       const [cloudContent, cloudPieces] = await Promise.all([getSiteContent(), getPieces()]);
-      if (cloudContent) setContent(cloudContent);
+      if (cloudContent) setContent(prev => ({ ...prev, ...cloudContent }));
       if (cloudPieces && cloudPieces.length > 0) setPieces(cloudPieces);
     } catch (error: any) {
       setSyncError(error.message);
