@@ -144,7 +144,7 @@ const AICurator: React.FC = () => {
           ref={logContainerRef}
           className="bg-[#ece9df] border border-[#dcd7cb] p-4 h-40 overflow-y-auto font-mono text-[9px] text-[#1c1c1c]/70 leading-loose no-scrollbar font-bold"
         >
-          {logs.length === 0 && <span className="opacity-60">> SYSTEM_IDLE: AWAITING_INPUT_SEQUENCE</span>}
+          {logs.length === 0 && <span className="opacity-60">&gt; SYSTEM_IDLE: AWAITING_INPUT_SEQUENCE</span>}
           {logs.map((log, i) => (
             <div key={i} className="animate-in fade-in slide-in-from-left-2 duration-300">
               <span className="text-[#8b0000]">{log.split(' ')[0]}</span> {log.split(' ').slice(1).join(' ')}
