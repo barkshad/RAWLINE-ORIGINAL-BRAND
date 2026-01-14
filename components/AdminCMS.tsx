@@ -10,6 +10,7 @@ import {
 } from '../services/firebaseService';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { uploadToCloudinary } from '../services/cloudinaryService';
+import AICurator from './AICurator';
 
 interface AdminCMSProps {
   content: SiteContent;
@@ -23,7 +24,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'content' | 'pieces'>('content');
+  const [activeTab, setActiveTab] = useState<'content' | 'pieces' | 'lab'>('content');
   const [isUploading, setIsUploading] = useState<string | null>(null);
   const [error, setError] = useState('');
 
@@ -123,7 +124,6 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
     <div className="fixed inset-0 z-[100] bg-[#020202] text-white flex flex-col p-6 md:p-12 overflow-hidden font-mono transition-all">
       <div className="noise opacity-10"></div>
       
-      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-white/5 pb-8 mb-10 gap-6">
         <div className="space-y-2">
           <h2 className="text-2xl md:text-3xl font-black tracking-tighter italic">FOUNDRY_CONTROLLER</h2>
@@ -179,14 +179,14 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
         </div>
       ) : (
         <div className="flex-1 flex flex-col min-h-0">
-          <div className="flex gap-12 mb-10 border-b border-white/5">
-            {['content', 'pieces'].map((tab) => (
+          <div className="flex gap-8 md:gap-12 mb-10 border-b border-white/5 overflow-x-auto no-scrollbar">
+            {['content', 'pieces', 'lab'].map((tab) => (
               <button 
                 key={tab}
                 onClick={() => setActiveTab(tab as any)}
-                className={`pb-5 text-[11px] tracking-[0.6em] uppercase transition-all font-black ${activeTab === tab ? 'text-white border-b-2 border-red-600' : 'text-white/20 hover:text-white/40'}`}
+                className={`pb-5 text-[11px] tracking-[0.6em] uppercase transition-all font-black whitespace-nowrap ${activeTab === tab ? 'text-white border-b-2 border-red-600' : 'text-white/20 hover:text-white/40'}`}
               >
-                {tab === 'content' ? 'SYSTEM_METADATA' : 'ARTIFACT_CATALOG'}
+                {tab === 'content' ? 'SYSTEM_METADATA' : tab === 'pieces' ? 'ARTIFACT_CATALOG' : 'MORPH_LAB_v4'}
               </button>
             ))}
           </div>
@@ -227,7 +227,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                   PUSH_TO_GLOBAL_PRODUCTION
                 </button>
               </div>
-            ) : (
+            ) : activeTab === 'pieces' ? (
               <div className="space-y-12 animate-in fade-in duration-700">
                 <button 
                   onClick={handleAddPiece}
@@ -335,6 +335,12 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                     </div>
                   ))}
                 </div>
+              </div>
+            ) : (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                 <div className="max-w-4xl">
+                   <AICurator />
+                 </div>
               </div>
             )}
           </div>
