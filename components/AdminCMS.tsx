@@ -11,7 +11,7 @@ import {
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { uploadToCloudinary } from '../services/cloudinaryService';
 import AICurator from './AICurator';
-import { isVideoUrl } from '../App';
+import { isVideoUrl } from '../utils';
 
 interface AdminCMSProps {
   content: SiteContent;

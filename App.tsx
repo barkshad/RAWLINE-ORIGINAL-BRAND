@@ -1,14 +1,19 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route, Link } from 'react-router-dom';
 import { motion, useScroll, useSpring, AnimatePresence } from 'framer-motion';
 import Lenis from 'lenis';
-import PieceCard from './components/PieceCard';
 import FadeInSection from './components/FadeInSection';
-import AdminCMS from './components/AdminCMS';
 import PieceDetail from './components/PieceDetail';
+import Philosophy from './components/Philosophy';
+import Fits from './components/Fits';
+import Archive from './components/Archive';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import PieceCard from './components/PieceCard';
 import { Piece, SiteContent } from './types';
 import { getPieces, getSiteContent } from './services/firebaseService';
+import { isVideoUrl } from './utils';
 
 const DEFAULT_CONTENT: SiteContent = {
   heroTitle: "RAWLINE FASHION ARCHIVE",
@@ -21,59 +26,11 @@ const DEFAULT_CONTENT: SiteContent = {
   fitChecks: []
 };
 
-// Global helper for media type detection
-export const isVideoUrl = (url?: string) => {
-  if (!url) return false;
-  // Cloudinary video URLs usually contain '/video/' or common video extensions
-  return url.includes('/video/') || url.match(/\.(mp4|webm|ogg|mov)$/i);
-};
-
-const MainLayout: React.FC<{ 
-  scrolled: boolean; 
-  syncError: string | null; 
-  content: SiteContent; 
-  pieces: Piece[]; 
-  loadData: () => void;
-  setContent: (c: SiteContent) => void;
-}> = ({ scrolled, syncError, content, pieces, loadData, setContent }) => {
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
-
+const HomePage: React.FC<{ content: SiteContent; pieces: Piece[] }> = ({ content, pieces }) => {
   return (
-    <div className="min-h-screen bg-[#080808] text-white selection:bg-white selection:text-black font-sans">
-      <motion.div className="fixed top-0 left-0 right-0 h-[1px] bg-white/20 z-[101] origin-[0%]" style={{ scaleX }} />
-
-      <nav className={`fixed top-0 left-0 w-full z-50 px-8 md:px-16 flex justify-between items-center transition-all duration-700 ${scrolled ? 'bg-[#080808]/90 backdrop-blur-xl py-6 border-b border-white/5' : 'bg-transparent py-12'}`}>
-        <div className="flex items-center gap-10">
-          <motion.div 
-            whileHover={{ opacity: 0.6 }}
-            className="text-2xl md:text-3xl font-light tracking-[0.2em] uppercase cursor-none"
-          >
-            RAWLINE
-          </motion.div>
-        </div>
-        
-        <div className="hidden md:flex gap-16 text-[10px] font-medium uppercase tracking-[0.3em] text-white/40">
-          {['ARCHIVE', 'FITS', 'PHILOSOPHY'].map((item) => (
-            <motion.a 
-              key={item}
-              href={`#${item.toLowerCase()}`}
-              whileHover={{ color: '#fff', letterSpacing: '0.4em' }}
-              className="transition-all duration-500"
-            >
-              {item}
-            </motion.a>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-4 text-[9px] font-mono tracking-[0.2em] text-white/20 uppercase">
-          <div className={`w-1.5 h-1.5 rounded-full ${syncError ? 'bg-orange-500' : 'bg-white/40'}`} />
-        </div>
-      </nav>
-
+    <div className="min-h-screen bg-[#080808] text-white font-sans">
       {/* Hero with Media Background */}
       <header className="relative h-screen flex flex-col justify-center items-center text-center px-6 overflow-hidden bg-black">
-        {/* Visibility increased from opacity-40 to opacity-80 for maximum clarity */}
         <div className="absolute inset-0 z-0 opacity-80">
           <AnimatePresence mode="wait">
             <motion.div
@@ -131,12 +88,16 @@ const MainLayout: React.FC<{
             {content.heroSubTitle}
           </motion.p>
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.2 }}
-            className="text-[10px] uppercase tracking-[0.4em] text-white/50 pt-8"
+             initial={{ opacity: 0 }}
+             animate={{ opacity: 1 }}
+             transition={{ delay: 1.2 }}
           >
-            TAP IN, TWIN.
+             <Link 
+               to="/archive"
+               className="inline-block mt-8 text-[10px] uppercase tracking-[0.4em] font-black border border-white/20 px-8 py-4 hover:bg-white hover:text-black transition-all"
+             >
+               ENTER ARCHIVE
+             </Link>
           </motion.div>
         </FadeInSection>
         
@@ -148,129 +109,82 @@ const MainLayout: React.FC<{
           <div className="w-[1px] h-12 bg-white/40" />
         </motion.div>
       </header>
-
-      {/* Curated Archive Grid */}
-      <section id="archive" className="py-24 md:py-48 px-8 md:px-16 lg:px-24">
-        <FadeInSection className="mb-24 flex flex-col md:flex-row justify-between items-end gap-10">
-          <div className="space-y-4">
-            <div className="artifact-label text-red-600/60">LIVING ARCHIVE</div>
-            <h2 className="text-4xl md:text-6xl serif-display italic font-light tracking-tight">The Archive</h2>
-            <p className="text-white/40 text-sm font-light max-w-md">This is a living fashion archive. Not everything here is for sale. Once it leaves, it don’t come back.</p>
-          </div>
-          <div className="text-[10px] font-mono text-white/20 uppercase tracking-widest border-b border-white/10 pb-2">
-            INDEX: {pieces.length} ARTIFACTS
-          </div>
-        </FadeInSection>
-
-        <div className="archive-grid">
-          {pieces.map((piece, idx) => (
-            <FadeInSection key={piece.id} delay={idx % 3 * 50}>
-              <PieceCard piece={piece} />
-            </FadeInSection>
-          ))}
-        </div>
-      </section>
-
-      {/* Fit Checks Section */}
-      {content.fitChecks && content.fitChecks.length > 0 && (
-        <section id="fits" className="py-24 md:py-48 px-8 md:px-16 lg:px-24 bg-[#050505]">
-          <FadeInSection className="mb-24">
-            <div className="artifact-label text-white/20 mb-4">STUDY_02 // MOTION</div>
-            <h2 className="text-4xl md:text-6xl serif-display italic font-light tracking-tight">Fits / Garments</h2>
-            <p className="text-white/40 text-lg font-light mt-4 max-w-lg italic serif-display">
-              "Vintage moves different. Old fabric. New posture. That's the balance."
-            </p>
-          </FadeInSection>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-            {content.fitChecks.map((check, idx) => (
-              <FadeInSection key={check.id} delay={idx * 100}>
-                <div className="space-y-6 group">
-                  <div className="relative aspect-[9/16] bg-black overflow-hidden border border-white/5 transition-all duration-700 group-hover:border-white/20">
-                    {isVideoUrl(check.videoUrl) ? (
-                      <video 
-                        src={check.videoUrl} 
-                        className="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-1000"
-                        muted
-                        loop
-                        autoPlay
-                        playsInline
-                      />
-                    ) : (
-                      <img 
-                        src={check.videoUrl} 
-                        className="w-full h-full object-cover grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-1000"
-                        alt={check.title}
-                      />
-                    )}
-                    <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="artifact-label text-[8px] text-white tracking-[0.5em]">RECORDED_FIT</div>
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <h4 className="serif-display italic text-xl font-light text-white/80">{check.title}</h4>
-                    {check.description && <p className="artifact-label text-[9px] text-white/20">{check.description}</p>}
-                  </div>
-                </div>
+      
+      {/* Featured Pieces */}
+      <section className="py-32 px-8 md:px-16">
+         <div className="flex justify-between items-end mb-16">
+            <h2 className="text-3xl md:text-5xl serif-display italic font-light">Latest Drops</h2>
+            <Link to="/archive" className="artifact-label text-white/40 hover:text-white transition-all">VIEW ALL</Link>
+         </div>
+         <div className="archive-grid">
+            {pieces.slice(0, 3).map((piece, idx) => (
+              <FadeInSection key={piece.id} delay={idx * 100}>
+                 <PieceCard piece={piece} />
               </FadeInSection>
             ))}
-          </div>
-        </section>
-      )}
-
-      {/* Manifesto / Statement */}
-      <section id="philosophy" className="py-48 px-8 md:px-24 bg-[#0a0a0a] border-y border-white/5">
-        <div className="max-w-5xl mx-auto text-center space-y-20">
-          <FadeInSection>
-            <div className="artifact-label text-white/20 mb-8">{content.archiveStatementTitle}</div>
-            <h3 className="text-3xl md:text-6xl serif-display italic leading-tight font-light text-white/90">
-              "{content.archiveStatementText1}"
-            </h3>
-          </FadeInSection>
-          <FadeInSection delay={300}>
-            <p className="text-xl md:text-2xl font-light text-white/40 max-w-3xl mx-auto italic serif-display leading-relaxed">
-              {content.archiveStatementText2}
-            </p>
-          </FadeInSection>
-        </div>
+         </div>
       </section>
 
-      {/* Minimal Footer */}
-      <footer className="py-32 px-8 md:px-16 border-t border-white/5 bg-black">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-24 items-start">
-          <div className="space-y-8">
-            <div className="text-2xl font-light tracking-[0.2em] uppercase">RAWLINE</div>
-            <p className="artifact-label text-white/20 leading-loose">Built from vintage.<br/>Still standing.</p>
-          </div>
-          
-          <div className="space-y-8 md:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-12">
-            <div className="space-y-6">
-              <span className="artifact-label text-white/40 block">INDEX</span>
-              <div className="flex flex-col gap-4 text-[10px] uppercase tracking-widest text-white/30">
-                <a href="#archive" className="hover:text-white transition-all">Archive</a>
-                <a href="#fits" className="hover:text-white transition-all">Fits</a>
-                <a href="#philosophy" className="hover:text-white transition-all">Philosophy</a>
+      {/* Featured Motion */}
+      {content.fitChecks && content.fitChecks.length > 0 && (
+        <section className="py-32 px-8 md:px-16 bg-[#0a0a0a] border-y border-white/5">
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
+              <div className="space-y-8">
+                 <div className="artifact-label text-red-600">IN MOTION</div>
+                 <h2 className="text-4xl md:text-6xl serif-display italic font-light leading-none">
+                    "Clothes aren't meant to be still."
+                 </h2>
+                 <p className="text-white/40 font-light max-w-md">
+                   See how the garments interact with movement, light, and posture. The RAWLINE Fit Check is an essential part of the archival process.
+                 </p>
+                 <Link to="/fits" className="inline-block artifact-label border-b border-white/20 pb-1 hover:text-red-600 hover:border-red-600 transition-all">
+                    WATCH ALL STUDIES
+                 </Link>
               </div>
-            </div>
-            <div className="space-y-6">
-              <span className="artifact-label text-white/40 block">SOCIAL</span>
-              <div className="flex flex-col gap-4 text-[10px] uppercase tracking-widest text-white/30">
-                <a href="#" className="hover:text-white transition-all">Instagram</a>
-                <a href="#" className="hover:text-white transition-all">TikTok</a>
+              <div className="aspect-[9/16] md:aspect-video bg-black overflow-hidden relative group">
+                 {isVideoUrl(content.fitChecks[0].videoUrl) ? (
+                    <video 
+                      src={content.fitChecks[0].videoUrl} 
+                      className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700"
+                      muted
+                      loop
+                      autoPlay
+                      playsInline
+                    />
+                 ) : (
+                    <img 
+                      src={content.fitChecks[0].videoUrl} 
+                      className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700" 
+                    />
+                 )}
               </div>
-            </div>
-            <div className="space-y-6">
-              <span className="artifact-label text-white/40 block">MANAGEMENT</span>
-              <AdminCMS content={content} onUpdateContent={setContent} pieces={pieces} onRefreshPieces={loadData} />
-            </div>
-          </div>
-        </div>
-        
-        <div className="mt-32 pt-16 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
-          <span className="artifact-label text-white/10">{content.footerTagline}</span>
-          <span className="artifact-label text-white/10">© {new Date().getFullYear()} RAWLINE ARCHIVE</span>
-        </div>
-      </footer>
+           </div>
+        </section>
+      )}
+    </div>
+  );
+};
+
+const MainLayout: React.FC<{ 
+  children: React.ReactNode;
+  scrolled: boolean; 
+  syncError: string | null; 
+  content: SiteContent; 
+  pieces: Piece[]; 
+  loadData: () => void;
+  setContent: (c: SiteContent) => void;
+}> = ({ children, scrolled, syncError, content, pieces, loadData, setContent }) => {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
+
+  return (
+    <div className="min-h-screen bg-[#080808] text-white selection:bg-white selection:text-black font-sans">
+      <motion.div className="fixed top-0 left-0 right-0 h-[1px] bg-white/20 z-[101] origin-[0%]" style={{ scaleX }} />
+      <Navbar scrolled={scrolled} syncError={syncError} />
+      
+      {children}
+
+      <Footer content={content} setContent={setContent} pieces={pieces} loadData={loadData} />
     </div>
   );
 };
@@ -314,10 +228,15 @@ const App: React.FC = () => {
 
   return (
     <HashRouter>
-      <Routes>
-        <Route path="/" element={<MainLayout scrolled={scrolled} syncError={syncError} content={content} pieces={pieces} loadData={loadData} setContent={setContent} />} />
-        <Route path="/artifact/:id" element={<PieceDetail />} />
-      </Routes>
+      <MainLayout scrolled={scrolled} syncError={syncError} content={content} pieces={pieces} loadData={loadData} setContent={setContent}>
+        <Routes>
+          <Route path="/" element={<HomePage content={content} pieces={pieces} />} />
+          <Route path="/archive" element={<Archive pieces={pieces} />} />
+          <Route path="/fits" element={<Fits content={content} />} />
+          <Route path="/philosophy" element={<Philosophy content={content} />} />
+          <Route path="/artifact/:id" element={<PieceDetail />} />
+        </Routes>
+      </MainLayout>
     </HashRouter>
   );
 };
