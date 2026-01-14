@@ -27,9 +27,9 @@ const Navbar: React.FC<NavbarProps> = ({ scrolled, syncError }) => {
       
       <div className="hidden md:flex gap-16 text-[10px] font-medium uppercase tracking-[0.3em] text-white/40">
         {[
-          { label: 'ARCHIVE', path: '/archive' },
-          { label: 'FITS', path: '/fits' },
-          { label: 'PHILOSOPHY', path: '/philosophy' }
+          { label: 'THE STACK', path: '/archive' },
+          { label: 'MOTION', path: '/fits' },
+          { label: 'THE CODE', path: '/philosophy' }
         ].map((item) => (
           <Link 
             key={item.label}
@@ -43,7 +43,7 @@ const Navbar: React.FC<NavbarProps> = ({ scrolled, syncError }) => {
 
       <div className="flex items-center gap-4 text-[9px] font-mono tracking-[0.2em] text-white/20 uppercase">
         <div className={`w-1.5 h-1.5 rounded-full ${syncError ? 'bg-orange-500' : 'bg-white/40'}`} />
-        <span className="hidden md:inline">{syncError ? 'OFFLINE' : 'LIVE'}</span>
+        <span className="hidden md:inline font-black tracking-[0.4em]">{syncError ? 'OFFLINE' : 'LIVE_FEED'}</span>
       </div>
     </nav>
   );

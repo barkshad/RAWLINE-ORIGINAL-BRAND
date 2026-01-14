@@ -13,12 +13,12 @@ const Fits: React.FC<FitsProps> = ({ content }) => {
     <div className="min-h-screen bg-[#050505] pt-32 pb-24">
        <section className="px-8 md:px-24 mb-24">
         <FadeInSection>
-          <div className="artifact-label text-white/20 mb-6">STUDY_02 // MOTION</div>
+          <div className="artifact-label text-white/20 mb-6">STUDY_02 // STILL_OUTSIDE</div>
           <h1 className="text-5xl md:text-8xl serif-display italic font-light tracking-tight text-white mb-12">
-            Fit Check
+            In Motion
           </h1>
           <p className="text-white/40 text-lg font-light max-w-lg italic serif-display border-l border-white/20 pl-6">
-            "Vintage moves different. Old fabric. New posture. That's the balance."
+            "Garments move different when you're actually outside. We document the drape, the texture, and the attitude."
           </p>
         </FadeInSection>
       </section>
@@ -47,19 +47,19 @@ const Fits: React.FC<FitsProps> = ({ content }) => {
                       />
                     )}
                     <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="artifact-label text-[8px] text-white tracking-[0.5em]">PLAYING_STUDY</div>
+                      <div className="artifact-label text-[8px] text-white tracking-[0.5em] font-black">ANALYZING_THE_SAUCE</div>
                     </div>
                   </div>
                   <div className="space-y-2 border-t border-white/5 pt-4">
                     <h4 className="serif-display italic text-2xl font-light text-white/80">{check.title}</h4>
-                    {check.description && <p className="artifact-label text-[9px] text-white/30 leading-relaxed">{check.description}</p>}
+                    {check.description && <p className="artifact-label text-[9px] text-white/30 leading-relaxed font-black">{check.description}</p>}
                   </div>
                 </div>
               </FadeInSection>
             ))
           ) : (
             <div className="col-span-full py-24 text-center border border-dashed border-white/10 rounded-lg">
-               <div className="artifact-label text-white/20">NO MOTION STUDIES RECORDED</div>
+               <div className="artifact-label text-white/20 tracking-[0.5em]">AWAITING MOTION FEED // STANDBY</div>
             </div>
           )}
         </div>

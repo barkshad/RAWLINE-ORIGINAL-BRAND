@@ -16,13 +16,13 @@ import { getPieces, getSiteContent } from './services/firebaseService';
 import { isVideoUrl } from './utils';
 
 const DEFAULT_CONTENT: SiteContent = {
-  heroTitle: "RAWLINE FASHION ARCHIVE",
-  heroSubTitle: "Old clothes. Real history.\nStill hitting.",
+  heroTitle: "RAWLINE: THE MOTION ARCHIVE",
+  heroSubTitle: "Not just clothes. Real artifacts.\nStill standing, still valid.",
   heroMediaUrl: "https://videos.pexels.com/video-files/3248357/3248357-hd_1920_1080_25fps.mp4",
-  archiveStatementTitle: "THE PHILOSOPHY",
-  archiveStatementText1: "RAWLINE ain’t start as a brand. It started with paying attention. Digging through racks, finding the same cuts that kept showing up. Stuff that been outside. That’s when it clicked — some clothes don’t fall off. They just level up.",
-  archiveStatementText2: "This ain’t random thrifting, gng. This is intention. RAWLINE is a fashion archive in motion — built from vintage, worn forward. You feel me.",
-  footerTagline: "Built from vintage. Still standing.",
+  archiveStatementTitle: "THE CODE",
+  archiveStatementText1: "RAWLINE ain’t a trend, it’s a standard. We been outside, digging through the noise to find the pieces that actually mean something. If it made the stack, it’s got history behind it.",
+  archiveStatementText2: "This for the steppers, the collectors, and everybody who knows that some garments don't just age—they gain pressure. No fluff, just motion. You feel me.",
+  footerTagline: "Built from the pavement up. Still the signal.",
   fitChecks: []
 };
 
@@ -69,7 +69,7 @@ const HomePage: React.FC<{ content: SiteContent; pieces: Piece[] }> = ({ content
             animate={{ opacity: 1, y: 0 }}
             className="artifact-label text-white/40 tracking-[0.4em]"
           >
-            EST. 2024
+            REAL_WORLD_AUTHENTICATED // 2024
           </motion.div>
           <motion.h1 
             initial={{ opacity: 0, scale: 0.95 }}
@@ -96,7 +96,7 @@ const HomePage: React.FC<{ content: SiteContent; pieces: Piece[] }> = ({ content
                to="/archive"
                className="inline-block mt-8 text-[10px] uppercase tracking-[0.4em] font-black border border-white/20 px-8 py-4 hover:bg-white hover:text-black transition-all"
              >
-               ENTER ARCHIVE
+               CHECK THE STACK
              </Link>
           </motion.div>
         </FadeInSection>
@@ -113,8 +113,8 @@ const HomePage: React.FC<{ content: SiteContent; pieces: Piece[] }> = ({ content
       {/* Featured Pieces */}
       <section className="py-32 px-8 md:px-16">
          <div className="flex justify-between items-end mb-16">
-            <h2 className="text-3xl md:text-5xl serif-display italic font-light">Latest Drops</h2>
-            <Link to="/archive" className="artifact-label text-white/40 hover:text-white transition-all">VIEW ALL</Link>
+            <h2 className="text-3xl md:text-5xl serif-display italic font-light">The New Pressure</h2>
+            <Link to="/archive" className="artifact-label text-white/40 hover:text-white transition-all underline decoration-red-600/50">FULL RE-UP</Link>
          </div>
          <div className="archive-grid">
             {pieces.slice(0, 3).map((piece, idx) => (
@@ -130,18 +130,18 @@ const HomePage: React.FC<{ content: SiteContent; pieces: Piece[] }> = ({ content
         <section className="py-32 px-8 md:px-16 bg-[#0a0a0a] border-y border-white/5">
            <div className="grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
               <div className="space-y-8">
-                 <div className="artifact-label text-red-600">IN MOTION</div>
+                 <div className="artifact-label text-red-600">IN_MOTION</div>
                  <h2 className="text-4xl md:text-6xl serif-display italic font-light leading-none">
-                    "Clothes aren't meant to be still."
+                    "Garments move different when you're actually outside."
                  </h2>
-                 <p className="text-white/40 font-light max-w-md">
-                   See how the garments interact with movement, light, and posture. The RAWLINE Fit Check is an essential part of the archival process.
+                 <p className="text-white/40 font-light max-w-md italic serif-display">
+                   We don't do flat lays. We show how it looks in the wild. If the drape ain't right, it ain't RAWLINE.
                  </p>
                  <Link to="/fits" className="inline-block artifact-label border-b border-white/20 pb-1 hover:text-red-600 hover:border-red-600 transition-all">
-                    WATCH ALL STUDIES
+                    WATCH THE MOTION STUDIES
                  </Link>
               </div>
-              <div className="aspect-[9/16] md:aspect-video bg-black overflow-hidden relative group">
+              <div className="aspect-[9/16] md:aspect-video bg-black overflow-hidden relative group border border-white/5">
                  {isVideoUrl(content.fitChecks[0].videoUrl) ? (
                     <video 
                       src={content.fitChecks[0].videoUrl} 
@@ -155,6 +155,7 @@ const HomePage: React.FC<{ content: SiteContent; pieces: Piece[] }> = ({ content
                     <img 
                       src={content.fitChecks[0].videoUrl} 
                       className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700" 
+                      alt="Motion reference"
                     />
                  )}
               </div>
