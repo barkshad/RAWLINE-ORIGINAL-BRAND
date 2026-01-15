@@ -209,52 +209,101 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
           <div className="flex-1 overflow-y-auto no-scrollbar space-y-16 pb-32 pr-4">
             {activeTab === 'content' ? (
               <div className="max-w-4xl space-y-12 animate-in fade-in duration-700">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                  <div className="space-y-4">
-                    <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Hero Title</label>
-                    <input 
-                      className="w-full bg-white/5 border border-white/10 p-5 text-sm focus:border-white/40 transition-all"
-                      value={content.heroTitle}
-                      onChange={(e) => onUpdateContent({ ...content, heroTitle: e.target.value })}
-                    />
+                {/* Hero Settings */}
+                <div className="space-y-10 border-b border-white/5 pb-12">
+                  <div className="artifact-label text-red-600/60 font-black tracking-widest">Section: HERO_MODULE</div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div className="space-y-4">
+                      <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Hero Title</label>
+                      <input 
+                        className="w-full bg-white/5 border border-white/10 p-5 text-sm focus:border-white/40 transition-all"
+                        value={content.heroTitle}
+                        onChange={(e) => onUpdateContent({ ...content, heroTitle: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-4">
+                      <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Hero Media Source</label>
+                      <div className="flex items-center gap-6">
+                        <div className="w-24 aspect-video bg-neutral-900 border border-white/10 overflow-hidden relative">
+                          {isUploading['hero'] ? (
+                            <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
+                              <div className="w-4 h-4 border border-white border-t-transparent animate-spin rounded-full" />
+                            </div>
+                          ) : isVideoUrl(content.heroMediaUrl) ? (
+                            <video src={content.heroMediaUrl} className="w-full h-full object-cover" muted />
+                          ) : content.heroMediaUrl ? (
+                            <img src={content.heroMediaUrl} className="w-full h-full object-cover" alt="Hero Preview" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-[8px] text-white/20">NO_MEDIA</div>
+                          )}
+                        </div>
+                        <label className="px-8 py-4 bg-white text-black text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-neutral-200 transition-all">
+                          {isUploading['hero'] ? 'UPLOADING...' : 'CHANGE_MEDIA'}
+                          <input type="file" accept="image/*,video/*" className="hidden" onChange={(e) => handleMediaUpload(e, (url) => onUpdateContent({...content, heroMediaUrl: url}), 'hero')} />
+                        </label>
+                      </div>
+                    </div>
                   </div>
                   <div className="space-y-4">
-                    <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Hero Background Media</label>
-                    <div className="flex items-center gap-6">
-                      <div className="w-24 aspect-video bg-neutral-900 border border-white/10 overflow-hidden relative">
-                        {isUploading['hero'] ? (
-                          <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
-                            <div className="w-4 h-4 border border-white border-t-transparent animate-spin rounded-full" />
-                          </div>
-                        ) : isVideoUrl(content.heroMediaUrl) ? (
-                          <video src={content.heroMediaUrl} className="w-full h-full object-cover" muted />
-                        ) : content.heroMediaUrl ? (
-                          <img src={content.heroMediaUrl} className="w-full h-full object-cover" alt="Hero Preview" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[8px] text-white/20">NO_MEDIA</div>
-                        )}
-                      </div>
-                      <label className="px-8 py-4 bg-white text-black text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-neutral-200 transition-all">
-                        {isUploading['hero'] ? 'UPLOADING...' : 'CHANGE_MEDIA'}
-                        <input type="file" accept="image/*,video/*" className="hidden" onChange={(e) => handleMediaUpload(e, (url) => onUpdateContent({...content, heroMediaUrl: url}), 'hero')} />
-                      </label>
+                    <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Hero Sub-Text (Manifesto Short)</label>
+                    <textarea 
+                      className="w-full bg-white/5 border border-white/10 p-5 text-sm h-32 focus:border-white/40 transition-all resize-none"
+                      value={content.heroSubTitle}
+                      onChange={(e) => onUpdateContent({ ...content, heroSubTitle: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                {/* Manifesto Settings */}
+                <div className="space-y-10 border-b border-white/5 pb-12">
+                  <div className="artifact-label text-red-600/60 font-black tracking-widest">Section: MANIFESTO_MODULE</div>
+                  <div className="space-y-4">
+                    <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Archive Statement Title</label>
+                    <input 
+                      className="w-full bg-white/5 border border-white/10 p-5 text-sm focus:border-white/40 transition-all"
+                      value={content.archiveStatementTitle}
+                      onChange={(e) => onUpdateContent({ ...content, archiveStatementTitle: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div className="space-y-4">
+                      <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Philosophy Primary (Bold)</label>
+                      <textarea 
+                        className="w-full bg-white/5 border border-white/10 p-5 text-sm h-48 focus:border-white/40 transition-all resize-none"
+                        value={content.archiveStatementText1}
+                        onChange={(e) => onUpdateContent({ ...content, archiveStatementText1: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-4">
+                      <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Philosophy Secondary (Support)</label>
+                      <textarea 
+                        className="w-full bg-white/5 border border-white/10 p-5 text-sm h-48 focus:border-white/40 transition-all resize-none"
+                        value={content.archiveStatementText2}
+                        onChange={(e) => onUpdateContent({ ...content, archiveStatementText2: e.target.value })}
+                      />
                     </div>
                   </div>
                 </div>
-                <div className="space-y-4">
-                  <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Archive Thesis Statement</label>
-                  <textarea 
-                    className="w-full bg-white/5 border border-white/10 p-5 text-sm h-32 focus:border-white/40 transition-all resize-none"
-                    value={content.heroSubTitle}
-                    onChange={(e) => onUpdateContent({ ...content, heroSubTitle: e.target.value })}
-                  />
+
+                {/* Footer Settings */}
+                <div className="space-y-10 border-b border-white/5 pb-12">
+                  <div className="artifact-label text-red-600/60 font-black tracking-widest">Section: FOOTER_MODULE</div>
+                  <div className="space-y-4">
+                    <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Footer Tagline</label>
+                    <input 
+                      className="w-full bg-white/5 border border-white/10 p-5 text-sm focus:border-white/40 transition-all"
+                      value={content.footerTagline}
+                      onChange={(e) => onUpdateContent({ ...content, footerTagline: e.target.value })}
+                    />
+                  </div>
                 </div>
+
                 <button 
                   onClick={handleSaveGlobalContent}
                   disabled={isSaving}
                   className="bg-red-600 text-white px-12 py-5 text-[10px] font-black uppercase tracking-[0.5em] hover:bg-red-500 shadow-xl disabled:opacity-50"
                 >
-                  {isSaving ? 'SYNCING...' : 'SAVE_METADATA'}
+                  {isSaving ? 'SYNCING...' : 'SAVE_ALL_METADATA'}
                 </button>
               </div>
             ) : activeTab === 'pieces' ? (
@@ -382,7 +431,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                   disabled={isSaving}
                   className="bg-red-600 text-white px-12 py-5 text-[10px] font-black uppercase tracking-[0.5em] hover:bg-red-500 shadow-xl disabled:opacity-50"
                 >
-                  {isSaving ? 'SYNCING...' : 'PUSH_FIT_UPDATES'}
+                  {isSaving ? 'SYNCING...' : 'PUSH_FIT_STUDIES'}
                 </button>
               </div>
             ) : (
