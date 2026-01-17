@@ -29,39 +29,39 @@ const Shop: React.FC<ShopProps> = ({ pieces, onAddToCart }) => {
   }, [pieces, activeCategory, activeStrain]);
 
   return (
-    <div className="min-h-screen bg-[#080808] pt-32 pb-24">
-      <header className="px-6 md:px-12 mb-16 space-y-8">
+    <div className="min-h-screen bg-[#050705] pt-32 pb-24">
+      <header className="px-6 md:px-12 mb-16 space-y-8 max-w-7xl mx-auto">
         <div className="space-y-4">
-          <div className="artifact-label text-emerald-500 font-black tracking-[0.5em]">LIVE_INVENTORY</div>
+          <div className="artifact-label text-[#d4af37] font-black tracking-[0.5em]">MENU_RESERVATION_LIVE</div>
           <h1 className="text-5xl md:text-8xl serif-display italic font-light tracking-tight text-white">
-            The Menu
+            Current Rotation
           </h1>
         </div>
 
         {/* Simplified Filters */}
-        <div className="flex flex-col gap-6 pt-8 border-t border-white/5">
-          <div className="space-y-3">
-             <div className="text-[9px] text-white/20 uppercase tracking-widest font-black">Categories</div>
+        <div className="flex flex-col gap-8 pt-12 border-t border-white/5">
+          <div className="space-y-4">
+             <div className="text-[9px] text-white/20 uppercase tracking-[0.4em] font-black">CATEGORIES</div>
              <div className="flex flex-wrap gap-2">
                 {categories.map(c => (
                   <button 
                     key={c}
                     onClick={() => setActiveCategory(c)}
-                    className={`px-6 py-2 text-[10px] font-black uppercase tracking-widest border transition-all ${activeCategory === c ? 'bg-white text-black border-white' : 'bg-transparent text-white/40 border-white/10 hover:border-white/30'}`}
+                    className={`px-8 py-3 text-[10px] font-black uppercase tracking-widest border transition-all rounded-full ${activeCategory === c ? 'bg-white text-black border-white' : 'bg-transparent text-white/40 border-white/10 hover:border-white/30'}`}
                   >
                     {c}
                   </button>
                 ))}
              </div>
           </div>
-          <div className="space-y-3">
-             <div className="text-[9px] text-white/20 uppercase tracking-widest font-black">Strain Type</div>
+          <div className="space-y-4">
+             <div className="text-[9px] text-white/20 uppercase tracking-[0.4em] font-black">STRIAN_GENETICS</div>
              <div className="flex flex-wrap gap-2">
                 {strains.map(s => (
                   <button 
                     key={s}
                     onClick={() => setActiveStrain(s)}
-                    className={`px-6 py-2 text-[10px] font-black uppercase tracking-widest border transition-all ${activeStrain === s ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-transparent text-white/40 border-white/10 hover:border-white/30'}`}
+                    className={`px-8 py-3 text-[10px] font-black uppercase tracking-widest border transition-all rounded-full ${activeStrain === s ? 'bg-[#10b981]/20 text-[#10b981] border-[#10b981]' : 'bg-transparent text-white/40 border-white/10 hover:border-white/30'}`}
                   >
                     {s}
                   </button>
@@ -71,16 +71,16 @@ const Shop: React.FC<ShopProps> = ({ pieces, onAddToCart }) => {
         </div>
       </header>
 
-      <section className="px-6 md:px-12">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      <section className="px-6 md:px-12 max-w-7xl mx-auto">
+        <div className="archive-grid">
           {filtered.map((product, idx) => (
             <FadeInSection key={product.id} delay={idx % 4 * 50}>
               <ProductCard product={product} onAddToCart={onAddToCart} />
             </FadeInSection>
           ))}
           {filtered.length === 0 && (
-            <div className="col-span-full py-48 text-center border border-dashed border-white/10">
-              <div className="artifact-label text-white/20 tracking-[0.8em]">AWAITING RESTOCK // NO_RESULTS</div>
+            <div className="col-span-full py-48 text-center border border-dashed border-white/10 rounded-sm">
+              <div className="artifact-label text-white/20 tracking-[0.8em]">AWAITING LAB RESULTS // NO_INVENTORY_MATCH</div>
             </div>
           )}
         </div>

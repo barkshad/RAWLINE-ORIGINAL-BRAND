@@ -34,17 +34,17 @@ const PieceDetail: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#080808] flex items-center justify-center">
-        <div className="w-6 h-6 border border-white/20 border-t-white rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#050705] flex items-center justify-center">
+        <div className="w-6 h-6 border border-white/20 border-t-[#d4af37] rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!piece) {
     return (
-      <div className="min-h-screen bg-[#080808] flex flex-col items-center justify-center p-8 text-center space-y-8">
-        <div className="artifact-label text-red-600">RECORD_NOT_FOUND</div>
-        <Link to="/" className="artifact-label px-10 py-4 border border-white/10 hover:bg-white hover:text-black transition-all">RETURN TO COLLECTION</Link>
+      <div className="min-h-screen bg-[#050705] flex flex-col items-center justify-center p-8 text-center space-y-8">
+        <div className="artifact-label text-red-600">PRODUCT_NOT_FOUND</div>
+        <Link to="/shop" className="artifact-label px-10 py-4 border border-white/10 hover:bg-white hover:text-black transition-all">RETURN TO MENU</Link>
       </div>
     );
   }
@@ -52,21 +52,21 @@ const PieceDetail: React.FC = () => {
   const allImages = [piece.imageUrl, ...(piece.additionalImages || [])];
 
   return (
-    <div className="min-h-screen bg-[#080808] text-white selection:bg-white selection:text-black pb-48">
-      {/* Dossier Header */}
-      <nav className="fixed top-0 left-0 w-full z-50 p-8 md:p-12 flex justify-between items-center bg-gradient-to-b from-[#080808] to-transparent pointer-events-none">
-        <Link to="/" className="text-2xl font-light tracking-[0.2em] uppercase pointer-events-auto hover:opacity-50 transition-all">RAWLINE</Link>
-        <Link to="/" className="artifact-label pointer-events-auto hover:opacity-50 transition-all flex items-center gap-4">
-          CLOSE <span>×</span>
+    <div className="min-h-screen bg-[#050705] text-[#f5f5f0] selection:bg-[#d4af37] selection:text-black pb-48">
+      {/* Product Header */}
+      <nav className="fixed top-0 left-0 w-full z-50 p-6 md:p-12 flex justify-between items-center bg-gradient-to-b from-black to-transparent pointer-events-none">
+        <Link to="/" className="text-xl font-light tracking-[0.2em] uppercase pointer-events-auto hover:opacity-50 transition-all">RAWLINE</Link>
+        <Link to="/shop" className="artifact-label pointer-events-auto hover:opacity-50 transition-all flex items-center gap-4">
+          BACK TO MENU <span>×</span>
         </Link>
       </nav>
 
-      <div className="pt-40 md:pt-64 px-8 md:px-[10%] lg:px-[15%]">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 lg:gap-40 items-start">
+      <div className="pt-32 md:pt-48 px-6 md:px-[8%] lg:px-[12%]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-32 items-start">
           
           {/* Visual Column */}
-          <div className="space-y-12">
-            <FadeInSection className="relative aspect-[3/4] overflow-hidden bg-[#111] shadow-2xl">
+          <div className="space-y-8">
+            <FadeInSection className="relative aspect-square overflow-hidden bg-[#111] shadow-2xl rounded-sm">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={mainImage}
@@ -79,7 +79,7 @@ const PieceDetail: React.FC = () => {
                   {isVideo(mainImage) ? (
                     <video 
                       src={mainImage} 
-                      className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
+                      className="w-full h-full object-cover"
                       controls
                       autoPlay
                       muted
@@ -90,74 +90,73 @@ const PieceDetail: React.FC = () => {
                     <img 
                       src={getOptimizedUrl(mainImage, 1800)} 
                       alt={piece.code} 
-                      className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
+                      className="w-full h-full object-cover"
                     />
                   )}
                 </motion.div>
               </AnimatePresence>
             </FadeInSection>
 
-            <div className="grid grid-cols-6 gap-3">
+            <div className="grid grid-cols-5 gap-3">
               {allImages.map((img, i) => (
                 <button 
                   key={i} 
                   onClick={() => setMainImage(img)}
-                  className={`aspect-square transition-all duration-500 overflow-hidden border ${mainImage === img ? 'border-white' : 'border-white/5 opacity-40 hover:opacity-100'}`}
+                  className={`aspect-square transition-all duration-500 overflow-hidden border rounded-sm ${mainImage === img ? 'border-[#d4af37]' : 'border-white/5 opacity-40 hover:opacity-100'}`}
                 >
-                  {isVideo(img) ? (
-                    <video src={img} className="w-full h-full object-cover grayscale" muted />
-                  ) : (
-                    <img src={getOptimizedUrl(img, 400)} className="w-full h-full object-cover grayscale" />
-                  )}
+                  <img src={getOptimizedUrl(img, 400)} className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Technical Info Column */}
-          <div className="space-y-24">
-            <FadeInSection className="space-y-12">
+          {/* Product Data Column */}
+          <div className="space-y-16">
+            <FadeInSection className="space-y-10">
               <div className="space-y-4">
-                <div className="artifact-label text-white/30 tracking-[0.5em]">REF NO: {piece.id.substring(0,8).toUpperCase()}</div>
-                <h1 className="text-7xl md:text-9xl serif-display italic font-light tracking-tight leading-none">
+                <div className="artifact-label text-emerald-500 tracking-[0.5em] font-black">CERTIFIED_FLOWER // {piece.era}</div>
+                <h1 className="text-6xl md:text-8xl serif-display italic font-light tracking-tight leading-none text-white">
                   {piece.code}
                 </h1>
                 <div className="flex flex-wrap gap-4 pt-4">
-                  <span className="artifact-label text-[9px] px-4 py-2 bg-white/5 border border-white/10 text-white/60 uppercase">
-                    ERA: {piece.era}
+                  <span className="artifact-label text-[9px] px-6 py-2 bg-white/5 border border-white/10 text-white/60 uppercase font-black">
+                    THC: {piece.material || '0'}%
                   </span>
-                  <span className="artifact-label text-[9px] px-4 py-2 border border-red-600/30 text-red-600 uppercase">
-                    STATUS: {piece.status}
+                  <span className="artifact-label text-[9px] px-6 py-2 bg-[#d4af37]/10 border border-[#d4af37]/30 text-[#d4af37] uppercase font-black">
+                    {piece.status}
                   </span>
                 </div>
               </div>
 
-              <div className="pt-16 border-t border-white/5 grid grid-cols-2 gap-y-12 gap-x-8">
+              <div className="pt-12 border-t border-white/5 grid grid-cols-2 gap-y-10 gap-x-8">
                 {[
-                  { label: "Fabrication", value: piece.material || 'Archive Blend' },
-                  { label: "Provenance", value: piece.era },
-                  { label: "Classification", value: piece.classification || 'Master Copy' },
-                  { label: "Condition", value: piece.condition || 'Archival' }
+                  { label: "Strain Class", value: piece.era },
+                  { label: "Category", value: piece.classification || 'Select' },
+                  { label: "Price", value: `$${piece.price || 50}.00` },
+                  { label: "CBD Content", value: `${piece.condition || '0'}%` }
                 ].map((item, i) => (
-                  <div key={i} className="space-y-2">
-                    <span className="artifact-label text-[8px] text-white/20 block">{item.label}</span>
-                    <span className="text-xl serif-display italic font-light text-white/80">{item.value}</span>
+                  <div key={i} className="space-y-1">
+                    <span className="artifact-label text-[8px] text-white/20 block font-black">{item.label}</span>
+                    <span className="text-2xl serif-display italic font-light text-white/80">{item.value}</span>
                   </div>
                 ))}
               </div>
 
-              <div className="space-y-8 pt-16 border-t border-white/5">
-                <span className="artifact-label text-[8px] text-red-600/40 block">TECHNICAL SUMMARY</span>
-                <p className="text-2xl md:text-3xl serif-display italic font-light text-white/60 leading-snug">
-                  {piece.description || "Archival record documenting the morphological significance of this artifact. Curated for its industrial hardware and textile integrity within the permanent collection."}
+              <div className="space-y-6 pt-12 border-t border-white/5">
+                <span className="artifact-label text-[8px] text-[#d4af37] block font-black">SENSORY_PROFILE & ANALYSIS</span>
+                <p className="text-xl md:text-2xl serif-display italic font-light text-white/50 leading-relaxed">
+                  {piece.description || "A curated high-terpene strain documented for its complex aroma and balanced physiological effects. Lab-verified and compliant with state retail standards."}
                 </p>
               </div>
 
-              <div className="pt-16 flex flex-col gap-4">
-                <button onClick={() => window.print()} className="artifact-label w-full py-6 border border-white/10 hover:bg-white hover:text-black transition-all font-black">
-                  GENERATE PDF RECORD
+              <div className="pt-12 space-y-4">
+                <button className="bg-[#d4af37] text-black w-full py-6 text-[11px] font-black uppercase tracking-[0.4em] hover:bg-white transition-all shadow-xl">
+                  ADD TO CART — ${piece.price || 50}
                 </button>
-                <div className="artifact-label text-[7px] text-center text-white/10 pt-4">AUTHENTICATED BY RAWLINE FOUNDRY ARCHIVE</div>
+                <div className="flex items-center justify-center gap-3 py-4 text-[9px] text-white/20 uppercase tracking-widest font-black italic">
+                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                   Available for Same Day Delivery
+                </div>
               </div>
             </FadeInSection>
           </div>
