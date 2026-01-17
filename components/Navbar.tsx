@@ -12,87 +12,90 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ scrolled, syncError, cartCount }) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  const isHome = location.pathname === '/';
 
   const menuItems = [
-    { label: 'SHOP ALL', path: '/shop' },
-    { label: 'FLOWER', path: '/shop?cat=Flower' },
-    { label: 'EDIBLES', path: '/shop?cat=Edibles' },
-    { label: 'DEALS', path: '/deals' },
-    { label: 'LEARN', path: '/philosophy' }
+    { label: 'Shop All', path: '/shop' },
+    { label: 'Flower', path: '/shop?cat=Flower' },
+    { label: 'Pre-Rolls', path: '/shop?cat=Pre-Rolls' },
+    { label: 'Vapes', path: '/shop?cat=Vapes' },
+    { label: 'Edibles', path: '/shop?cat=Edibles' },
+    { label: 'Learn', path: '/philosophy' }
   ];
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 w-full z-[100] px-6 md:px-12 flex justify-between items-center transition-all duration-500 ${scrolled || !isHome || isOpen ? 'bg-black/95 backdrop-blur-md py-4 border-b border-white/5' : 'bg-transparent py-8'}`}>
-        <div className="flex items-center gap-8">
-          <Link to="/" onClick={() => setIsOpen(false)}>
-            <div className="text-xl md:text-2xl font-light tracking-[0.2em] uppercase">RAWLINE</div>
-          </Link>
-          
-          <div className="hidden lg:flex gap-8 text-[9px] font-bold uppercase tracking-[0.2em] text-white/40">
-            {menuItems.map((item) => (
-              <Link 
-                key={item.label}
-                to={item.path}
-                className={`hover:text-white transition-all ${location.pathname + location.search === item.path ? 'text-white' : ''}`}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
+      <nav className="sticky top-0 left-0 w-full z-[100] bg-white border-b border-neutral-200">
+        {/* Top Bar */}
+        <div className="bg-neutral-900 text-white text-[10px] py-2 px-6 text-center font-bold tracking-widest uppercase">
+          Free Delivery on orders over $150 | Legal Age 19+
         </div>
-        
-        <div className="flex items-center gap-6">
-          <div className="hidden sm:flex items-center gap-3 text-[9px] font-mono text-white/20 uppercase tracking-widest">
-            <div className={`w-1.5 h-1.5 rounded-full ${syncError ? 'bg-red-500' : 'bg-emerald-500'}`} />
-            <span>{syncError ? 'OFFLINE' : 'LOCAL STORE OPEN'}</span>
+
+        {/* Main Nav */}
+        <div className="px-6 md:px-12 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-12">
+            <Link to="/" onClick={() => setIsOpen(false)}>
+              <div className="text-2xl font-bold tracking-tight uppercase display-font text-neutral-900">RAWLINE</div>
+            </Link>
+            
+            <div className="hidden lg:flex gap-8 text-sm font-medium text-neutral-600">
+              {menuItems.map((item) => (
+                <Link 
+                  key={item.label}
+                  to={item.path}
+                  className={`hover:text-neutral-900 transition-colors uppercase tracking-wide text-xs font-bold ${location.pathname + location.search === item.path ? 'text-neutral-900' : ''}`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
           </div>
+          
+          <div className="flex items-center gap-6">
+            <Link to="/cart" className="relative group flex items-center gap-2">
+              <span className="text-xs font-bold uppercase hidden md:block">Cart</span>
+              <div className="relative">
+                <svg className="w-5 h-5 text-neutral-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-[#b91c1c] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </div>
+            </Link>
 
-          <Link to="/cart" className="relative group">
-            <svg className="w-5 h-5 text-white/60 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-            </svg>
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-emerald-600 text-white text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                {cartCount}
-              </span>
-            )}
-          </Link>
-
-          <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden flex flex-col gap-1.5 group">
-            <motion.div animate={isOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }} className="w-6 h-[1.5px] bg-white" />
-            <motion.div animate={isOpen ? { opacity: 0 } : { opacity: 1 }} className="w-6 h-[1.5px] bg-white/60" />
-            <motion.div animate={isOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }} className="w-6 h-[1.5px] bg-white" />
-          </button>
+            <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden p-2">
+              <div className="w-6 h-0.5 bg-neutral-900 mb-1.5"></div>
+              <div className="w-6 h-0.5 bg-neutral-900 mb-1.5"></div>
+              <div className="w-6 h-0.5 bg-neutral-900"></div>
+            </button>
+          </div>
         </div>
       </nav>
 
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-[90] bg-black pt-24 px-8"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="fixed top-[105px] left-0 w-full bg-white border-b border-neutral-200 overflow-hidden z-[90]"
           >
-            <div className="flex flex-col gap-8">
-              {menuItems.map((item, idx) => (
-                <motion.div 
+            <div className="p-6 flex flex-col gap-4">
+              {menuItems.map((item) => (
+                <Link 
                   key={item.label}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.1 }}
+                  to={item.path} 
+                  onClick={() => setIsOpen(false)} 
+                  className="text-lg font-bold uppercase tracking-wide text-neutral-800 hover:text-[#b91c1c]"
                 >
-                  <Link to={item.path} onClick={() => setIsOpen(false)} className="text-4xl font-light tracking-tight text-white/80 hover:text-white serif-display italic">
-                    {item.label}
-                  </Link>
-                </motion.div>
+                  {item.label}
+                </Link>
               ))}
-              <div className="pt-12 border-t border-white/5 space-y-4">
-                 <div className="text-[9px] text-white/20 uppercase tracking-widest font-black">Quick Links</div>
-                 <Link to="/philosophy" onClick={() => setIsOpen(false)} className="block text-white/40 uppercase tracking-widest text-xs">Knowledge Base</Link>
-                 <Link to="/deals" onClick={() => setIsOpen(false)} className="block text-emerald-500 uppercase tracking-widest text-xs">Today's Deals</Link>
+              <div className="border-t border-neutral-100 pt-4 mt-2">
+                <Link to="/deals" onClick={() => setIsOpen(false)} className="block text-[#b91c1c] font-bold uppercase text-sm">Sale Items</Link>
               </div>
             </div>
           </motion.div>

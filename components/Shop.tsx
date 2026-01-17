@@ -17,8 +17,8 @@ const Shop: React.FC<ShopProps> = ({ pieces, onAddToCart }) => {
   const [activeCategory, setActiveCategory] = useState<string>(catParam || 'All');
   const [activeStrain, setActiveStrain] = useState<string>('All');
 
-  const categories = ['All', 'Flower', 'Pre-Rolls', 'Edibles', 'Vapes', 'Concentrates'];
-  const strains = ['All', 'Indica', 'Sativa', 'Hybrid'];
+  const categories = ['All', 'Flower', 'Pre-Rolls', 'Vapes', 'Edibles', 'Concentrates', 'Topicals', 'Seeds'];
+  const strains = ['All', 'Indica', 'Sativa', 'Hybrid', 'High CBD'];
 
   const filtered = useMemo(() => {
     return pieces.filter(p => {
@@ -29,62 +29,68 @@ const Shop: React.FC<ShopProps> = ({ pieces, onAddToCart }) => {
   }, [pieces, activeCategory, activeStrain]);
 
   return (
-    <div className="min-h-screen bg-[#050705] pt-32 pb-24">
-      <header className="px-6 md:px-12 mb-16 space-y-8 max-w-7xl mx-auto">
-        <div className="space-y-4">
-          <div className="artifact-label text-[#d4af37] font-black tracking-[0.5em]">MENU_RESERVATION_LIVE</div>
-          <h1 className="text-5xl md:text-8xl serif-display italic font-light tracking-tight text-white">
-            Current Rotation
+    <div className="min-h-screen bg-white pb-24">
+      <div className="bg-neutral-100 py-12 px-6 md:px-12 mb-12 border-b border-neutral-200">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-4xl md:text-5xl font-bold display-font text-neutral-900 mb-4">
+            {activeCategory === 'All' ? 'All Collections' : activeCategory}
           </h1>
+          <p className="text-neutral-500 max-w-2xl">
+            Browse our curated selection of legal cannabis products. Filter by category or plant type to find exactly what you need.
+          </p>
         </div>
+      </div>
 
-        {/* Simplified Filters */}
-        <div className="flex flex-col gap-8 pt-12 border-t border-white/5">
-          <div className="space-y-4">
-             <div className="text-[9px] text-white/20 uppercase tracking-[0.4em] font-black">CATEGORIES</div>
-             <div className="flex flex-wrap gap-2">
-                {categories.map(c => (
-                  <button 
-                    key={c}
-                    onClick={() => setActiveCategory(c)}
-                    className={`px-8 py-3 text-[10px] font-black uppercase tracking-widest border transition-all rounded-full ${activeCategory === c ? 'bg-white text-black border-white' : 'bg-transparent text-white/40 border-white/10 hover:border-white/30'}`}
-                  >
-                    {c}
-                  </button>
-                ))}
-             </div>
+      <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row gap-12">
+        {/* Sidebar Filters */}
+        <aside className="w-full md:w-64 flex-shrink-0 space-y-8">
+          <div>
+            <h3 className="font-bold text-sm uppercase tracking-widest mb-4 text-neutral-900 border-b border-neutral-200 pb-2">Collections</h3>
+            <div className="space-y-2">
+              {categories.map(c => (
+                <button 
+                  key={c}
+                  onClick={() => setActiveCategory(c)}
+                  className={`block w-full text-left text-sm ${activeCategory === c ? 'font-bold text-[#b91c1c]' : 'text-neutral-600 hover:text-neutral-900'}`}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="space-y-4">
-             <div className="text-[9px] text-white/20 uppercase tracking-[0.4em] font-black">STRIAN_GENETICS</div>
-             <div className="flex flex-wrap gap-2">
-                {strains.map(s => (
-                  <button 
-                    key={s}
-                    onClick={() => setActiveStrain(s)}
-                    className={`px-8 py-3 text-[10px] font-black uppercase tracking-widest border transition-all rounded-full ${activeStrain === s ? 'bg-[#10b981]/20 text-[#10b981] border-[#10b981]' : 'bg-transparent text-white/40 border-white/10 hover:border-white/30'}`}
-                  >
-                    {s}
-                  </button>
-                ))}
-             </div>
+          <div>
+            <h3 className="font-bold text-sm uppercase tracking-widest mb-4 text-neutral-900 border-b border-neutral-200 pb-2">Plant Type</h3>
+            <div className="space-y-2">
+              {strains.map(s => (
+                <button 
+                  key={s}
+                  onClick={() => setActiveStrain(s)}
+                  className={`block w-full text-left text-sm ${activeStrain === s ? 'font-bold text-[#b91c1c]' : 'text-neutral-600 hover:text-neutral-900'}`}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      </header>
+        </aside>
 
-      <section className="px-6 md:px-12 max-w-7xl mx-auto">
-        <div className="archive-grid">
-          {filtered.map((product, idx) => (
-            <FadeInSection key={product.id} delay={idx % 4 * 50}>
-              <ProductCard product={product} onAddToCart={onAddToCart} />
-            </FadeInSection>
-          ))}
+        {/* Product Grid */}
+        <div className="flex-1">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
+            {filtered.map((product, idx) => (
+              <FadeInSection key={product.id} delay={idx % 4 * 50}>
+                <ProductCard product={product} onAddToCart={onAddToCart} />
+              </FadeInSection>
+            ))}
+          </div>
           {filtered.length === 0 && (
-            <div className="col-span-full py-48 text-center border border-dashed border-white/10 rounded-sm">
-              <div className="artifact-label text-white/20 tracking-[0.8em]">AWAITING LAB RESULTS // NO_INVENTORY_MATCH</div>
+            <div className="py-24 text-center border rounded-sm bg-neutral-50">
+              <p className="text-neutral-400 font-bold uppercase tracking-widest text-sm">No products found matching your criteria</p>
+              <button onClick={() => { setActiveCategory('All'); setActiveStrain('All'); }} className="mt-4 text-[#b91c1c] text-sm font-bold underline">Clear Filters</button>
             </div>
           )}
         </div>
-      </section>
+      </div>
     </div>
   );
 };
