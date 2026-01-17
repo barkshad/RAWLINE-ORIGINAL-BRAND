@@ -1,15 +1,20 @@
 
 export interface Piece {
   id: string;
-  code: string;
-  era: string;
-  status: 'ORIGINAL' | 'STUDY' | 'ALTERED' | 'RELEASED' | 'ARCHIVED';
+  code: string; // Product Name
+  era: 'Indica' | 'Sativa' | 'Hybrid' | 'High CBD'; // Strain Type
+  status: 'IN STOCK' | 'OUT OF STOCK' | 'LIMITED' | 'NEW'; 
   imageUrl: string;
   additionalImages?: string[];
   description?: string;
-  material?: string;
-  condition?: string;
-  classification?: string;
+  material?: string; // THC %
+  condition?: string; // CBD %
+  classification?: 'Flower' | 'Pre-Rolls' | 'Edibles' | 'Concentrates' | 'Vapes'; // Category
+  price?: number;
+}
+
+export interface CartItem extends Piece {
+  quantity: number;
 }
 
 export interface FitCheck {
@@ -23,7 +28,7 @@ export interface FitCheck {
 export interface SiteContent {
   heroTitle: string;
   heroSubTitle: string;
-  heroMediaUrl?: string; // URL for video or image background
+  heroMediaUrl?: string;
   archiveStatementTitle: string;
   archiveStatementText1: string;
   archiveStatementText2: string;

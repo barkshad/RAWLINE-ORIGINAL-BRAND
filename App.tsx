@@ -1,217 +1,131 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { HashRouter, Routes, Route, Link } from 'react-router-dom';
-import { motion, useScroll, useSpring, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Lenis from 'lenis';
 import FadeInSection from './components/FadeInSection';
 import PieceDetail from './components/PieceDetail';
 import Philosophy from './components/Philosophy';
 import Fits from './components/Fits';
-import Archive from './components/Archive';
+import Shop from './components/Shop'; // Renamed from Archive
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import PieceCard from './components/PieceCard';
 import ScrollToTop from './components/ScrollToTop';
-import { Piece, SiteContent } from './types';
+import AgeGate from './components/AgeGate';
+import { Piece, SiteContent, CartItem } from './types';
 import { getPieces, getSiteContent } from './services/firebaseService';
 import { isVideoUrl } from './utils';
 
 const DEFAULT_CONTENT: SiteContent = {
-  heroTitle: "RAWLINE: THE MOTION ARCHIVE",
-  heroSubTitle: "A curated look at the industrial shapes and material heritage that actually paved the way. Real history for the streets.",
+  heroTitle: "PREMIUM CANNABIS. RAW AUTHENTICITY.",
+  heroSubTitle: "Legal. Lab-tested. Delivered fast. We curate the strongest silhouettes in the industry.",
   heroMediaUrl: "https://videos.pexels.com/video-files/3248357/3248357-hd_1920_1080_25fps.mp4",
   archiveStatementTitle: "THE CODE",
-  archiveStatementText1: "RAWLINE is where the silhouette meets the real world. We only pull pieces with that heavy-duty build and actual history. If the construction ain't holding up under pressure, it ain't making the archive.",
-  archiveStatementText2: "This ain't for the spectators. It's for the ones in the paint. Authentic artifacts, authenticated by the block. You feel me.",
-  footerTagline: "Built from the pavement up. Still the signal.",
+  archiveStatementText1: "RAWLINE is where construction integrity meets the culture. We only stock products with heavy-duty testing and real history. If the quality ain't hitting, it ain't RAWLINE.",
+  archiveStatementText2: "Built from the block, authenticated by the experts. No weak links in our rotation. You feel me.",
+  footerTagline: "Elevated standard. Established outside.",
   fitChecks: []
 };
 
-const HomePage: React.FC<{ content: SiteContent; pieces: Piece[] }> = ({ content, pieces }) => {
+const HomePage: React.FC<{ content: SiteContent; pieces: Piece[]; onAddToCart: (p: Piece) => void }> = ({ content, pieces, onAddToCart }) => {
   return (
-    <div className="min-h-screen bg-[#080808] text-white font-sans">
-      {/* Hero with Media Background */}
-      <header className="relative h-screen flex flex-col justify-center items-center text-center px-6 overflow-hidden bg-black">
-        <div className="absolute inset-0 z-0 opacity-80">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={content.heroMediaUrl}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1.2 }}
-              className="w-full h-full"
-            >
-              {isVideoUrl(content.heroMediaUrl) ? (
-                <video 
-                  key={content.heroMediaUrl}
-                  autoPlay 
-                  loop 
-                  muted 
-                  playsInline 
-                  src={content.heroMediaUrl}
-                  className="w-full h-full object-cover" 
-                />
-              ) : content.heroMediaUrl ? (
-                <img 
-                  src={content.heroMediaUrl} 
-                  className="w-full h-full object-cover" 
-                  alt="Hero Background" 
-                />
-              ) : null}
-            </motion.div>
-          </AnimatePresence>
-          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-black" />
+    <div className="min-h-screen bg-[#080808] text-white">
+      {/* Hero */}
+      <header className="relative h-[90vh] flex flex-col justify-center items-center text-center px-6 overflow-hidden bg-black">
+        <div className="absolute inset-0 z-0 opacity-50 grayscale-[0.5]">
+          {isVideoUrl(content.heroMediaUrl) ? (
+            <video autoPlay loop muted playsInline src={content.heroMediaUrl} className="w-full h-full object-cover" />
+          ) : content.heroMediaUrl ? (
+            <img src={content.heroMediaUrl} className="w-full h-full object-cover" alt="Hero" />
+          ) : null}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black" />
         </div>
 
-        <FadeInSection className="max-w-5xl z-10 space-y-12">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="artifact-label text-white/40 tracking-[0.4em]"
-          >
-            REAL_WORLD_AUTHENTICATED // 2024
-          </motion.div>
-          <motion.h1 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-            className="text-[clamp(3rem,10vw,8rem)] leading-[0.9] serif-display font-light italic tracking-tight text-white drop-shadow-2xl"
-          >
+        <FadeInSection className="max-w-4xl z-10 space-y-10">
+          <div className="artifact-label text-emerald-500 font-black tracking-[0.5em] text-[8px]">
+            LICENSED DISPENSARY // NYC_STRL_08
+          </div>
+          <h1 className="text-[clamp(2.5rem,8vw,6rem)] leading-[0.9] serif-display font-light italic tracking-tight text-white">
             {content.heroTitle}
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-            className="text-white/80 text-lg md:text-xl max-w-2xl mx-auto font-light tracking-wide italic serif-display whitespace-pre-line"
-          >
+          </h1>
+          <p className="text-white/60 text-lg max-w-xl mx-auto font-light tracking-wide italic serif-display">
             {content.heroSubTitle}
-          </motion.p>
-          <motion.div
-             initial={{ opacity: 0 }}
-             animate={{ opacity: 1 }}
-             transition={{ delay: 1.2 }}
-          >
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
              <Link 
-               to="/archive"
-               className="inline-block mt-8 text-[10px] uppercase tracking-[0.4em] font-black border border-white/20 px-8 py-4 hover:bg-white hover:text-black transition-all"
+               to="/shop"
+               className="bg-white text-black px-12 py-5 text-[10px] font-black uppercase tracking-[0.4em] hover:bg-neutral-200 transition-all"
              >
-               CHECK THE STACK
+               SHOP FLOWER
              </Link>
-          </motion.div>
+             <Link 
+               to="/shop?cat=Edibles"
+               className="border border-white/20 text-white px-12 py-5 text-[10px] font-black uppercase tracking-[0.4em] hover:bg-white hover:text-black transition-all"
+             >
+               BROWSE EDIBLES
+             </Link>
+          </div>
         </FadeInSection>
-        
-        <motion.div 
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 3, repeat: Infinity }}
-          className="absolute bottom-16 left-1/2 -translate-x-1/2 z-10"
-        >
-          <div className="w-[1px] h-12 bg-white/40" />
-        </motion.div>
       </header>
       
-      {/* Introduction Section */}
-      <section className="py-48 px-8 md:px-24 bg-[#080808]">
-        <div className="max-w-4xl mx-auto">
-          <FadeInSection className="space-y-12">
-            <div className="artifact-label text-red-600 font-black">MISSION_CRITICAL</div>
-            <h2 className="text-4xl md:text-7xl serif-display italic font-light tracking-tighter leading-none">
-              The link between the look and the life.
-            </h2>
-            <p className="text-xl md:text-2xl font-light text-white/50 italic serif-display leading-relaxed">
-              RAWLINE is where the silhouette meets the real world. We only pull pieces with that heavy-duty build and actual history. If the construction ain't holding up under pressure, it ain't making the archive. No weak links allowed.
-            </p>
-          </FadeInSection>
+      {/* Quick Category Grid */}
+      <section className="py-24 px-6 md:px-12 grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: 'Flower', path: '/shop?cat=Flower', img: 'https://images.pexels.com/photos/7317926/pexels-photo-7317926.jpeg' },
+          { label: 'Pre-Rolls', path: '/shop?cat=Pre-Rolls', img: 'https://images.pexels.com/photos/10363220/pexels-photo-10363220.jpeg' },
+          { label: 'Edibles', path: '/shop?cat=Edibles', img: 'https://images.pexels.com/photos/332617/pexels-photo-332617.jpeg' },
+          { label: 'Vapes', path: '/shop?cat=Vapes', img: 'https://images.pexels.com/photos/1614942/pexels-photo-1614942.jpeg' }
+        ].map((cat) => (
+          <Link key={cat.label} to={cat.path} className="group relative aspect-square overflow-hidden border border-white/5">
+             <img src={cat.img} className="w-full h-full object-cover opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-110" />
+             <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-xl serif-display italic font-light tracking-widest uppercase group-hover:scale-110 transition-transform">{cat.label}</span>
+             </div>
+          </Link>
+        ))}
+      </section>
+
+      {/* Featured Drops */}
+      <section className="py-24 px-6 md:px-12 bg-[#0a0a0a]">
+        <div className="flex justify-between items-end mb-16 border-b border-white/5 pb-8">
+           <div className="space-y-2">
+              <h2 className="text-3xl md:text-5xl serif-display italic font-light">Fresh Selection</h2>
+              <p className="text-[10px] text-white/30 uppercase tracking-[0.3em] font-black">Latest Lab-Tested Artifacts</p>
+           </div>
+           <Link to="/shop" className="artifact-label text-emerald-500 hover:text-white transition-all underline decoration-emerald-500/30 underline-offset-8">VIEW ALL</Link>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+           {pieces.slice(0, 4).map((p) => (
+              <ProductCard key={p.id} product={p} onAddToCart={onAddToCart} />
+           ))}
         </div>
       </section>
 
-      {/* Featured Pieces */}
-      <section className="py-32 px-8 md:px-16">
-         <div className="flex justify-between items-end mb-16">
-            <h2 className="text-3xl md:text-5xl serif-display italic font-light">The New Pressure</h2>
-            <Link to="/archive" className="artifact-label text-white/40 hover:text-white transition-all underline decoration-red-600/50">FULL RE-UP</Link>
-         </div>
-         <div className="archive-grid">
-            {pieces.slice(0, 3).map((piece, idx) => (
-              <FadeInSection key={piece.id} delay={idx * 100}>
-                 <PieceCard piece={piece} />
-              </FadeInSection>
-            ))}
-         </div>
+      {/* Fast Motion Section */}
+      <section className="py-32 px-6 md:px-24 border-y border-white/5 text-center space-y-8">
+          <div className="artifact-label text-emerald-500">KNOWLEDGE_BASE</div>
+          <h2 className="text-4xl md:text-6xl serif-display italic font-light max-w-2xl mx-auto leading-tight">
+            "We don't just sell, we educate."
+          </h2>
+          <p className="text-white/40 max-w-lg mx-auto italic serif-display leading-relaxed">
+            New to the culture? Our guides simplify the science. From terpenes to strain history, we give you the signal, not the noise.
+          </p>
+          <Link to="/philosophy" className="inline-block py-4 px-10 border border-white/10 hover:bg-white hover:text-black uppercase text-[10px] tracking-widest font-black transition-all">
+             THE RAWLINE GUIDE
+          </Link>
       </section>
-
-      {/* Featured Motion */}
-      {content.fitChecks && content.fitChecks.length > 0 && (
-        <section className="py-32 px-8 md:px-16 bg-[#0a0a0a] border-y border-white/5">
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-24 items-center">
-              <div className="space-y-8">
-                 <div className="artifact-label text-red-600 font-black">IN_MOTION</div>
-                 <h2 className="text-4xl md:text-6xl serif-display italic font-light leading-none">
-                    "Garments move different when you're actually outside."
-                 </h2>
-                 <p className="text-white/40 font-light max-w-md italic serif-display">
-                   We don't do flat lays. We show how it looks in the wild. If the drape ain't right, it ain't RAWLINE. Pressure is applied on every silhouette.
-                 </p>
-                 <Link to="/fits" className="inline-block artifact-label border-b border-white/20 pb-1 hover:text-red-600 hover:border-red-600 transition-all">
-                    WATCH THE MOTION STUDIES
-                 </Link>
-              </div>
-              <div className="aspect-[9/16] md:aspect-video bg-black overflow-hidden relative group border border-white/5 shadow-2xl">
-                 {isVideoUrl(content.fitChecks[0].videoUrl) ? (
-                    <video 
-                      src={content.fitChecks[0].videoUrl} 
-                      className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700"
-                      muted
-                      loop
-                      autoPlay
-                      playsInline
-                    />
-                 ) : (
-                    <img 
-                      src={content.fitChecks[0].videoUrl} 
-                      className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700" 
-                      alt="Motion reference"
-                    />
-                 )}
-                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-all pointer-events-none" />
-              </div>
-           </div>
-        </section>
-      )}
     </div>
   );
 };
 
-const MainLayout: React.FC<{ 
-  children: React.ReactNode;
-  scrolled: boolean; 
-  syncError: string | null; 
-  content: SiteContent; 
-  pieces: Piece[]; 
-  loadData: () => void;
-  setContent: (c: SiteContent) => void;
-}> = ({ children, scrolled, syncError, content, pieces, loadData, setContent }) => {
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
-
-  return (
-    <div className="min-h-screen bg-[#080808] text-white selection:bg-white selection:text-black font-sans">
-      <motion.div className="fixed top-0 left-0 right-0 h-[1px] bg-white/20 z-[101] origin-[0%]" style={{ scaleX }} />
-      <Navbar scrolled={scrolled} syncError={syncError} />
-      
-      {children}
-
-      <Footer content={content} setContent={setContent} pieces={pieces} loadData={loadData} />
-    </div>
-  );
-};
+// Reusable ProductCard defined in local scope for App.tsx if needed or imported
+import ProductCard from './components/ProductCard';
 
 const App: React.FC = () => {
-  const [scrolled, setScrolled] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [content, setContent] = useState<SiteContent>(DEFAULT_CONTENT);
   const [pieces, setPieces] = useState<Piece[]>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [syncError, setSyncError] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
@@ -227,26 +141,23 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const lenis = new Lenis({ 
-      duration: 1.2, 
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
-      smoothWheel: true 
-    });
-    
-    function raf(time: number) { 
-      lenis.raf(time); 
-      requestAnimationFrame(raf); 
-    }
-    
+    const lenis = new Lenis({ duration: 1.2, smoothWheel: true });
+    function raf(time: number) { lenis.raf(time); requestAnimationFrame(raf); }
     requestAnimationFrame(raf);
-    const handleScroll = () => setScrolled(window.scrollY > 80);
-    window.addEventListener('scroll', handleScroll, { passive: true });
     loadData();
-    return () => { 
-      window.removeEventListener('scroll', handleScroll); 
-      lenis.destroy(); 
-    };
+    return () => lenis.destroy();
   }, [loadData]);
+
+  const handleAddToCart = (product: Piece) => {
+    setCart(prev => {
+      const existing = prev.find(i => i.id === product.id);
+      if (existing) {
+        return prev.map(i => i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i);
+      }
+      return [...prev, { ...product, quantity: 1 }];
+    });
+    // Visual feedback would go here (e.g., toast)
+  };
 
   if (isLoading) {
     return (
@@ -259,15 +170,20 @@ const App: React.FC = () => {
   return (
     <HashRouter>
       <ScrollToTop />
-      <MainLayout scrolled={scrolled} syncError={syncError} content={content} pieces={pieces} loadData={loadData} setContent={setContent}>
+      <AgeGate />
+      <div className="min-h-screen bg-[#080808] text-white selection:bg-emerald-600 selection:text-white font-sans">
+        <Navbar scrolled={false} syncError={syncError} cartCount={cart.reduce((a,b) => a + b.quantity, 0)} />
+        
         <Routes>
-          <Route path="/" element={<HomePage content={content} pieces={pieces} />} />
-          <Route path="/archive" element={<Archive pieces={pieces} />} />
-          <Route path="/fits" element={<Fits content={content} />} />
+          <Route path="/" element={<HomePage content={content} pieces={pieces} onAddToCart={handleAddToCart} />} />
+          <Route path="/shop" element={<Shop pieces={pieces} onAddToCart={handleAddToCart} />} />
+          <Route path="/deals" element={<Shop pieces={pieces.filter(p => p.status === 'LIMITED')} onAddToCart={handleAddToCart} />} />
           <Route path="/philosophy" element={<Philosophy content={content} />} />
           <Route path="/artifact/:id" element={<PieceDetail />} />
         </Routes>
-      </MainLayout>
+
+        <Footer content={content} setContent={setContent} pieces={pieces} loadData={loadData} />
+      </div>
     </HashRouter>
   );
 };

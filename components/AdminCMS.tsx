@@ -51,14 +51,15 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
 
   const handleAddPiece = async () => {
     const newPiece: Omit<Piece, 'id'> = {
-      code: `RL-ARCH-${(pieces.length + 1).toString().padStart(4, '0')}`,
-      era: '1990s',
-      status: 'ORIGINAL',
-      imageUrl: 'https://picsum.photos/800/1000',
-      material: 'Archive Material',
-      condition: 'Mint',
-      classification: 'Original Record',
+      code: `New Product`,
+      era: 'Hybrid',
+      status: 'NEW',
+      imageUrl: 'https://images.pexels.com/photos/7317926/pexels-photo-7317926.jpeg',
+      material: '20', // THC%
+      condition: '0', // CBD%
+      classification: 'Flower',
       description: '',
+      price: 50,
       additionalImages: []
     };
     await createPiece(newPiece);
@@ -92,26 +93,6 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
     }
   };
 
-  const handleAddFitCheck = () => {
-    const newFitChecks = [...(content.fitChecks || []), {
-      id: Math.random().toString(36).substr(2, 9),
-      videoUrl: '',
-      title: 'New Study Entry',
-      description: ''
-    }];
-    onUpdateContent({ ...content, fitChecks: newFitChecks });
-  };
-
-  const handleRemoveFitCheck = (id: string) => {
-    const newFitChecks = content.fitChecks?.filter(f => f.id !== id) || [];
-    onUpdateContent({ ...content, fitChecks: newFitChecks });
-  };
-
-  const handleFitCheckUpdate = (id: string, field: keyof FitCheck, value: any) => {
-    const newFitChecks = content.fitChecks?.map(f => f.id === id ? { ...f, [field]: value } : f) || [];
-    onUpdateContent({ ...content, fitChecks: newFitChecks });
-  };
-
   const handleSaveGlobalContent = async () => {
     setIsSaving(true);
     try {
@@ -130,7 +111,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
         onClick={() => setIsOpen(true)}
         className="text-[9px] font-mono text-white/20 hover:text-white uppercase tracking-[0.5em] transition-all py-3 flex items-center gap-4"
       >
-        ARCHIVE INDEX
+        CONTROL_PANEL
       </button>
     );
   }
@@ -141,27 +122,15 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
       
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-white/5 pb-8 mb-10 gap-6">
         <div className="space-y-2">
-          <h2 className="text-2xl md:text-3xl font-black tracking-tighter italic">ARCHIVE_INDEX_CONTROLLER</h2>
+          <h2 className="text-2xl md:text-3xl font-black tracking-tighter italic">RAWLINE_DISPENSARY_MGMT</h2>
           <div className="flex items-center gap-3">
-             <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
+             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
              <span className="text-[10px] text-white/30 uppercase tracking-[0.4em]">Node: {user ? 'ROOT_ACCESS' : 'LOCKED'}</span>
           </div>
         </div>
         <div className="flex gap-4 w-full sm:w-auto">
-          {user && (
-            <button 
-              onClick={handleLogout} 
-              className="px-6 py-3 border border-red-600/30 text-red-600 text-[10px] uppercase tracking-widest font-black hover:bg-red-600 hover:text-white transition-all shadow-lg"
-            >
-              TERMINATE_SESSION
-            </button>
-          )}
-          <button 
-            onClick={() => setIsOpen(false)} 
-            className="flex-1 sm:flex-none px-6 py-3 bg-white text-black text-[10px] uppercase tracking-widest font-black hover:bg-neutral-200 transition-all cursor-none"
-          >
-            DISCONNECT
-          </button>
+          {user && <button onClick={handleLogout} className="px-6 py-3 border border-red-600/30 text-red-600 text-[10px] uppercase tracking-widest font-black hover:bg-red-600 hover:text-white transition-all">TERMINATE_SESSION</button>}
+          <button onClick={() => setIsOpen(false)} className="flex-1 sm:flex-none px-6 py-3 bg-white text-black text-[10px] uppercase tracking-widest font-black hover:bg-neutral-200 transition-all">DISCONNECT</button>
         </div>
       </div>
 
@@ -173,35 +142,17 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
              {error && <p className="text-red-600 text-[10px] uppercase font-black bg-red-600/10 p-4 border border-red-600/20">{error}</p>}
           </div>
           <form onSubmit={handleLogin} className="w-full space-y-6">
-            <input 
-              type="email" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-neutral-900/50 border border-white/10 px-6 py-4 text-xs focus:outline-none focus:border-white/30 transition-all"
-              placeholder="IDENT_ID"
-              required
-            />
-            <input 
-              type="password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-neutral-900/50 border border-white/10 px-6 py-4 text-xs focus:outline-none focus:border-white/30 transition-all"
-              placeholder="AUTH_PHRASE"
-              required
-            />
-            <button type="submit" className="w-full bg-red-600 text-white px-6 py-5 text-xs font-black hover:bg-red-500 transition-all uppercase tracking-[0.8em]">UNLOCK</button>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-neutral-900/50 border border-white/10 px-6 py-4 text-xs focus:outline-none focus:border-white/30 transition-all" placeholder="IDENT_ID" required />
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-neutral-900/50 border border-white/10 px-6 py-4 text-xs focus:outline-none focus:border-white/30 transition-all" placeholder="AUTH_PHRASE" required />
+            <button type="submit" className="w-full bg-emerald-600 text-white px-6 py-5 text-xs font-black hover:bg-emerald-500 transition-all uppercase tracking-[0.8em]">UNLOCK</button>
           </form>
         </div>
       ) : (
         <div className="flex-1 flex flex-col min-h-0">
           <div className="flex gap-8 md:gap-12 mb-10 border-b border-white/5 overflow-x-auto no-scrollbar">
-            {['content', 'pieces', 'fitchecks', 'lab'].map((tab) => (
-              <button 
-                key={tab}
-                onClick={() => setActiveTab(tab as any)}
-                className={`pb-5 text-[11px] tracking-[0.6em] uppercase transition-all font-black whitespace-nowrap ${activeTab === tab ? 'text-white border-b-2 border-red-600' : 'text-white/20 hover:text-white/40'}`}
-              >
-                {tab === 'content' ? 'INDEX_METADATA' : tab === 'pieces' ? 'ARCHIVE_CATALOG' : tab === 'fitchecks' ? 'FIT_STUDIES' : 'MORPH_LAB'}
+            {['content', 'pieces', 'lab'].map((tab) => (
+              <button key={tab} onClick={() => setActiveTab(tab as any)} className={`pb-5 text-[11px] tracking-[0.6em] uppercase transition-all font-black whitespace-nowrap ${activeTab === tab ? 'text-white border-b-2 border-emerald-600' : 'text-white/20 hover:text-white/40'}`}>
+                {tab === 'content' ? 'METADATA' : tab === 'pieces' ? 'INVENTORY' : 'LAB_TOOLS'}
               </button>
             ))}
           </div>
@@ -209,165 +160,91 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
           <div className="flex-1 overflow-y-auto no-scrollbar space-y-16 pb-32 pr-4">
             {activeTab === 'content' ? (
               <div className="max-w-4xl space-y-12 animate-in fade-in duration-700">
-                {/* Hero Settings */}
                 <div className="space-y-10 border-b border-white/5 pb-12">
-                  <div className="artifact-label text-red-600/60 font-black tracking-widest">Section: HERO_MODULE</div>
+                  <div className="artifact-label text-emerald-500/60 font-black tracking-widest">Section: HERO_MODULE</div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <div className="space-y-4">
                       <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Hero Title</label>
-                      <input 
-                        className="w-full bg-white/5 border border-white/10 p-5 text-sm focus:border-white/40 transition-all"
-                        value={content.heroTitle}
-                        onChange={(e) => onUpdateContent({ ...content, heroTitle: e.target.value })}
-                      />
+                      <input className="w-full bg-white/5 border border-white/10 p-5 text-sm" value={content.heroTitle} onChange={(e) => onUpdateContent({ ...content, heroTitle: e.target.value })} />
                     </div>
                     <div className="space-y-4">
                       <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Hero Media Source</label>
-                      <div className="flex items-center gap-6">
-                        <div className="w-24 aspect-video bg-neutral-900 border border-white/10 overflow-hidden relative">
-                          {isUploading['hero'] ? (
-                            <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
-                              <div className="w-4 h-4 border border-white border-t-transparent animate-spin rounded-full" />
-                            </div>
-                          ) : isVideoUrl(content.heroMediaUrl) ? (
-                            <video src={content.heroMediaUrl} className="w-full h-full object-cover" muted />
-                          ) : content.heroMediaUrl ? (
-                            <img src={content.heroMediaUrl} className="w-full h-full object-cover" alt="Hero Preview" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-[8px] text-white/20">NO_MEDIA</div>
-                          )}
-                        </div>
-                        <label className="px-8 py-4 bg-white text-black text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-neutral-200 transition-all">
-                          {isUploading['hero'] ? 'UPLOADING...' : 'CHANGE_MEDIA'}
-                          <input type="file" accept="image/*,video/*" className="hidden" onChange={(e) => handleMediaUpload(e, (url) => onUpdateContent({...content, heroMediaUrl: url}), 'hero')} />
-                        </label>
-                      </div>
+                      <input className="w-full bg-white/5 border border-white/10 p-5 text-sm" value={content.heroMediaUrl} onChange={(e) => onUpdateContent({ ...content, heroMediaUrl: e.target.value })} />
                     </div>
                   </div>
                   <div className="space-y-4">
-                    <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Hero Sub-Text (Manifesto Short)</label>
-                    <textarea 
-                      className="w-full bg-white/5 border border-white/10 p-5 text-sm h-32 focus:border-white/40 transition-all resize-none"
-                      value={content.heroSubTitle}
-                      onChange={(e) => onUpdateContent({ ...content, heroSubTitle: e.target.value })}
-                    />
+                    <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Shop Description</label>
+                    <textarea className="w-full bg-white/5 border border-white/10 p-5 text-sm h-32 resize-none" value={content.heroSubTitle} onChange={(e) => onUpdateContent({ ...content, heroSubTitle: e.target.value })} />
                   </div>
                 </div>
-
-                {/* Manifesto Settings */}
-                <div className="space-y-10 border-b border-white/5 pb-12">
-                  <div className="artifact-label text-red-600/60 font-black tracking-widest">Section: MANIFESTO_MODULE</div>
-                  <div className="space-y-4">
-                    <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Archive Statement Title</label>
-                    <input 
-                      className="w-full bg-white/5 border border-white/10 p-5 text-sm focus:border-white/40 transition-all"
-                      value={content.archiveStatementTitle}
-                      onChange={(e) => onUpdateContent({ ...content, archiveStatementTitle: e.target.value })}
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                    <div className="space-y-4">
-                      <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Philosophy Primary (Bold)</label>
-                      <textarea 
-                        className="w-full bg-white/5 border border-white/10 p-5 text-sm h-48 focus:border-white/40 transition-all resize-none"
-                        value={content.archiveStatementText1}
-                        onChange={(e) => onUpdateContent({ ...content, archiveStatementText1: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-4">
-                      <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Philosophy Secondary (Support)</label>
-                      <textarea 
-                        className="w-full bg-white/5 border border-white/10 p-5 text-sm h-48 focus:border-white/40 transition-all resize-none"
-                        value={content.archiveStatementText2}
-                        onChange={(e) => onUpdateContent({ ...content, archiveStatementText2: e.target.value })}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Footer Settings */}
-                <div className="space-y-10 border-b border-white/5 pb-12">
-                  <div className="artifact-label text-red-600/60 font-black tracking-widest">Section: FOOTER_MODULE</div>
-                  <div className="space-y-4">
-                    <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Footer Tagline</label>
-                    <input 
-                      className="w-full bg-white/5 border border-white/10 p-5 text-sm focus:border-white/40 transition-all"
-                      value={content.footerTagline}
-                      onChange={(e) => onUpdateContent({ ...content, footerTagline: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                <button 
-                  onClick={handleSaveGlobalContent}
-                  disabled={isSaving}
-                  className="bg-red-600 text-white px-12 py-5 text-[10px] font-black uppercase tracking-[0.5em] hover:bg-red-500 shadow-xl disabled:opacity-50"
-                >
+                <button onClick={handleSaveGlobalContent} disabled={isSaving} className="bg-emerald-600 text-white px-12 py-5 text-[10px] font-black uppercase tracking-[0.5em] hover:bg-emerald-500 shadow-xl disabled:opacity-50">
                   {isSaving ? 'SYNCING...' : 'SAVE_ALL_METADATA'}
                 </button>
               </div>
             ) : activeTab === 'pieces' ? (
               <div className="space-y-12 animate-in fade-in duration-700">
-                <button 
-                  onClick={handleAddPiece}
-                  className="w-full border border-dashed border-white/10 py-12 text-white/20 hover:text-white hover:border-white/30 transition-all uppercase text-[10px] tracking-[0.8em] font-black"
-                >
-                  + ADD TO ARCHIVE
+                <button onClick={handleAddPiece} className="w-full border border-dashed border-white/10 py-12 text-white/20 hover:text-white hover:border-emerald-600/30 transition-all uppercase text-[10px] tracking-[0.8em] font-black">
+                  + REGISTER_NEW_PRODUCT
                 </button>
                 <div className="grid grid-cols-1 gap-12">
                   {pieces.map((piece) => (
-                    <div key={piece.id} className="glass-panel p-10 space-y-8">
+                    <div key={piece.id} className="glass-panel p-10 space-y-8 bg-[#111]">
                        <div className="flex justify-between items-center border-b border-white/5 pb-6">
-                        <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">RECORD_ID: {piece.id.substring(0,8)}</span>
+                        <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">PRODUCT_SKU: {piece.id.substring(0,8)}</span>
                         <button onClick={() => handleDeletePiece(piece.id)} className="text-[10px] text-red-600 uppercase font-black px-4 py-2 hover:bg-red-600 hover:text-white transition-all">PURGE</button>
                       </div>
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                         <div className="space-y-6">
+                           <div className="space-y-2">
+                                <label className="text-[8px] uppercase text-white/20 font-black">Product Name</label>
+                                <input className="w-full bg-black/40 border border-white/5 p-4 text-xs font-bold" value={piece.code} onChange={(e) => handlePieceFieldUpdate(piece.id, 'code', e.target.value)} />
+                           </div>
                            <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="text-[8px] uppercase text-white/20 font-black">Archive ID</label>
-                                <input className="w-full bg-black/40 border border-white/5 p-4 text-xs font-bold" value={piece.code} onChange={(e) => handlePieceFieldUpdate(piece.id, 'code', e.target.value)} />
+                                <label className="text-[8px] uppercase text-white/20 font-black">Strain Type</label>
+                                <select className="w-full bg-black/40 border border-white/5 p-4 text-xs font-black uppercase" value={piece.era} onChange={(e) => handlePieceFieldUpdate(piece.id, 'era', e.target.value)}>
+                                  {['Indica', 'Sativa', 'Hybrid', 'High CBD'].map(s => <option key={s} value={s}>{s}</option>)}
+                                </select>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[8px] uppercase text-white/20 font-black">Era</label>
-                                <input className="w-full bg-black/40 border border-white/5 p-4 text-xs font-bold" value={piece.era} onChange={(e) => handlePieceFieldUpdate(piece.id, 'era', e.target.value)} />
+                                <label className="text-[8px] uppercase text-white/20 font-black">Category</label>
+                                <select className="w-full bg-black/40 border border-white/5 p-4 text-xs font-black uppercase" value={piece.classification} onChange={(e) => handlePieceFieldUpdate(piece.id, 'classification', e.target.value)}>
+                                  {['Flower', 'Pre-Rolls', 'Edibles', 'Concentrates', 'Vapes'].map(c => <option key={c} value={c}>{c}</option>)}
+                                </select>
                             </div>
                            </div>
-                           <div className="space-y-2">
-                                <label className="text-[8px] uppercase text-white/20 font-black">Archive Notes</label>
-                                <textarea className="w-full bg-black/40 border border-white/5 p-4 text-xs h-32 resize-none" value={piece.description} onChange={(e) => handlePieceFieldUpdate(piece.id, 'description', e.target.value)} />
-                                <div className="text-[8px] text-white/30 pt-1 italic">This entry becomes part of the RAWLINE archive. Document carefully.</div>
+                           <div className="grid grid-cols-3 gap-4">
+                            <div className="space-y-2">
+                                <label className="text-[8px] uppercase text-white/20 font-black">THC %</label>
+                                <input type="number" className="w-full bg-black/40 border border-white/5 p-4 text-xs font-bold" value={piece.material} onChange={(e) => handlePieceFieldUpdate(piece.id, 'material', e.target.value)} />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[8px] uppercase text-white/20 font-black">CBD %</label>
+                                <input type="number" className="w-full bg-black/40 border border-white/5 p-4 text-xs font-bold" value={piece.condition} onChange={(e) => handlePieceFieldUpdate(piece.id, 'condition', e.target.value)} />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[8px] uppercase text-white/20 font-black">Price ($)</label>
+                                <input type="number" className="w-full bg-black/40 border border-white/5 p-4 text-xs font-bold" value={piece.price} onChange={(e) => handlePieceFieldUpdate(piece.id, 'price', e.target.value)} />
+                            </div>
                            </div>
                         </div>
                         <div className="space-y-6">
                            <div className="space-y-2">
-                             <label className="text-[8px] uppercase text-white/20 font-black">Document Garment</label>
+                             <label className="text-[8px] uppercase text-white/20 font-black">Product Image</label>
                              <div className="flex gap-8 items-end">
-                                <div className="w-32 aspect-[3/4] bg-neutral-900 border border-white/10 relative overflow-hidden shrink-0">
-                                   {isUploading[piece.id] ? (
-                                     <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
-                                       <div className="w-6 h-6 border border-white border-t-transparent animate-spin rounded-full" />
-                                     </div>
-                                   ) : isVideoUrl(piece.imageUrl) ? (
-                                      <video src={piece.imageUrl} className="w-full h-full object-cover" muted />
-                                   ) : (
-                                      <img src={piece.imageUrl} className="w-full h-full object-cover" />
-                                   )}
+                                <div className="w-32 aspect-square bg-neutral-900 border border-white/10 relative overflow-hidden shrink-0">
+                                   {isUploading[piece.id] ? <div className="absolute inset-0 bg-black/80 flex items-center justify-center animate-spin" /> : <img src={piece.imageUrl} className="w-full h-full object-cover" />}
                                 </div>
                                 <label className="px-6 py-4 border border-white/10 text-[9px] uppercase font-black hover:bg-white hover:text-black transition-all cursor-pointer">
-                                  {isUploading[piece.id] ? 'UPLOADING...' : 'REPLACE_ASSET'}
-                                  <input type="file" accept="image/*,video/*" className="hidden" onChange={(e) => handleMediaUpload(e, (url) => handlePieceFieldUpdate(piece.id, 'imageUrl', url), piece.id)} />
+                                  {isUploading[piece.id] ? 'UPLOADING...' : 'CHANGE_ASSET'}
+                                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleMediaUpload(e, (url) => handlePieceFieldUpdate(piece.id, 'imageUrl', url), piece.id)} />
                                 </label>
                              </div>
                            </div>
                            <div className="space-y-2">
-                              <label className="text-[8px] uppercase text-white/20 font-black">Status Configuration</label>
-                              <select 
-                                value={piece.status} 
-                                onChange={(e) => handlePieceFieldUpdate(piece.id, 'status', e.target.value)}
-                                className="w-full bg-black/40 border border-white/5 p-4 text-xs font-black uppercase tracking-widest text-white/60"
-                              >
-                                {['ORIGINAL', 'STUDY', 'ALTERED', 'RELEASED', 'ARCHIVED'].map(s => <option key={s} value={s}>{s}</option>)}
+                              <label className="text-[8px] uppercase text-white/20 font-black">Stock Status</label>
+                              <select value={piece.status} onChange={(e) => handlePieceFieldUpdate(piece.id, 'status', e.target.value)} className="w-full bg-black/40 border border-white/5 p-4 text-xs font-black uppercase text-white/60">
+                                {['IN STOCK', 'OUT OF STOCK', 'LIMITED', 'NEW'].map(s => <option key={s} value={s}>{s}</option>)}
                               </select>
                            </div>
                         </div>
@@ -375,64 +252,6 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                     </div>
                   ))}
                 </div>
-              </div>
-            ) : activeTab === 'fitchecks' ? (
-              <div className="space-y-12 animate-in fade-in duration-700">
-                <button 
-                  onClick={handleAddFitCheck}
-                  className="w-full border border-dashed border-white/10 py-12 text-white/20 hover:text-white hover:border-white/30 transition-all uppercase text-[10px] tracking-[0.8em] font-black"
-                >
-                  + INITIALIZE_FIT_STUDY
-                </button>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                  {content.fitChecks?.map((f) => (
-                    <div key={f.id} className="glass-panel p-8 space-y-6">
-                      <div className="flex justify-between border-b border-white/5 pb-4">
-                        <span className="text-[10px] text-white/30 uppercase font-black tracking-widest">STUDY_NODE: {f.id}</span>
-                        <button onClick={() => handleRemoveFitCheck(f.id)} className="text-red-600 text-[10px] uppercase font-black tracking-widest">PURGE</button>
-                      </div>
-                      <div className="space-y-6">
-                        <div className="space-y-2">
-                           <label className="text-[8px] uppercase text-white/20 font-black">Study Heading</label>
-                           <input className="w-full bg-black/40 border border-white/5 p-4 text-xs font-bold" value={f.title} onChange={(e) => handleFitCheckUpdate(f.id, 'title', e.target.value)} />
-                        </div>
-                        <div className="space-y-2">
-                           <label className="text-[8px] uppercase text-white/20 font-black">Motion Asset (Video/Image)</label>
-                           <div className="flex gap-6 items-center">
-                              <div className="w-20 aspect-[9/16] bg-black border border-white/10 relative overflow-hidden">
-                                 {isUploading[f.id] ? (
-                                   <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
-                                      <div className="w-4 h-4 border border-white border-t-transparent animate-spin rounded-full" />
-                                   </div>
-                                 ) : isVideoUrl(f.videoUrl) ? (
-                                    <video src={f.videoUrl} className="w-full h-full object-cover" muted />
-                                 ) : f.videoUrl ? (
-                                    <img src={f.videoUrl} className="w-full h-full object-cover" />
-                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-[8px] text-white/20">NO_ASSET</div>
-                                 )}
-                              </div>
-                              <label className="flex-1 px-6 py-4 bg-white/5 border border-white/10 text-[9px] uppercase font-black text-center hover:bg-white hover:text-black cursor-pointer transition-all">
-                                {isUploading[f.id] ? 'UPLOADING...' : 'LOAD_ASSET'}
-                                <input type="file" accept="video/*,image/*" className="hidden" onChange={(e) => handleMediaUpload(e, (url) => handleFitCheckUpdate(f.id, 'videoUrl', url), f.id)} />
-                              </label>
-                           </div>
-                        </div>
-                        <div className="space-y-2">
-                           <label className="text-[8px] uppercase text-white/20 font-black">Analysis Meta</label>
-                           <textarea className="w-full bg-black/40 border border-white/5 p-4 text-xs h-24 resize-none" value={f.description} onChange={(e) => handleFitCheckUpdate(f.id, 'description', e.target.value)} />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <button 
-                  onClick={handleSaveGlobalContent}
-                  disabled={isSaving}
-                  className="bg-red-600 text-white px-12 py-5 text-[10px] font-black uppercase tracking-[0.5em] hover:bg-red-500 shadow-xl disabled:opacity-50"
-                >
-                  {isSaving ? 'SYNCING...' : 'PUSH_FIT_STUDIES'}
-                </button>
               </div>
             ) : (
               <div className="animate-in fade-in duration-700">
