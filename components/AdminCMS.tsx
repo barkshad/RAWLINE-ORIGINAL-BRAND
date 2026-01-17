@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Piece, SiteContent, FitCheck } from '../types';
+import { Piece, SiteContent } from '../types';
 import { 
   auth, 
   saveSiteContent, 
@@ -10,7 +10,6 @@ import {
 } from '../services/firebaseService';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { uploadToCloudinary } from '../services/cloudinaryService';
-import AICurator from './AICurator';
 import { isVideoUrl } from '../utils';
 
 interface AdminCMSProps {
@@ -25,7 +24,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'content' | 'pieces' | 'fitchecks' | 'lab'>('content');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'products' | 'content'>('products');
   const [isUploading, setIsUploading] = useState<Record<string, boolean>>({});
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
@@ -41,7 +40,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err: any) {
-      setError(err.message || "Invalid credentials");
+      setError("Invalid login credentials.");
     }
   };
 
@@ -59,7 +58,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
       condition: '0', // CBD%
       classification: 'Flower',
       description: '',
-      price: 50,
+      price: 35,
       additionalImages: []
     };
     await createPiece(newPiece);
@@ -72,7 +71,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
   };
 
   const handleDeletePiece = async (id: string) => {
-    if (confirm("Permanently purge this record?")) {
+    if (confirm("Are you sure you want to delete this product? This action cannot be undone.")) {
       await removePiece(id);
       onRefreshPieces();
     }
@@ -87,7 +86,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
       const url = await uploadToCloudinary(files[0] as File);
       callback(url);
     } catch (err) {
-      alert("Upload failed. Check console for details.");
+      alert("Upload failed.");
     } finally {
       setIsUploading(prev => ({ ...prev, [id]: false }));
     }
@@ -97,9 +96,9 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
     setIsSaving(true);
     try {
       await saveSiteContent(content);
-      alert("Metadata synchronized to global production.");
+      alert("Site settings saved successfully.");
     } catch (err) {
-      alert("Failed to sync metadata.");
+      alert("Failed to save settings.");
     } finally {
       setIsSaving(false);
     }
@@ -109,156 +108,232 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
     return (
       <button 
         onClick={() => setIsOpen(true)}
-        className="text-[9px] font-mono text-white/20 hover:text-white uppercase tracking-[0.5em] transition-all py-3 flex items-center gap-4"
+        className="text-xs font-bold uppercase tracking-widest text-neutral-500 hover:text-[#b91c1c] transition-colors flex items-center gap-2"
       >
-        CONTROL_PANEL
+        <span className="w-2 h-2 rounded-full bg-neutral-300"></span>
+        Staff Login
       </button>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-[100] bg-[#020202] text-white flex flex-col p-6 md:p-12 overflow-hidden font-mono transition-all">
-      <div className="noise opacity-10"></div>
+    <div className="fixed inset-0 z-[100] bg-gray-50 flex flex-col font-sans text-neutral-900 overflow-hidden">
       
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-white/5 pb-8 mb-10 gap-6">
-        <div className="space-y-2">
-          <h2 className="text-2xl md:text-3xl font-black tracking-tighter italic">RAWLINE_DISPENSARY_MGMT</h2>
-          <div className="flex items-center gap-3">
-             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-             <span className="text-[10px] text-white/30 uppercase tracking-[0.4em]">Node: {user ? 'ROOT_ACCESS' : 'LOCKED'}</span>
-          </div>
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200 h-16 px-6 flex items-center justify-between flex-shrink-0">
+        <div className="flex items-center gap-4">
+          <h2 className="text-xl font-bold uppercase tracking-wide text-neutral-900 display-font">Retail Manager</h2>
+          {user && <span className="px-2 py-1 bg-green-100 text-green-800 text-[10px] font-bold uppercase tracking-widest rounded-sm">Online</span>}
         </div>
-        <div className="flex gap-4 w-full sm:w-auto">
-          {user && <button onClick={handleLogout} className="px-6 py-3 border border-red-600/30 text-red-600 text-[10px] uppercase tracking-widest font-black hover:bg-red-600 hover:text-white transition-all">TERMINATE_SESSION</button>}
-          <button onClick={() => setIsOpen(false)} className="flex-1 sm:flex-none px-6 py-3 bg-white text-black text-[10px] uppercase tracking-widest font-black hover:bg-neutral-200 transition-all">DISCONNECT</button>
+        <div className="flex items-center gap-4">
+          <button onClick={() => setIsOpen(false)} className="text-sm font-bold text-neutral-500 hover:text-neutral-900 uppercase tracking-wide">Close</button>
+          {user && (
+            <button onClick={handleLogout} className="text-sm font-bold text-[#b91c1c] hover:text-red-800 uppercase tracking-wide">Log Out</button>
+          )}
         </div>
-      </div>
+      </header>
 
       {!user ? (
-        <div className="flex-1 flex flex-col items-center justify-center space-y-12 max-w-md mx-auto w-full">
-          <div className="text-center space-y-4">
-             <div className="text-5xl mb-6">🔒</div>
-             <p className="text-xs text-white/40 uppercase tracking-[0.6em] font-black">Authorized Personnel Only.</p>
-             {error && <p className="text-red-600 text-[10px] uppercase font-black bg-red-600/10 p-4 border border-red-600/20">{error}</p>}
+        <div className="flex-1 flex items-center justify-center p-6">
+          <div className="bg-white p-10 border border-gray-200 rounded-sm shadow-sm max-w-sm w-full space-y-6">
+            <div className="text-center space-y-2">
+              <h3 className="text-2xl font-bold display-font">Staff Access</h3>
+              <p className="text-neutral-500 text-sm">Please sign in to manage inventory.</p>
+            </div>
+            
+            {error && <div className="bg-red-50 text-[#b91c1c] p-3 text-sm rounded-sm text-center font-medium">{error}</div>}
+            
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Email ID</label>
+                <input 
+                  type="email" 
+                  value={email} 
+                  onChange={(e) => setEmail(e.target.value)} 
+                  className="w-full bg-gray-50 border border-gray-200 p-3 text-sm focus:outline-none focus:border-neutral-400 transition-colors rounded-sm"
+                  required 
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Password</label>
+                <input 
+                  type="password" 
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)} 
+                  className="w-full bg-gray-50 border border-gray-200 p-3 text-sm focus:outline-none focus:border-neutral-400 transition-colors rounded-sm"
+                  required 
+                />
+              </div>
+              <button type="submit" className="w-full bg-[#1a1a1a] text-white py-4 font-bold uppercase tracking-widest text-xs hover:bg-neutral-800 transition-colors rounded-sm mt-4">
+                Access Dashboard
+              </button>
+            </form>
           </div>
-          <form onSubmit={handleLogin} className="w-full space-y-6">
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-neutral-900/50 border border-white/10 px-6 py-4 text-xs focus:outline-none focus:border-white/30 transition-all" placeholder="IDENT_ID" required />
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full bg-neutral-900/50 border border-white/10 px-6 py-4 text-xs focus:outline-none focus:border-white/30 transition-all" placeholder="AUTH_PHRASE" required />
-            <button type="submit" className="w-full bg-emerald-600 text-white px-6 py-5 text-xs font-black hover:bg-emerald-500 transition-all uppercase tracking-[0.8em]">UNLOCK</button>
-          </form>
         </div>
       ) : (
-        <div className="flex-1 flex flex-col min-h-0">
-          <div className="flex gap-8 md:gap-12 mb-10 border-b border-white/5 overflow-x-auto no-scrollbar">
-            {['content', 'pieces', 'lab'].map((tab) => (
-              <button key={tab} onClick={() => setActiveTab(tab as any)} className={`pb-5 text-[11px] tracking-[0.6em] uppercase transition-all font-black whitespace-nowrap ${activeTab === tab ? 'text-white border-b-2 border-emerald-600' : 'text-white/20 hover:text-white/40'}`}>
-                {tab === 'content' ? 'METADATA' : tab === 'pieces' ? 'INVENTORY' : 'LAB_TOOLS'}
+        <div className="flex-1 flex overflow-hidden">
+          {/* Sidebar */}
+          <aside className="w-64 bg-white border-r border-gray-200 flex-col hidden md:flex">
+            <nav className="p-6 space-y-2">
+              <button 
+                onClick={() => setActiveTab('products')} 
+                className={`w-full text-left px-4 py-3 rounded-sm text-sm font-bold uppercase tracking-widest transition-colors ${activeTab === 'products' ? 'bg-gray-100 text-[#b91c1c]' : 'text-neutral-500 hover:bg-gray-50 hover:text-neutral-900'}`}
+              >
+                Inventory
               </button>
-            ))}
-          </div>
+              <button 
+                onClick={() => setActiveTab('content')} 
+                className={`w-full text-left px-4 py-3 rounded-sm text-sm font-bold uppercase tracking-widest transition-colors ${activeTab === 'content' ? 'bg-gray-100 text-[#b91c1c]' : 'text-neutral-500 hover:bg-gray-50 hover:text-neutral-900'}`}
+              >
+                Site Content
+              </button>
+            </nav>
+            <div className="mt-auto p-6 border-t border-gray-200">
+               <div className="text-xs text-neutral-400">
+                  <p><strong>System Status:</strong> Operational</p>
+                  <p className="mt-1">v2.4.0 Retail Build</p>
+               </div>
+            </div>
+          </aside>
 
-          <div className="flex-1 overflow-y-auto no-scrollbar space-y-16 pb-32 pr-4">
-            {activeTab === 'content' ? (
-              <div className="max-w-4xl space-y-12 animate-in fade-in duration-700">
-                <div className="space-y-10 border-b border-white/5 pb-12">
-                  <div className="artifact-label text-emerald-500/60 font-black tracking-widest">Section: HERO_MODULE</div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                    <div className="space-y-4">
-                      <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Hero Title</label>
-                      <input className="w-full bg-white/5 border border-white/10 p-5 text-sm" value={content.heroTitle} onChange={(e) => onUpdateContent({ ...content, heroTitle: e.target.value })} />
+          {/* Main Content */}
+          <main className="flex-1 overflow-y-auto bg-gray-50 p-6 md:p-12">
+            <div className="max-w-5xl mx-auto">
+              
+              {/* Mobile Tab Nav */}
+              <div className="md:hidden flex gap-2 mb-8 overflow-x-auto pb-2">
+                 <button onClick={() => setActiveTab('products')} className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest whitespace-nowrap ${activeTab === 'products' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-900 border'}`}>Inventory</button>
+                 <button onClick={() => setActiveTab('content')} className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest whitespace-nowrap ${activeTab === 'content' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-900 border'}`}>Site Content</button>
+              </div>
+
+              {activeTab === 'content' ? (
+                <div className="space-y-8">
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-bold display-font">Storefront Metadata</h2>
+                    <button 
+                      onClick={handleSaveGlobalContent}
+                      disabled={isSaving}
+                      className="bg-[#1a1a1a] text-white px-6 py-3 font-bold uppercase tracking-widest text-xs rounded-sm hover:bg-neutral-800 disabled:opacity-50"
+                    >
+                      {isSaving ? 'Saving...' : 'Save Changes'}
+                    </button>
+                  </div>
+
+                  <div className="bg-white p-8 rounded-sm border border-gray-200 shadow-sm space-y-6">
+                    <h3 className="font-bold text-sm uppercase tracking-widest border-b border-gray-100 pb-2 mb-4">Homepage Hero</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-neutral-500 uppercase">Headline</label>
+                        <input className="w-full bg-gray-50 border border-gray-200 p-3 rounded-sm text-sm" value={content.heroTitle} onChange={(e) => onUpdateContent({ ...content, heroTitle: e.target.value })} />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-neutral-500 uppercase">Sub-Headline</label>
+                        <input className="w-full bg-gray-50 border border-gray-200 p-3 rounded-sm text-sm" value={content.heroSubTitle} onChange={(e) => onUpdateContent({ ...content, heroSubTitle: e.target.value })} />
+                      </div>
                     </div>
-                    <div className="space-y-4">
-                      <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Hero Media Source</label>
-                      <input className="w-full bg-white/5 border border-white/10 p-5 text-sm" value={content.heroMediaUrl} onChange={(e) => onUpdateContent({ ...content, heroMediaUrl: e.target.value })} />
+                    
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-neutral-500 uppercase">Hero Image URL</label>
+                      <input className="w-full bg-gray-50 border border-gray-200 p-3 rounded-sm text-sm font-mono text-neutral-600" value={content.heroMediaUrl} onChange={(e) => onUpdateContent({ ...content, heroMediaUrl: e.target.value })} />
                     </div>
                   </div>
+
+                  <div className="bg-white p-8 rounded-sm border border-gray-200 shadow-sm space-y-6">
+                    <h3 className="font-bold text-sm uppercase tracking-widest border-b border-gray-100 pb-2 mb-4">Store Policies (Footer)</h3>
+                     <div className="space-y-2">
+                        <label className="text-xs font-bold text-neutral-500 uppercase">License Information</label>
+                        <input className="w-full bg-gray-50 border border-gray-200 p-3 rounded-sm text-sm" value={content.footerTagline} onChange={(e) => onUpdateContent({ ...content, footerTagline: e.target.value })} />
+                      </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-8">
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-bold display-font">Product Inventory</h2>
+                    <button 
+                      onClick={handleAddPiece}
+                      className="bg-[#b91c1c] text-white px-6 py-3 font-bold uppercase tracking-widest text-xs rounded-sm hover:bg-red-800"
+                    >
+                      + Add New Product
+                    </button>
+                  </div>
+
                   <div className="space-y-4">
-                    <label className="text-[10px] text-white/30 uppercase tracking-widest font-black">Shop Description</label>
-                    <textarea className="w-full bg-white/5 border border-white/10 p-5 text-sm h-32 resize-none" value={content.heroSubTitle} onChange={(e) => onUpdateContent({ ...content, heroSubTitle: e.target.value })} />
+                    {pieces.map((piece) => (
+                      <div key={piece.id} className="bg-white border border-gray-200 rounded-sm shadow-sm p-6 hover:shadow-md transition-shadow">
+                        <div className="flex flex-col lg:flex-row gap-8">
+                          
+                          {/* Image Section */}
+                          <div className="w-full lg:w-48 flex-shrink-0">
+                            <div className="aspect-square bg-gray-100 rounded-sm overflow-hidden border border-gray-200 relative group">
+                               {isUploading[piece.id] ? (
+                                 <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-10">
+                                   <div className="w-6 h-6 border-2 border-[#b91c1c] border-t-transparent rounded-full animate-spin"></div>
+                                 </div>
+                               ) : (
+                                 <img src={piece.imageUrl} className="w-full h-full object-cover" />
+                               )}
+                               
+                               <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity">
+                                 <span className="text-white text-[10px] font-bold uppercase tracking-widest">Change Image</span>
+                                 <input type="file" accept="image/*" className="hidden" onChange={(e) => handleMediaUpload(e, (url) => handlePieceFieldUpdate(piece.id, 'imageUrl', url), piece.id)} />
+                               </label>
+                            </div>
+                            <button onClick={() => handleDeletePiece(piece.id)} className="w-full mt-3 text-red-600 text-[10px] font-bold uppercase tracking-widest hover:bg-red-50 py-2 rounded-sm transition-colors">Delete Product</button>
+                          </div>
+
+                          {/* Details Section */}
+                          <div className="flex-1 space-y-6">
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                               <div className="space-y-1">
+                                  <label className="text-[10px] font-bold text-neutral-400 uppercase">Product Name</label>
+                                  <input className="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-sm text-sm font-bold" value={piece.code} onChange={(e) => handlePieceFieldUpdate(piece.id, 'code', e.target.value)} />
+                               </div>
+                               <div className="space-y-1">
+                                  <label className="text-[10px] font-bold text-neutral-400 uppercase">Inventory Status</label>
+                                  <select value={piece.status} onChange={(e) => handlePieceFieldUpdate(piece.id, 'status', e.target.value)} className="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-sm text-xs font-bold uppercase">
+                                    {['IN STOCK', 'OUT OF STOCK', 'LIMITED', 'NEW'].map(s => <option key={s} value={s}>{s}</option>)}
+                                  </select>
+                               </div>
+                             </div>
+
+                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div className="space-y-1">
+                                  <label className="text-[10px] font-bold text-neutral-400 uppercase">Category</label>
+                                  <select className="w-full bg-gray-50 border border-gray-200 p-2 rounded-sm text-xs" value={piece.classification} onChange={(e) => handlePieceFieldUpdate(piece.id, 'classification', e.target.value)}>
+                                    {['Flower', 'Pre-Rolls', 'Edibles', 'Concentrates', 'Vapes', 'Topicals'].map(c => <option key={c} value={c}>{c}</option>)}
+                                  </select>
+                                </div>
+                                <div className="space-y-1">
+                                  <label className="text-[10px] font-bold text-neutral-400 uppercase">Plant Type</label>
+                                  <select className="w-full bg-gray-50 border border-gray-200 p-2 rounded-sm text-xs" value={piece.era} onChange={(e) => handlePieceFieldUpdate(piece.id, 'era', e.target.value)}>
+                                    {['Indica', 'Sativa', 'Hybrid', 'High CBD'].map(s => <option key={s} value={s}>{s}</option>)}
+                                  </select>
+                                </div>
+                                <div className="space-y-1">
+                                  <label className="text-[10px] font-bold text-neutral-400 uppercase">THC %</label>
+                                  <input type="number" className="w-full bg-gray-50 border border-gray-200 p-2 rounded-sm text-xs" value={piece.material} onChange={(e) => handlePieceFieldUpdate(piece.id, 'material', e.target.value)} />
+                                </div>
+                                <div className="space-y-1">
+                                  <label className="text-[10px] font-bold text-neutral-400 uppercase">Price ($)</label>
+                                  <input type="number" className="w-full bg-gray-50 border border-gray-200 p-2 rounded-sm text-xs" value={piece.price} onChange={(e) => handlePieceFieldUpdate(piece.id, 'price', e.target.value)} />
+                                </div>
+                             </div>
+
+                             <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-neutral-400 uppercase">Description</label>
+                                <textarea className="w-full bg-gray-50 border border-gray-200 p-3 rounded-sm text-sm h-20 resize-none" value={piece.description} onChange={(e) => handlePieceFieldUpdate(piece.id, 'description', e.target.value)} />
+                             </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-                <button onClick={handleSaveGlobalContent} disabled={isSaving} className="bg-emerald-600 text-white px-12 py-5 text-[10px] font-black uppercase tracking-[0.5em] hover:bg-emerald-500 shadow-xl disabled:opacity-50">
-                  {isSaving ? 'SYNCING...' : 'SAVE_ALL_METADATA'}
-                </button>
-              </div>
-            ) : activeTab === 'pieces' ? (
-              <div className="space-y-12 animate-in fade-in duration-700">
-                <button onClick={handleAddPiece} className="w-full border border-dashed border-white/10 py-12 text-white/20 hover:text-white hover:border-emerald-600/30 transition-all uppercase text-[10px] tracking-[0.8em] font-black">
-                  + REGISTER_NEW_PRODUCT
-                </button>
-                <div className="grid grid-cols-1 gap-12">
-                  {pieces.map((piece) => (
-                    <div key={piece.id} className="glass-panel p-10 space-y-8 bg-[#111]">
-                       <div className="flex justify-between items-center border-b border-white/5 pb-6">
-                        <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">PRODUCT_SKU: {piece.id.substring(0,8)}</span>
-                        <button onClick={() => handleDeletePiece(piece.id)} className="text-[10px] text-red-600 uppercase font-black px-4 py-2 hover:bg-red-600 hover:text-white transition-all">PURGE</button>
-                      </div>
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                        <div className="space-y-6">
-                           <div className="space-y-2">
-                                <label className="text-[8px] uppercase text-white/20 font-black">Product Name</label>
-                                <input className="w-full bg-black/40 border border-white/5 p-4 text-xs font-bold" value={piece.code} onChange={(e) => handlePieceFieldUpdate(piece.id, 'code', e.target.value)} />
-                           </div>
-                           <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label className="text-[8px] uppercase text-white/20 font-black">Strain Type</label>
-                                <select className="w-full bg-black/40 border border-white/5 p-4 text-xs font-black uppercase" value={piece.era} onChange={(e) => handlePieceFieldUpdate(piece.id, 'era', e.target.value)}>
-                                  {['Indica', 'Sativa', 'Hybrid', 'High CBD'].map(s => <option key={s} value={s}>{s}</option>)}
-                                </select>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[8px] uppercase text-white/20 font-black">Category</label>
-                                <select className="w-full bg-black/40 border border-white/5 p-4 text-xs font-black uppercase" value={piece.classification} onChange={(e) => handlePieceFieldUpdate(piece.id, 'classification', e.target.value)}>
-                                  {['Flower', 'Pre-Rolls', 'Edibles', 'Concentrates', 'Vapes'].map(c => <option key={c} value={c}>{c}</option>)}
-                                </select>
-                            </div>
-                           </div>
-                           <div className="grid grid-cols-3 gap-4">
-                            <div className="space-y-2">
-                                <label className="text-[8px] uppercase text-white/20 font-black">THC %</label>
-                                <input type="number" className="w-full bg-black/40 border border-white/5 p-4 text-xs font-bold" value={piece.material} onChange={(e) => handlePieceFieldUpdate(piece.id, 'material', e.target.value)} />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[8px] uppercase text-white/20 font-black">CBD %</label>
-                                <input type="number" className="w-full bg-black/40 border border-white/5 p-4 text-xs font-bold" value={piece.condition} onChange={(e) => handlePieceFieldUpdate(piece.id, 'condition', e.target.value)} />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[8px] uppercase text-white/20 font-black">Price ($)</label>
-                                <input type="number" className="w-full bg-black/40 border border-white/5 p-4 text-xs font-bold" value={piece.price} onChange={(e) => handlePieceFieldUpdate(piece.id, 'price', e.target.value)} />
-                            </div>
-                           </div>
-                        </div>
-                        <div className="space-y-6">
-                           <div className="space-y-2">
-                             <label className="text-[8px] uppercase text-white/20 font-black">Product Image</label>
-                             <div className="flex gap-8 items-end">
-                                <div className="w-32 aspect-square bg-neutral-900 border border-white/10 relative overflow-hidden shrink-0">
-                                   {isUploading[piece.id] ? <div className="absolute inset-0 bg-black/80 flex items-center justify-center animate-spin" /> : <img src={piece.imageUrl} className="w-full h-full object-cover" />}
-                                </div>
-                                <label className="px-6 py-4 border border-white/10 text-[9px] uppercase font-black hover:bg-white hover:text-black transition-all cursor-pointer">
-                                  {isUploading[piece.id] ? 'UPLOADING...' : 'CHANGE_ASSET'}
-                                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleMediaUpload(e, (url) => handlePieceFieldUpdate(piece.id, 'imageUrl', url), piece.id)} />
-                                </label>
-                             </div>
-                           </div>
-                           <div className="space-y-2">
-                              <label className="text-[8px] uppercase text-white/20 font-black">Stock Status</label>
-                              <select value={piece.status} onChange={(e) => handlePieceFieldUpdate(piece.id, 'status', e.target.value)} className="w-full bg-black/40 border border-white/5 p-4 text-xs font-black uppercase text-white/60">
-                                {['IN STOCK', 'OUT OF STOCK', 'LIMITED', 'NEW'].map(s => <option key={s} value={s}>{s}</option>)}
-                              </select>
-                           </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="animate-in fade-in duration-700">
-                 <AICurator />
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          </main>
         </div>
       )}
     </div>
