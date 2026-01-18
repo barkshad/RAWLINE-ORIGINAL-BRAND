@@ -28,7 +28,8 @@ export interface FitCheck {
 export interface SiteContent {
   heroTitle: string;
   heroSubTitle: string;
-  heroMediaUrl?: string;
+  heroMediaUrl?: string; // Fallback or legacy single media
+  heroCarouselUrls?: string[]; // New: List of media for carousel
   archiveStatementTitle: string;
   archiveStatementText1: string;
   archiveStatementText2: string;

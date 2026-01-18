@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { HashRouter, Routes, Route, Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import Lenis from 'lenis';
 import FadeInSection from './components/FadeInSection';
 import PieceDetail from './components/PieceDetail';
@@ -13,11 +14,13 @@ import AgeGate from './components/AgeGate';
 import ProductCard from './components/ProductCard';
 import { Piece, SiteContent, CartItem } from './types';
 import { getPieces, getSiteContent } from './services/firebaseService';
+import { isVideoUrl } from './utils';
 
 const DEFAULT_CONTENT: SiteContent = {
   heroTitle: "DISCOVER LEGAL CANNABIS",
   heroSubTitle: "Your trusted source for recreational cannabis. Safe, regulated, and responsibly sourced.",
   heroMediaUrl: "https://images.pexels.com/photos/1466335/pexels-photo-1466335.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+  heroCarouselUrls: [],
   archiveStatementTitle: "RESPONSIBLE CONSUMPTION",
   archiveStatementText1: "Start low and go slow. Understanding how cannabis affects you is key to a positive experience.",
   archiveStatementText2: "All products sold are federally compliant and lab-tested for your safety.",
@@ -26,31 +29,100 @@ const DEFAULT_CONTENT: SiteContent = {
 };
 
 const HomePage: React.FC<{ content: SiteContent; pieces: Piece[]; onAddToCart: (p: Piece) => void }> = ({ content, pieces, onAddToCart }) => {
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const carouselItems = content.heroCarouselUrls && content.heroCarouselUrls.length > 0 
+    ? content.heroCarouselUrls 
+    : [content.heroMediaUrl].filter(Boolean) as string[];
+
+  useEffect(() => {
+    if (carouselItems.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentIdx((prev) => (prev + 1) % carouselItems.length);
+    }, 6000); // Change slide every 6 seconds
+    return () => clearInterval(interval);
+  }, [carouselItems.length]);
+
   return (
     <div className="min-h-screen bg-white text-neutral-900">
       {/* Hero */}
-      <header className="relative h-[600px] flex flex-col justify-center items-center text-center px-6 bg-neutral-100 overflow-hidden">
+      <header className="relative h-[650px] flex flex-col justify-center items-center text-center px-6 bg-neutral-900 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={content.heroMediaUrl} className="w-full h-full object-cover opacity-90" alt="Hero" />
-          <div className="absolute inset-0 bg-black/40" />
+          <AnimatePresence mode="wait">
+            {carouselItems.length > 0 && (
+              <motion.div
+                key={carouselItems[currentIdx]}
+                initial={{ opacity: 0, scale: 1.05 }}
+                animate={{ opacity: 0.8, scale: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1.5, ease: "easeInOut" }}
+                className="absolute inset-0 w-full h-full"
+              >
+                {isVideoUrl(carouselItems[currentIdx]) ? (
+                  <video 
+                    autoPlay 
+                    loop 
+                    muted 
+                    playsInline 
+                    src={carouselItems[currentIdx]} 
+                    className="w-full h-full object-cover" 
+                  />
+                ) : (
+                  <img 
+                    src={carouselItems[currentIdx]} 
+                    className="w-full h-full object-cover" 
+                    alt={`Slide ${currentIdx}`} 
+                  />
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <div className="absolute inset-0 bg-black/50" />
         </div>
 
         <div className="relative z-10 max-w-3xl space-y-6">
-          <h1 className="text-5xl md:text-7xl font-bold text-white tracking-wide display-font">
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="text-5xl md:text-7xl font-bold text-white tracking-wide display-font"
+          >
             {content.heroTitle}
-          </h1>
-          <p className="text-white/90 text-lg md:text-xl max-w-xl mx-auto font-medium">
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.8 }}
+            className="text-white/90 text-lg md:text-xl max-w-xl mx-auto font-medium"
+          >
             {content.heroSubTitle}
-          </p>
-          <div className="pt-8">
+          </motion.p>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9, duration: 0.8 }}
+            className="pt-8"
+          >
              <Link 
                to="/shop"
                className="inline-block bg-[#b91c1c] text-white px-10 py-4 font-bold uppercase tracking-widest text-sm hover:bg-red-800 transition-colors rounded-sm"
              >
                Shop Collections
              </Link>
-          </div>
+          </motion.div>
         </div>
+
+        {/* Carousel Indicators */}
+        {carouselItems.length > 1 && (
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+            {carouselItems.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentIdx(i)}
+                className={`w-12 h-1 rounded-full transition-all duration-500 ${i === currentIdx ? 'bg-white' : 'bg-white/20'}`}
+              />
+            ))}
+          </div>
+        )}
       </header>
       
       {/* Shop by Category */}

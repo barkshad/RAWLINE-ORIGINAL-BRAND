@@ -92,6 +92,12 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
     }
   };
 
+  const handleRemoveCarouselItem = (idx: number) => {
+    const newUrls = [...(content.heroCarouselUrls || [])];
+    newUrls.splice(idx, 1);
+    onUpdateContent({ ...content, heroCarouselUrls: newUrls });
+  };
+
   const handleSaveGlobalContent = async () => {
     setIsSaving(true);
     try {
@@ -219,7 +225,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                     </button>
                   </div>
 
-                  <div className="bg-white p-8 rounded-sm border border-gray-200 shadow-sm space-y-6">
+                  <div className="bg-white p-8 rounded-sm border border-gray-200 shadow-sm space-y-8">
                     <h3 className="font-bold text-sm uppercase tracking-widest border-b border-gray-100 pb-2 mb-4">Homepage Hero</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -234,47 +240,57 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                     </div>
                     
                     <div className="space-y-4">
-                      <label className="text-xs font-bold text-neutral-500 uppercase">Hero Background (Image or Video)</label>
-                      <div className="flex flex-col md:flex-row gap-6 items-start">
-                        <div className="w-full md:w-64 aspect-video bg-neutral-100 border border-gray-200 rounded-sm overflow-hidden relative group">
-                          {isUploading['hero'] ? (
-                            <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-10">
-                              <div className="w-6 h-6 border-2 border-[#b91c1c] border-t-transparent rounded-full animate-spin"></div>
-                            </div>
-                          ) : (
-                            <>
-                              {content.heroMediaUrl ? (
-                                isVideoUrl(content.heroMediaUrl) ? (
-                                  <video src={content.heroMediaUrl} className="w-full h-full object-cover" muted />
-                                ) : (
-                                  <img src={content.heroMediaUrl} className="w-full h-full object-cover" />
-                                )
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-neutral-300 text-[10px] font-bold uppercase tracking-widest">No Media</div>
-                              )}
-                            </>
-                          )}
-                          <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity">
-                            <span className="text-white text-[10px] font-bold uppercase tracking-widest">Upload New</span>
+                      <div className="flex justify-between items-center">
+                        <label className="text-xs font-bold text-neutral-500 uppercase">Hero Carousel Media</label>
+                        <div className="relative">
+                          <label className="bg-[#b91c1c] text-white px-4 py-2 text-[10px] font-bold uppercase tracking-widest rounded-sm cursor-pointer hover:bg-red-800 transition-colors">
+                            + Add New Media
                             <input 
                               type="file" 
                               accept="image/*,video/*" 
                               className="hidden" 
-                              onChange={(e) => handleMediaUpload(e, (url) => onUpdateContent({ ...content, heroMediaUrl: url }), 'hero')} 
+                              onChange={(e) => handleMediaUpload(e, (url) => {
+                                const current = content.heroCarouselUrls || [];
+                                onUpdateContent({ ...content, heroCarouselUrls: [...current, url] });
+                              }, 'carousel-add')} 
                             />
                           </label>
-                        </div>
-                        <div className="flex-1 space-y-2">
-                           <p className="text-[10px] text-neutral-400 uppercase leading-relaxed">
-                              Recommended: High-quality landscape video or image.<br/>Supports: .mp4, .webm, .jpg, .png
-                           </p>
-                           <input 
-                             className="w-full bg-gray-50 border border-gray-200 p-2 rounded-sm text-[10px] font-mono text-neutral-400" 
-                             value={content.heroMediaUrl} 
-                             readOnly
-                           />
+                          {isUploading['carousel-add'] && (
+                            <div className="absolute -left-8 top-1">
+                               <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                            </div>
+                          )}
                         </div>
                       </div>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 pt-4">
+                        {(content.heroCarouselUrls || []).map((url, idx) => (
+                          <div key={idx} className="relative aspect-video group bg-neutral-100 border border-neutral-200 rounded-sm overflow-hidden">
+                             {isVideoUrl(url) ? (
+                               <video src={url} className="w-full h-full object-cover" muted />
+                             ) : (
+                               <img src={url} className="w-full h-full object-cover" alt={`Carousel ${idx}`} />
+                             )}
+                             <button 
+                               onClick={() => handleRemoveCarouselItem(idx)}
+                               className="absolute top-1 right-1 bg-red-600 text-white w-5 h-5 flex items-center justify-center rounded-sm opacity-0 group-hover:opacity-100 transition-opacity text-[10px]"
+                             >
+                               ×
+                             </button>
+                             <div className="absolute bottom-1 left-1 bg-black/60 text-white text-[8px] px-1 py-0.5 rounded-sm">
+                               {idx + 1}
+                             </div>
+                          </div>
+                        ))}
+                        {(!content.heroCarouselUrls || content.heroCarouselUrls.length === 0) && (
+                          <div className="col-span-full py-12 text-center bg-neutral-50 border border-dashed border-neutral-200 text-neutral-400 text-[10px] font-bold uppercase tracking-widest">
+                             No items in carousel.
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-neutral-400 uppercase mt-2">
+                        You can upload more than 5 photos/videos. They will cycle automatically on the homepage.
+                      </p>
                     </div>
                   </div>
 
