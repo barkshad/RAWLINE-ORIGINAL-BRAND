@@ -10,7 +10,7 @@ import {
 } from '../services/firebaseService';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { uploadToCloudinary, getOptimizedUrl } from '../services/cloudinaryService';
-import { isVideoUrl } from '../utils';
+import { isVideoUrl, getUnitLabel } from '../utils';
 
 interface AdminCMSProps {
   content: SiteContent;
@@ -58,8 +58,8 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
       condition: '0', // CBD %
       classification: 'Flower',
       description: '',
-      price: 100, // 100 Ksh per gram
-      weight: 3.5, // Default weight
+      price: 100,
+      weight: 3.5,
       additionalImages: []
     };
     await createPiece(newPiece);
@@ -289,18 +289,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                           </div>
                         )}
                       </div>
-                      <p className="text-[10px] text-neutral-400 uppercase mt-2">
-                        You can upload more than 5 photos/videos. They will cycle automatically on the homepage.
-                      </p>
                     </div>
-                  </div>
-
-                  <div className="bg-white p-8 rounded-sm border border-gray-200 shadow-sm space-y-6">
-                    <h3 className="font-bold text-sm uppercase tracking-widest border-b border-gray-100 pb-2 mb-4">Store Policies (Footer)</h3>
-                     <div className="space-y-2">
-                        <label className="text-xs font-bold text-neutral-500 uppercase">License Information</label>
-                        <input className="w-full bg-gray-50 border border-gray-200 p-3 rounded-sm text-sm" value={content.footerTagline} onChange={(e) => onUpdateContent({ ...content, footerTagline: e.target.value })} />
-                      </div>
                   </div>
                 </div>
               ) : (
@@ -316,7 +305,9 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                   </div>
 
                   <div className="space-y-4">
-                    {pieces.map((piece) => (
+                    {pieces.map((piece) => {
+                      const unit = getUnitLabel(piece.classification);
+                      return (
                       <div key={piece.id} className="bg-white border border-gray-200 rounded-sm shadow-sm p-6 hover:shadow-md transition-shadow">
                         <div className="flex flex-col lg:flex-row gap-8">
                           
@@ -372,14 +363,14 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                                   <input type="number" className="w-full bg-gray-50 border border-gray-200 p-2 rounded-sm text-xs" value={piece.material} onChange={(e) => handlePieceFieldUpdate(piece.id, 'material', e.target.value)} />
                                 </div>
                                 <div className="space-y-1">
-                                  <label className="text-[10px] font-bold text-neutral-400 uppercase">Weight (g)</label>
-                                  <input type="number" step="0.1" className="w-full bg-gray-50 border border-gray-200 p-2 rounded-sm text-xs" value={piece.weight || 3.5} onChange={(e) => handlePieceFieldUpdate(piece.id, 'weight', parseFloat(e.target.value))} />
+                                  <label className="text-[10px] font-bold text-neutral-400 uppercase">Qty / Amount ({unit})</label>
+                                  <input type="number" step="0.1" className="w-full bg-gray-50 border border-gray-200 p-2 rounded-sm text-xs" value={piece.weight || (piece.classification === 'Flower' ? 3.5 : 1)} onChange={(e) => handlePieceFieldUpdate(piece.id, 'weight', parseFloat(e.target.value))} />
                                 </div>
                              </div>
 
                              <div className="space-y-1">
-                                <label className="text-[10px] font-bold text-neutral-400 uppercase">Price per Gram (Ksh)</label>
-                                <input type="number" className="w-full bg-gray-50 border border-gray-200 p-2 rounded-sm text-xs" value={piece.price} onChange={(e) => handlePieceFieldUpdate(piece.id, 'price', parseInt(e.target.value))} />
+                                <label className="text-[10px] font-bold text-neutral-400 uppercase">Price per {unit} (Ksh)</label>
+                                <input type="number" className="w-full bg-gray-50 border border-gray-200 p-2 rounded-sm text-xs" value={piece.price || (piece.classification === 'Vapes' ? 900 : 100)} onChange={(e) => handlePieceFieldUpdate(piece.id, 'price', parseInt(e.target.value))} />
                              </div>
 
                              <div className="space-y-1">
@@ -389,7 +380,7 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                           </div>
                         </div>
                       </div>
-                    ))}
+                    )})}
                   </div>
                 </div>
               )}

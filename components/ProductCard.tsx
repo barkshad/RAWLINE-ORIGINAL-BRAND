@@ -4,12 +4,16 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Piece } from '../types';
 import { getOptimizedUrl } from '../services/cloudinaryService';
+import { getUnitLabel } from '../utils';
 
 interface ProductCardProps {
   product: Piece;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  const unit = getUnitLabel(product.classification);
+  const defaultPrice = product.classification === 'Vapes' ? 900 : 100;
+
   return (
     <div className="group flex flex-col h-full border border-neutral-200 bg-white hover:shadow-lg transition-all rounded-sm overflow-hidden">
       <Link to={`/artifact/${product.id}`} className="relative aspect-square bg-neutral-100 overflow-hidden block">
@@ -40,7 +44,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         
         <div className="mt-auto pt-2 flex items-center justify-between border-t border-neutral-100">
           <div className="flex flex-col">
-             <span className="text-lg font-bold text-neutral-900">Ksh {product.price || 100} <span className="text-[10px] font-normal text-neutral-500">/ g</span></span>
+             <span className="text-lg font-bold text-neutral-900">Ksh {product.price || defaultPrice} <span className="text-[10px] font-normal text-neutral-500">/ {unit}</span></span>
              <span className="text-[10px] text-neutral-400 font-medium">THC {product.material || 0}%</span>
           </div>
           <a 

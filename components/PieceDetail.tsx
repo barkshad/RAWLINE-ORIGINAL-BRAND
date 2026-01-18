@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Piece } from '../types';
 import { getPieces } from '../services/firebaseService';
 import { getOptimizedUrl } from '../services/cloudinaryService';
+import { getUnitLabel } from '../utils';
 import FadeInSection from './FadeInSection';
 
 const PieceDetail: React.FC = () => {
@@ -38,9 +39,11 @@ const PieceDetail: React.FC = () => {
     );
   }
 
-  const unitPrice = piece.price || 100;
-  const weight = piece.weight || 3.5;
-  const totalPrice = unitPrice * weight;
+  const unit = getUnitLabel(piece.classification);
+  const defaultPrice = piece.classification === 'Vapes' ? 900 : 100;
+  const unitPrice = piece.price || defaultPrice;
+  const quantity = piece.weight || (piece.classification === 'Flower' ? 3.5 : 1);
+  const totalPrice = unitPrice * quantity;
 
   return (
     <div className="min-h-screen bg-white text-neutral-900 pb-24">
@@ -75,7 +78,7 @@ const PieceDetail: React.FC = () => {
                 <h1 className="text-4xl font-bold display-font text-neutral-900 mb-2">{piece.code}</h1>
                 <div className="flex items-baseline gap-2">
                    <div className="text-2xl font-bold text-neutral-900">Ksh {totalPrice.toLocaleString()}</div>
-                   <div className="text-sm text-neutral-500 font-medium">(Ksh {unitPrice}/g)</div>
+                   <div className="text-sm text-neutral-500 font-medium">(Ksh {unitPrice} / {unit})</div>
                 </div>
              </div>
 
@@ -93,8 +96,8 @@ const PieceDetail: React.FC = () => {
                   <span className="font-bold">{piece.era}</span>
                 </div>
                 <div>
-                  <span className="block text-neutral-500 text-xs uppercase tracking-wide">Weight</span>
-                  <span className="font-bold">{weight}g</span>
+                  <span className="block text-neutral-500 text-xs uppercase tracking-wide">Amount</span>
+                  <span className="font-bold">{quantity}{unit === 'g' ? 'g' : ` ${unit}${quantity > 1 ? 's' : ''}`}</span>
                 </div>
              </div>
 
@@ -113,7 +116,7 @@ const PieceDetail: React.FC = () => {
                   Call to Order
                 </a>
                 <a 
-                  href={`https://wa.me/254700000000?text=Hi, I am interested in ${piece.code} (${weight}g)`}
+                  href={`https://wa.me/254700000000?text=Hi, I am interested in ${piece.code} (${quantity}${unit})`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full bg-green-600 text-white py-4 font-bold uppercase tracking-widest text-sm hover:bg-green-700 transition-colors rounded-sm text-center shadow-sm"
