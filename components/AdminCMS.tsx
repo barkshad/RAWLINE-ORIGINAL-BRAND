@@ -9,7 +9,7 @@ import {
   removePiece 
 } from '../services/firebaseService';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, User } from 'firebase/auth';
-import { uploadToCloudinary } from '../services/cloudinaryService';
+import { uploadToCloudinary, getOptimizedUrl } from '../services/cloudinaryService';
 import { isVideoUrl } from '../utils';
 
 interface AdminCMSProps {
@@ -54,8 +54,8 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
       era: 'Hybrid',
       status: 'NEW',
       imageUrl: 'https://images.pexels.com/photos/7317926/pexels-photo-7317926.jpeg',
-      material: '20', // THC%
-      condition: '0', // CBD%
+      material: '20', // THC %
+      condition: '0', // CBD %
       classification: 'Flower',
       description: '',
       price: 35,
@@ -233,9 +233,48 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                       </div>
                     </div>
                     
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-neutral-500 uppercase">Hero Image URL</label>
-                      <input className="w-full bg-gray-50 border border-gray-200 p-3 rounded-sm text-sm font-mono text-neutral-600" value={content.heroMediaUrl} onChange={(e) => onUpdateContent({ ...content, heroMediaUrl: e.target.value })} />
+                    <div className="space-y-4">
+                      <label className="text-xs font-bold text-neutral-500 uppercase">Hero Background (Image or Video)</label>
+                      <div className="flex flex-col md:flex-row gap-6 items-start">
+                        <div className="w-full md:w-64 aspect-video bg-neutral-100 border border-gray-200 rounded-sm overflow-hidden relative group">
+                          {isUploading['hero'] ? (
+                            <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-10">
+                              <div className="w-6 h-6 border-2 border-[#b91c1c] border-t-transparent rounded-full animate-spin"></div>
+                            </div>
+                          ) : (
+                            <>
+                              {content.heroMediaUrl ? (
+                                isVideoUrl(content.heroMediaUrl) ? (
+                                  <video src={content.heroMediaUrl} className="w-full h-full object-cover" muted />
+                                ) : (
+                                  <img src={content.heroMediaUrl} className="w-full h-full object-cover" />
+                                )
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-neutral-300 text-[10px] font-bold uppercase tracking-widest">No Media</div>
+                              )}
+                            </>
+                          )}
+                          <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity">
+                            <span className="text-white text-[10px] font-bold uppercase tracking-widest">Upload New</span>
+                            <input 
+                              type="file" 
+                              accept="image/*,video/*" 
+                              className="hidden" 
+                              onChange={(e) => handleMediaUpload(e, (url) => onUpdateContent({ ...content, heroMediaUrl: url }), 'hero')} 
+                            />
+                          </label>
+                        </div>
+                        <div className="flex-1 space-y-2">
+                           <p className="text-[10px] text-neutral-400 uppercase leading-relaxed">
+                              Recommended: High-quality landscape video or image.<br/>Supports: .mp4, .webm, .jpg, .png
+                           </p>
+                           <input 
+                             className="w-full bg-gray-50 border border-gray-200 p-2 rounded-sm text-[10px] font-mono text-neutral-400" 
+                             value={content.heroMediaUrl} 
+                             readOnly
+                           />
+                        </div>
+                      </div>
                     </div>
                   </div>
 
