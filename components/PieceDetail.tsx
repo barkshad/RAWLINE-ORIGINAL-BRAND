@@ -38,6 +38,10 @@ const PieceDetail: React.FC = () => {
     );
   }
 
+  const unitPrice = piece.price || 100;
+  const weight = piece.weight || 3.5;
+  const totalPrice = unitPrice * weight;
+
   return (
     <div className="min-h-screen bg-white text-neutral-900 pb-24">
       {/* Breadcrumb */}
@@ -69,7 +73,10 @@ const PieceDetail: React.FC = () => {
              <div>
                 <span className="text-[#b91c1c] font-bold uppercase tracking-widest text-xs mb-2 block">{piece.classification || 'Cannabis'}</span>
                 <h1 className="text-4xl font-bold display-font text-neutral-900 mb-2">{piece.code}</h1>
-                <div className="text-2xl font-bold text-neutral-900">${piece.price || 45}.00</div>
+                <div className="flex items-baseline gap-2">
+                   <div className="text-2xl font-bold text-neutral-900">Ksh {totalPrice.toLocaleString()}</div>
+                   <div className="text-sm text-neutral-500 font-medium">(Ksh {unitPrice}/g)</div>
+                </div>
              </div>
 
              <div className="bg-neutral-50 p-6 rounded-sm border border-neutral-200 grid grid-cols-2 gap-4 text-sm">
@@ -86,8 +93,8 @@ const PieceDetail: React.FC = () => {
                   <span className="font-bold">{piece.era}</span>
                 </div>
                 <div>
-                  <span className="block text-neutral-500 text-xs uppercase tracking-wide">Format</span>
-                  <span className="font-bold">3.5g Dried Flower</span>
+                  <span className="block text-neutral-500 text-xs uppercase tracking-wide">Weight</span>
+                  <span className="font-bold">{weight}g</span>
                 </div>
              </div>
 
@@ -98,12 +105,25 @@ const PieceDetail: React.FC = () => {
                 </p>
              </div>
 
-             <button className="w-full bg-[#b91c1c] text-white py-4 font-bold uppercase tracking-widest text-sm hover:bg-red-800 transition-colors rounded-sm shadow-sm">
-               Add to Cart
-             </button>
+             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <a 
+                  href="tel:+254700000000"
+                  className="w-full bg-neutral-900 text-white py-4 font-bold uppercase tracking-widest text-sm hover:bg-[#b91c1c] transition-colors rounded-sm text-center shadow-sm"
+                >
+                  Call to Order
+                </a>
+                <a 
+                  href={`https://wa.me/254700000000?text=Hi, I am interested in ${piece.code} (${weight}g)`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full bg-green-600 text-white py-4 font-bold uppercase tracking-widest text-sm hover:bg-green-700 transition-colors rounded-sm text-center shadow-sm"
+                >
+                  WhatsApp Inquiry
+                </a>
+             </div>
 
              <div className="text-xs text-neutral-400 text-center">
-                Free shipping on orders over $150. ID required at delivery.
+                Delivery available within 60 minutes. ID required at delivery.
              </div>
           </div>
 

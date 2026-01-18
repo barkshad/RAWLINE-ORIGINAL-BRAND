@@ -10,11 +10,8 @@ export interface Piece {
   material?: string; // THC %
   condition?: string; // CBD %
   classification?: 'Flower' | 'Pre-Rolls' | 'Edibles' | 'Concentrates' | 'Vapes'; // Category
-  price?: number;
-}
-
-export interface CartItem extends Piece {
-  quantity: number;
+  price?: number; // Price per gram
+  weight?: number; // Standard weight in grams
 }
 
 export interface FitCheck {

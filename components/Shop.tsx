@@ -7,10 +7,9 @@ import { Piece } from '../types';
 
 interface ShopProps {
   pieces: Piece[];
-  onAddToCart: (p: Piece) => void;
 }
 
-const Shop: React.FC<ShopProps> = ({ pieces, onAddToCart }) => {
+const Shop: React.FC<ShopProps> = ({ pieces }) => {
   const [searchParams] = useSearchParams();
   const catParam = searchParams.get('cat');
   
@@ -36,7 +35,7 @@ const Shop: React.FC<ShopProps> = ({ pieces, onAddToCart }) => {
             {activeCategory === 'All' ? 'All Collections' : activeCategory}
           </h1>
           <p className="text-neutral-500 max-w-2xl">
-            Browse our curated selection of legal cannabis products. Filter by category or plant type to find exactly what you need.
+            Browse our curated selection of legal cannabis products. Contact us directly via phone or social media to place your order.
           </p>
         </div>
       </div>
@@ -72,6 +71,10 @@ const Shop: React.FC<ShopProps> = ({ pieces, onAddToCart }) => {
               ))}
             </div>
           </div>
+          <div className="pt-8 border-t border-neutral-200">
+             <h3 className="font-bold text-xs uppercase tracking-[0.2em] mb-4 text-neutral-400">Order Hotline</h3>
+             <a href="tel:+254700000000" className="text-xl font-bold text-neutral-900 hover:text-[#b91c1c]">+254 700 000000</a>
+          </div>
         </aside>
 
         {/* Product Grid */}
@@ -79,7 +82,7 @@ const Shop: React.FC<ShopProps> = ({ pieces, onAddToCart }) => {
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((product, idx) => (
               <FadeInSection key={product.id} delay={idx % 4 * 50}>
-                <ProductCard product={product} onAddToCart={onAddToCart} />
+                <ProductCard product={product} />
               </FadeInSection>
             ))}
           </div>

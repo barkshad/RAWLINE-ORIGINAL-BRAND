@@ -7,10 +7,9 @@ import { getOptimizedUrl } from '../services/cloudinaryService';
 
 interface ProductCardProps {
   product: Piece;
-  onAddToCart?: (p: Piece) => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   return (
     <div className="group flex flex-col h-full border border-neutral-200 bg-white hover:shadow-lg transition-all rounded-sm overflow-hidden">
       <Link to={`/artifact/${product.id}`} className="relative aspect-square bg-neutral-100 overflow-hidden block">
@@ -34,25 +33,23 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
         </div>
         
         <Link to={`/artifact/${product.id}`} className="block">
-          <h3 className="font-bold text-neutral-900 text-sm leading-tight group-hover:text-[#b91c1c] transition-colors uppercase">
+          <h3 className="font-bold text-neutral-900 text-sm leading-tight group-hover:text-[#b91c1c] transition-colors uppercase text-nowrap overflow-hidden text-ellipsis">
             {product.code}
           </h3>
         </Link>
         
         <div className="mt-auto pt-2 flex items-center justify-between border-t border-neutral-100">
           <div className="flex flex-col">
-             <span className="text-lg font-bold text-neutral-900">${product.price || 45}</span>
+             <span className="text-lg font-bold text-neutral-900">Ksh {product.price || 100} <span className="text-[10px] font-normal text-neutral-500">/ g</span></span>
              <span className="text-[10px] text-neutral-400 font-medium">THC {product.material || 0}%</span>
           </div>
-          <button 
-            onClick={(e) => {
-              e.preventDefault();
-              onAddToCart?.(product);
-            }}
-            className="bg-neutral-900 text-white w-8 h-8 flex items-center justify-center rounded-sm hover:bg-[#b91c1c] transition-colors"
+          <a 
+            href={`tel:+254700000000`}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-neutral-900 text-white px-3 py-2 text-[10px] font-bold uppercase tracking-widest rounded-sm hover:bg-[#b91c1c] transition-colors"
           >
-            +
-          </button>
+            ORDER
+          </a>
         </div>
       </div>
     </div>

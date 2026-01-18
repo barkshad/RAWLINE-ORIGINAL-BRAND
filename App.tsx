@@ -12,7 +12,7 @@ import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import AgeGate from './components/AgeGate';
 import ProductCard from './components/ProductCard';
-import { Piece, SiteContent, CartItem } from './types';
+import { Piece, SiteContent } from './types';
 import { getPieces, getSiteContent } from './services/firebaseService';
 import { isVideoUrl } from './utils';
 
@@ -28,7 +28,7 @@ const DEFAULT_CONTENT: SiteContent = {
   fitChecks: []
 };
 
-const HomePage: React.FC<{ content: SiteContent; pieces: Piece[]; onAddToCart: (p: Piece) => void }> = ({ content, pieces, onAddToCart }) => {
+const HomePage: React.FC<{ content: SiteContent; pieces: Piece[] }> = ({ content, pieces }) => {
   const [currentIdx, setCurrentIdx] = useState(0);
   const carouselItems = content.heroCarouselUrls && content.heroCarouselUrls.length > 0 
     ? content.heroCarouselUrls 
@@ -106,7 +106,7 @@ const HomePage: React.FC<{ content: SiteContent; pieces: Piece[]; onAddToCart: (
                to="/shop"
                className="inline-block bg-[#b91c1c] text-white px-10 py-4 font-bold uppercase tracking-widest text-sm hover:bg-red-800 transition-colors rounded-sm"
              >
-               Shop Collections
+               Explore Products
              </Link>
           </motion.div>
         </div>
@@ -154,7 +154,7 @@ const HomePage: React.FC<{ content: SiteContent; pieces: Piece[]; onAddToCart: (
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
              {pieces.slice(0, 4).map((p) => (
-                <ProductCard key={p.id} product={p} onAddToCart={onAddToCart} />
+                <ProductCard key={p.id} product={p} />
              ))}
           </div>
         </div>
@@ -181,9 +181,9 @@ const HomePage: React.FC<{ content: SiteContent; pieces: Piece[]; onAddToCart: (
       <section className="py-20 px-6 md:px-12 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
            <div className="p-12 bg-neutral-100 border border-neutral-200 space-y-4 rounded-sm">
-              <h3 className="text-2xl font-bold display-font">Click & Collect</h3>
-              <p className="text-neutral-600">Order online and pick up at your nearest location in as little as 15 minutes.</p>
-              <button className="text-sm font-bold uppercase text-[#b91c1c] tracking-widest mt-4 inline-block">Find a Store →</button>
+              <h3 className="text-2xl font-bold display-font">Order via Phone</h3>
+              <p className="text-neutral-600">Quick and easy ordering. Call or text us to place your order for immediate processing.</p>
+              <a href="tel:+254700000000" className="text-sm font-bold uppercase text-[#b91c1c] tracking-widest mt-4 inline-block hover:underline">Call to Order →</a>
            </div>
            <div className="p-12 bg-neutral-100 border border-neutral-200 space-y-4 rounded-sm">
               <h3 className="text-2xl font-bold display-font">Legal & Safe</h3>
@@ -200,7 +200,6 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [content, setContent] = useState<SiteContent>(DEFAULT_CONTENT);
   const [pieces, setPieces] = useState<Piece[]>([]);
-  const [cart, setCart] = useState<CartItem[]>([]);
 
   const loadData = useCallback(async () => {
     try {
@@ -222,16 +221,6 @@ const App: React.FC = () => {
     return () => lenis.destroy();
   }, [loadData]);
 
-  const handleAddToCart = (product: Piece) => {
-    setCart(prev => {
-      const existing = prev.find(i => i.id === product.id);
-      if (existing) {
-        return prev.map(i => i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i);
-      }
-      return [...prev, { ...product, quantity: 1 }];
-    });
-  };
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center font-sans text-neutral-400">
@@ -245,12 +234,12 @@ const App: React.FC = () => {
       <ScrollToTop />
       <AgeGate />
       <div className="min-h-screen bg-white text-neutral-900 font-sans">
-        <Navbar scrolled={false} syncError={null} cartCount={cart.reduce((a,b) => a + b.quantity, 0)} />
+        <Navbar scrolled={false} syncError={null} />
         
         <Routes>
-          <Route path="/" element={<HomePage content={content} pieces={pieces} onAddToCart={handleAddToCart} />} />
-          <Route path="/shop" element={<Shop pieces={pieces} onAddToCart={handleAddToCart} />} />
-          <Route path="/deals" element={<Shop pieces={pieces.filter(p => p.status === 'LIMITED')} onAddToCart={handleAddToCart} />} />
+          <Route path="/" element={<HomePage content={content} pieces={pieces} />} />
+          <Route path="/shop" element={<Shop pieces={pieces} />} />
+          <Route path="/deals" element={<Shop pieces={pieces.filter(p => p.status === 'LIMITED')} />} />
           <Route path="/philosophy" element={<Philosophy content={content} />} />
           <Route path="/artifact/:id" element={<PieceDetail />} />
         </Routes>

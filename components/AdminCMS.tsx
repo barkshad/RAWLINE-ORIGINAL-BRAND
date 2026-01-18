@@ -58,7 +58,8 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
       condition: '0', // CBD %
       classification: 'Flower',
       description: '',
-      price: 35,
+      price: 100, // 100 Ksh per gram
+      weight: 3.5, // Default weight
       additionalImages: []
     };
     await createPiece(newPiece);
@@ -371,9 +372,14 @@ const AdminCMS: React.FC<AdminCMSProps> = ({ content, onUpdateContent, pieces, o
                                   <input type="number" className="w-full bg-gray-50 border border-gray-200 p-2 rounded-sm text-xs" value={piece.material} onChange={(e) => handlePieceFieldUpdate(piece.id, 'material', e.target.value)} />
                                 </div>
                                 <div className="space-y-1">
-                                  <label className="text-[10px] font-bold text-neutral-400 uppercase">Price ($)</label>
-                                  <input type="number" className="w-full bg-gray-50 border border-gray-200 p-2 rounded-sm text-xs" value={piece.price} onChange={(e) => handlePieceFieldUpdate(piece.id, 'price', e.target.value)} />
+                                  <label className="text-[10px] font-bold text-neutral-400 uppercase">Weight (g)</label>
+                                  <input type="number" step="0.1" className="w-full bg-gray-50 border border-gray-200 p-2 rounded-sm text-xs" value={piece.weight || 3.5} onChange={(e) => handlePieceFieldUpdate(piece.id, 'weight', parseFloat(e.target.value))} />
                                 </div>
+                             </div>
+
+                             <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-neutral-400 uppercase">Price per Gram (Ksh)</label>
+                                <input type="number" className="w-full bg-gray-50 border border-gray-200 p-2 rounded-sm text-xs" value={piece.price} onChange={(e) => handlePieceFieldUpdate(piece.id, 'price', parseInt(e.target.value))} />
                              </div>
 
                              <div className="space-y-1">
